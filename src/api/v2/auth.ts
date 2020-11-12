@@ -1,5 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
-import * as app from "../../../app";
+import * as app from "../../app";
 
 app.v2.post(
   "/login",

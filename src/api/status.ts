@@ -1,4 +1,4 @@
-import * as app from "../../app";
+import * as app from "../app";
 
 app.server.get("/status", (req, res) => {
   // todo: Returns the Status of the server.
