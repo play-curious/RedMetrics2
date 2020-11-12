@@ -1,6 +1,8 @@
 
 module.exports = {
-  hello: () => {
-    return "Hello World"
+  Query: {
+    hello: () => {
+      return "Hello World"
+    }
   }
 }
