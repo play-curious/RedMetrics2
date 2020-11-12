@@ -1,6 +1,6 @@
 # Site
 
 - home
-- dashboard
+- dashboards
 - login interface
 - documentation
