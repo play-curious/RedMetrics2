@@ -48,3 +48,17 @@ app.v2.post("/game/:id/version", (req, res) => {
     error: "not implemented, ",
   });
 });
+
+app.v2.get("/game/:id/version/:versionId", (req, res) => {
+  // todo: Retrieves information about the game version as a GameVersionMeta object
+  res.status(404).json({
+    error: "not implemented, ",
+  });
+});
+
+app.v2.put("/game/:id/version/:versionId", (req, res) => {
+  // todo: Updates game information with the provided GameVersionMeta.
+  res.status(404).json({
+    error: "not implemented, ",
+  });
+});
