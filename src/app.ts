@@ -10,12 +10,21 @@ import pg from "pg";
 
 dotenv.config();
 
+// PostgreSQL
+
+export const database = new pg.Client();
+export const connected = database.connect();
+
 // Express
 
 export const server = express();
 export const v2 = express.Router();
 
 server.listen(process.env.RMPORT ?? 6627);
+
+server.use((req, res, next) => {
+  connected.then(() => next()).catch(next);
+});
 
 server.use("/api/v2/rest", v2);
 
@@ -37,8 +46,3 @@ server.use(
     graphiql: true,
   })
 );
-
-// PostgreSQL
-
-// export const database = new pg.Client();
-// export const connected = database.connect();
