@@ -28,6 +28,7 @@
     "express-async-handler": "^1.1.4",
     "express-graphql": "^0.11.0",
     "graphql": "^15.4.0",
+    "knex": "^0.21.12",
     "pg": "^8.5.0",
     "tsc-watch": "^4.2.9"
   },

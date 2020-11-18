@@ -17,7 +17,7 @@ export type Id = string;
  */
 export type Email = string;
 
-export interface AccountMeta {
+export interface Account {
   id: Id;
   email: Email;
   role: Role;
@@ -30,7 +30,7 @@ export interface AccountMeta {
  * @property software - String that can be user agent on browsers.
  * @property externalId - String that can be set by developers in order to link the player with another database. This must not be a personally identifiable marker such as an email address.
  */
-export interface SessionMeta {
+export interface Session {
   id: Id;
   platform?: string;
   screen_size?: string;
@@ -42,7 +42,7 @@ export interface SessionMeta {
 /**
  * @property author - Containing the name of the person or organization who created the game
  */
-export interface GameMeta {
+export interface Game {
   id: Id;
   name: string;
   author?: string;
@@ -50,7 +50,7 @@ export interface GameMeta {
   custom_data?: CustomData;
 }
 
-export interface GameVersionMeta {
+export interface GameVersion {
   name: string;
   description?: string;
   custom_data?: CustomData;
