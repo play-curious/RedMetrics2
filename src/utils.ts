@@ -24,7 +24,7 @@ export async function forFiles(
       if (options?.recursive) {
         if (
           Number.isNaN(options?.depth) ||
-          currentDepth < (options?.depth ?? 1)
+          currentDepth <= (options?.depth ?? 1)
         ) {
           if (
             !options?.filters?.dirname ||

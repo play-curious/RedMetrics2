@@ -4,6 +4,10 @@ import * as types from "../types";
 export const games = app.database<types.Game>("game");
 export const versions = app.database<types.GameVersion>("game_version");
 
+export function getGames(): Promise<types.Game[]> {
+  return games.select();
+}
+
 export function getGame(id: number): Promise<types.Game | undefined> {
   return games.where("_id", id).first();
 }
