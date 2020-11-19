@@ -7,7 +7,9 @@ app.v2
   .get(
     expressAsyncHandler(async (req, res) => {
       // todo: Lists the games using the service as GameMeta objects (see section on Paging below)
-      res.json(await game.getGames());
+      res.json({
+        games: await game.getGames(),
+      });
     })
   )
   .post((req, res) => {
@@ -23,12 +25,21 @@ app.v2
 
 app.v2
   .route("/game/:id")
-  .get((req, res) => {
-    // todo: Retrieves information about the game with that Id as a GameMeta object
-    res.status(404).json({
-      error: "not implemented, ",
-    });
-  })
+  .get(
+    expressAsyncHandler(async (req, res) => {
+      // todo: Retrieves information about the game with that Id as a GameMeta object
+
+      // todo: add a v2.param("id") to check this automatically
+      let id: number;
+      if (/^\d+$/.test(req.params.id)) id = Number(req.params.id);
+      else
+        return res.status(300).json({
+          error: "Invalid ID parameter",
+        });
+
+      res.json({ game: await game.getGame(id) });
+    })
+  )
   .put((req, res) => {
     // todo: Updates game information with the provided GameMeta.
     res.status(404).json({
