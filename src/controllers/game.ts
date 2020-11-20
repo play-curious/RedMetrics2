@@ -8,10 +8,10 @@ export function getGames(): Promise<types.Game[]> {
   return games.select();
 }
 
-export function getGame(id: number): Promise<types.Game | undefined> {
-  return games.where("_id", id).first();
+export function getGame(id: string): Promise<types.Game | undefined> {
+  return games.where("id", id).first();
 }
 
-export function getGameVersions(id: number): Promise<types.GameVersion[]> {
+export function getGameVersions(id: string): Promise<types.GameVersion[]> {
   return versions.where("game_id", id);
 }

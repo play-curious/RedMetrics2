@@ -51,6 +51,8 @@ export interface Game {
 }
 
 export interface GameVersion {
+  id: Id;
+  game_id: Id;
   name: string;
   description?: string;
   custom_data?: CustomData;
@@ -96,6 +98,8 @@ export type CustomData = object;
  * @property custom_data - JSON For "gain" and “lose” events, specifies the number of things are gained or lost.
  */
 export interface RMEvent {
+  id: number;
+  session_id: string;
   type: EventType;
   server_time: RMDate;
   user_time?: RMDate;

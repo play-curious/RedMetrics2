@@ -32,10 +32,6 @@ export const database = knex({
   },
 });
 
-export function keyId(id: string | number): "id" | "_id" {
-  return typeof id === "string" ? "id" : "_id";
-}
-
 // Express
 
 export const server = express();
