@@ -3,6 +3,8 @@
  * It looks like 2015-01-27T09:44:32.418Z. <br>
  * All times are in UTC, and include milliseconds.
  */
+import { stringify } from "querystring";
+
 export type RMDate = string;
 
 export type Role = "admin" | "dev" | "tiers";
@@ -12,14 +14,9 @@ export type Role = "admin" | "dev" | "tiers";
  */
 export type Id = string;
 
-/**
- * String validated by email regex
- */
-export type Email = string;
-
-export interface Account {
+export interface Account extends Login {
   id: Id;
-  email: Email;
+  password: Hash;
   role: Role;
   games?: Id[];
 }
@@ -125,6 +122,26 @@ export interface Status {
 }
 
 export interface Login {
-  username: string;
-  password: string;
+  email: Email;
+  password: Password;
+}
+
+/**
+ * String validated by email regex
+ */
+export type Email = string;
+export type Hash = Password;
+export type Password = string;
+
+export function isHash(str: string): str is Hash {
+  return str.length === 60;
+}
+
+export function isValidEmail(email: any): email is Email {
+  return (
+    typeof email === "string" &&
+    !/\s/.test(email) &&
+    email.includes("@") &&
+    email.includes(".")
+  );
 }

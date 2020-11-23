@@ -7,6 +7,12 @@ export function getAccount(id: string): Promise<types.Account | undefined> {
   return accounts.where("id", id).first();
 }
 
+export function getAccountByEmail(
+  email: types.Email
+): Promise<types.Account | undefined> {
+  return accounts.where("email", email).first();
+}
+
 export function postAccount(account: types.Account) {
   return accounts.insert(account);
 }

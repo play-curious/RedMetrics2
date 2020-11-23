@@ -1,12 +1,38 @@
+import expressAsyncHandler from "express-async-handler";
 import * as app from "../../app";
+import * as types from "../../types";
+import * as utils from "../../utils";
+import * as auth from "../../controllers/auth";
 
-app.v2.post("/login", (req, res) => {
-  // todo: Login to the system with valid username and password
+app.v2.post(
+  "/login",
+  expressAsyncHandler(async (req, res) => {
+    // Login to the system with valid username and password
 
-  res.status(404).json({
-    error: "not implemented, ",
-  });
-});
+    const email = req.body.email,
+      password = req.body.password;
+
+    if (!email || !password)
+      return utils.sendError(res, {
+        description: "Missing email or passord",
+        code: 401,
+      });
+
+    if (!types.isValidEmail(email)) {
+      return utils.sendError(res, { code: 401, description: "Invalid email" });
+    }
+
+    const account = await auth.getAccountByEmail(email);
+
+    if (!account) {
+      return utils.sendError(res, { code: 300, description: "Unknown email" });
+    }
+
+    const token = await utils.generateAccessToken({ email, password });
+
+    res.json({ token });
+  })
+);
 
 app.v2.post("/account", (req, res) => {
   // todo:
