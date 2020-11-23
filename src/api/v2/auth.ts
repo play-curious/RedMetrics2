@@ -1,4 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
+import bcrypt from "bcrypt";
 import * as app from "../../app";
 import * as types from "../../types";
 import * as utils from "../../utils";
@@ -26,6 +27,13 @@ app.v2.post(
 
     if (!account) {
       return utils.sendError(res, { code: 300, description: "Unknown email" });
+    }
+
+    if (!(await bcrypt.compare(password, account.password))) {
+      return utils.sendError(res, {
+        code: 401,
+        description: "Incorrect password",
+      });
     }
 
     const token = await utils.generateAccessToken({ email, password });
