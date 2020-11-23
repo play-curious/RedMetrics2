@@ -123,3 +123,8 @@ export interface Status {
   build: string;
   started_at: RMDate;
 }
+
+export interface Login {
+  username: string;
+  password: string;
+}

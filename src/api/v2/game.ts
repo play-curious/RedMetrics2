@@ -1,10 +1,12 @@
 import expressAsyncHandler from "express-async-handler";
 import * as app from "../../app";
 import * as game from "../../controllers/game";
+import * as utils from "../../utils";
 
 app.v2
   .route("/game")
   .get(
+    utils.needToken,
     expressAsyncHandler(async (req, res) => {
       // todo: Lists the games using the service as GameMeta objects (see section on Paging below)
       res.json({
@@ -12,7 +14,7 @@ app.v2
       });
     })
   )
-  .post((req, res) => {
+  .post(utils.needToken, (req, res) => {
     // todo:
     //  Creates a new game.
     //  A GameMeta object should be sent in the body.
@@ -24,20 +26,13 @@ app.v2
   });
 
 app.v2
-  .route("/game/:id")
+  .route("/game/:uuid")
   .get(
     expressAsyncHandler(async (req, res) => {
       // todo: Retrieves information about the game with that Id as a GameMeta object
 
-      // todo: add a v2.param("id") to check this automatically
-      let id: number;
-      if (/^\d+$/.test(req.params.id)) id = Number(req.params.id);
-      else
-        return res.status(300).json({
-          error: "Invalid ID parameter",
-        });
-
-      res.json({ game: await game.getGame(id) });
+      // todo: add a v2.param("uuid") to check his validity automatically
+      res.json({ game: await game.getGame(req.params.uuid) });
     })
   )
   .put((req, res) => {
@@ -48,7 +43,7 @@ app.v2
   });
 
 app.v2
-  .route("/game/:id/version")
+  .route("/game/:uuid/version")
   .get((req, res) => {
     // todo: Lists versions of the the game with that Id as GameVersionMeta objects (see section on Paging below)
     res.status(404).json({
@@ -66,7 +61,7 @@ app.v2
   });
 
 app.v2
-  .route("/game/:id/version/:versionId")
+  .route("/game/:uuid/version/:versionId")
   .get((req, res) => {
     // todo: Retrieves information about the game version as a GameVersionMeta object
     res.status(404).json({

@@ -1,5 +1,9 @@
 import path from "path";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import express from "express";
 import fsp from "fs/promises";
+import * as types from "./types";
 
 interface ForFilesOptions {
   recursive?: boolean;
@@ -41,4 +45,52 @@ export async function forFiles(
       await callback(filepath);
     }
   }
+}
+
+export const needToken: express.RequestHandler = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (token == null)
+    return sendError(res, {
+      code: 401,
+      description: "Missing JWT",
+    });
+
+  jwt.verify(
+    token,
+    process.env.ACCESS_TOKEN_SECRET as string,
+    (err: any, user: any) => {
+      if (err)
+        return sendError(res, {
+          code: 401,
+          description: "Missing JWT",
+        });
+
+      // @ts-ignore
+      req.user = user;
+
+      next();
+    }
+  );
+};
+
+export async function generateAccessToken(login: types.Login): Promise<string> {
+  login.password = await bcrypt.hash(
+    login.password,
+    process.env.SALT as string
+  );
+  return jwt.sign(login, process.env.TOKEN_SECRET as string, {
+    expiresIn: "1800s",
+  });
+}
+
+export function sendError(res: express.Response, error: types.RMError) {
+  return res.status(error.code).json(error);
+}
+
+export function isUserReq(
+  req: express.Request
+): req is express.Request & { user: any } {
+  return req.hasOwnProperty("user");
 }
