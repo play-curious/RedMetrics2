@@ -4,6 +4,7 @@ import * as app from "../../app";
 import * as types from "../../types";
 import * as utils from "../../utils";
 import * as auth from "../../controllers/auth";
+import has = Reflect.has;
 
 app.v2.post(
   "/login",
@@ -42,15 +43,51 @@ app.v2.post(
   })
 );
 
-app.v2.post("/account", (req, res) => {
-  // todo:
-  //  Registers a new account.
-  //  An AccountMeta object should be sent in the body.
-  //  The Location response header will contain the URL for the new account.
-  res.status(404).json({
-    error: "not implemented, ",
-  });
-});
+app.v2.post(
+  "/account",
+  expressAsyncHandler(async (req, res) => {
+    // todo:
+    //  Registers a new account.
+    //  An AccountMeta object should be sent in the body.
+    //  The Location response header will contain the URL for the new account.
+
+    const email = req.body.email,
+      password = req.body.password,
+      type = req.body.type;
+
+    if (!email || !password)
+      return utils.sendError(res, {
+        description: "Missing email or passord",
+        code: 401,
+      });
+
+    if (!types.isValidEmail(email)) {
+      return utils.sendError(res, { code: 401, description: "Invalid email" });
+    }
+
+    const account = await auth.getAccountByEmail(email);
+
+    if (account) {
+      return utils.sendError(res, {
+        code: 300,
+        description: "Already used email",
+      });
+    }
+
+    const hash = await bcrypt.hash(password, process.env.SALT as string);
+
+    await auth.postAccount({
+      email,
+      password: hash,
+      role: type === "dev" ? "dev" : "user",
+    });
+
+    res.json({
+      email,
+      success: "Success",
+    });
+  })
+);
 
 /** “me” can be used instead of id to reference own account */
 app.v2

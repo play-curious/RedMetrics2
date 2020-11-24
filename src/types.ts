@@ -5,7 +5,7 @@
  */
 export type RMDate = string;
 
-export type Role = "admin" | "dev" | "tiers";
+export type Role = "admin" | "dev" | "user";
 
 /**
  * String containing a server-generated unique identifier.
@@ -13,7 +13,7 @@ export type Role = "admin" | "dev" | "tiers";
 export type Id = string;
 
 export interface Account extends Login {
-  id: Id;
+  id?: Id;
   password: Hash;
   role: Role;
   games?: Id[];
