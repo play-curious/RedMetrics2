@@ -4,7 +4,6 @@ import * as app from "../../app";
 import * as types from "../../types";
 import * as utils from "../../utils";
 import * as auth from "../../controllers/auth";
-import has = Reflect.has;
 
 app.v2.post(
   "/login",
@@ -46,7 +45,6 @@ app.v2.post(
 app.v2.post(
   "/account",
   expressAsyncHandler(async (req, res) => {
-    // todo:
     //  Registers a new account.
     //  An AccountMeta object should be sent in the body.
     //  The Location response header will contain the URL for the new account.
@@ -92,14 +90,29 @@ app.v2.post(
 /** “me” can be used instead of id to reference own account */
 app.v2
   .route("/account/:id")
-  .get((req, res) => {
-    // todo:
-    //  Retrieves the AccountMeta for the given account.
-    //  Only admins can access accounts other than their own
-    res.status(404).json({
-      error: "not implemented, ",
-    });
-  })
+  .get(
+    expressAsyncHandler(async (req, res) => {
+      //  Retrieves the AccountMeta for the given account.
+      //  Only admins can access accounts other than their own
+
+      const account = await auth.getAccount(req.params.id);
+
+      if (!account)
+        return utils.sendError(res, {
+          code: 404,
+          description: "Account not found",
+        });
+
+      account.games = await auth.getAccountGames(account.id as string);
+
+      res.json({
+        email: account.email,
+        id: account.id,
+        role: account.role,
+        games: account.games,
+      });
+    })
+  )
   .put((req, res) => {
     // todo:
     //  Update the given account.

@@ -24,3 +24,14 @@ export function updateAccount(id: string, account: Partial<types.Account>) {
 export function countAccounts(): Promise<number> {
   return accounts.count();
 }
+
+export async function getAccountGames(id: string): Promise<string[]> {
+  const games: types.Game[] = await app.database
+    .select("game.id")
+    .from("account")
+    .leftJoin("game_account", "game_account.account_id", "account.id")
+    .leftJoin("game", "game_account.game_id", "game.id")
+    .where("account.id", id)
+    .groupBy("game.id");
+  return games.map((game) => game.id);
+}
