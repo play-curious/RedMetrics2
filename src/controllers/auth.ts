@@ -13,8 +13,8 @@ export function getAccountByEmail(
   return accounts.where("email", email).first();
 }
 
-export function postAccount(account: types.Account) {
-  return accounts.insert(account);
+export function postAccount(account: types.Account): Promise<string> {
+  return accounts.insert(account).returning("id");
 }
 
 export function updateAccount(id: string, account: Partial<types.Account>) {

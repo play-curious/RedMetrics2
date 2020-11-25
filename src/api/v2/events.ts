@@ -30,7 +30,7 @@ app.v2.post(
       });
     }
 
-    events.postSession({
+    const id = await events.postSession({
       external_id,
       platform,
       screen_size,
@@ -40,6 +40,7 @@ app.v2.post(
     });
 
     res.json({
+      id,
       success: "Success",
     });
   })

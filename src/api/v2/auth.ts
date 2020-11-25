@@ -74,14 +74,14 @@ app.v2.post(
 
     const hash = await bcrypt.hash(password, process.env.SALT as string);
 
-    await auth.postAccount({
+    const id = await auth.postAccount({
       email,
       password: hash,
       role: type === "dev" ? "dev" : "user",
     });
 
     res.json({
-      email,
+      id,
       success: "Success",
     });
   })
@@ -150,7 +150,7 @@ app.v2
       });
 
       res.json({
-        email,
+        id,
         success: "Success",
       });
     })

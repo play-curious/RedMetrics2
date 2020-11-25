@@ -12,14 +12,14 @@ export function getSessionEvents(id: string): Promise<types.RMEvent[]> {
   return events.where("session_id", id);
 }
 
-export function postSession(session: types.Session) {
-  return sessions.insert(session);
+export function postSession(session: types.Session): Promise<string> {
+  return sessions.insert(session).returning("id");
 }
 
 export function getEvent(id: number): Promise<types.RMEvent | undefined> {
   return events.where("id", id).first();
 }
 
-export function postEvent(event: types.RMEvent) {
-  return events.insert(event);
+export function postEvent(event: types.RMEvent): Promise<string> {
+  return events.insert(event).returning("id");
 }
