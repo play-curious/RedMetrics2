@@ -113,15 +113,49 @@ app.v2
       });
     })
   )
-  .put((req, res) => {
-    // todo:
-    //  Update the given account.
-    //  An AccountMeta object should be sent in the body.
-    //  Only admins can access accounts other than their own
-    res.status(404).json({
-      error: "not implemented, ",
-    });
-  });
+  .put(
+    utils.needToken,
+    expressAsyncHandler(async (req, res) => {
+      // todo:
+      //  Update the given account.
+      //  An AccountMeta object should be sent in the body.
+      //  Only admins can access accounts other than their own
+
+      const id = req.params.id,
+        email = req.body.email,
+        password = req.body.password,
+        type = req.body.type;
+
+      if (email && !types.isValidEmail(email)) {
+        return utils.sendError(res, {
+          code: 401,
+          description: "Invalid email",
+        });
+      }
+
+      const account = await auth.getAccount(id);
+
+      if (!account) {
+        return utils.sendError(res, {
+          code: 300,
+          description: "Unknown account",
+        });
+      }
+
+      const hash = await bcrypt.hash(password, process.env.SALT as string);
+
+      await auth.updateAccount(id, {
+        email,
+        password: hash,
+        role: type === "dev" ? "dev" : "user",
+      });
+
+      res.json({
+        email,
+        success: "Success",
+      });
+    })
+  );
 
 app.v2.post("/account/:id/reset-password", (req, res) => {
   // todo: Request password reset. Requires confirmation by email
