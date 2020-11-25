@@ -26,7 +26,8 @@ export interface Account extends Login {
  * @property externalId - String that can be set by developers in order to link the player with another database. This must not be a personally identifiable marker such as an email address.
  */
 export interface Session {
-  id: Id;
+  id?: Id;
+  game_version_id: string;
   platform?: string;
   screen_size?: string;
   software?: string;

@@ -1,15 +1,49 @@
+import expressAsyncHandler from "express-async-handler";
 import * as app from "../../app";
+import * as utils from "../../utils";
+import * as events from "../../controllers/events";
+import * as game from "../../controllers/game";
 
-app.v2.post("/session", (req, res) => {
-  // todo:
-  //  Creates a new session.
-  //  A SessionMeta object should be sent in the body.
-  //  The Location response header will contain the URL for the new session.
-  //  Only accessible to dev and admin.
-  res.status(404).json({
-    error: "not implemented, ",
-  });
-});
+app.v2.post(
+  "/session",
+  utils.needToken,
+  expressAsyncHandler(async (req, res) => {
+    // todo:
+    //  Creates a new session.
+    //  A SessionMeta object should be sent in the body.
+    //  The Location response header will contain the URL for the new session.
+    //  Only accessible to dev and admin.
+
+    if (!utils.isUserReq(req)) return;
+
+    const external_id = req.body.external_id,
+      platform = req.body.platform,
+      screen_size = req.body.screen_size,
+      software = req.body.software,
+      custom_data = req.body.custom_data,
+      game_version_id = req.body.game_version_id;
+
+    if (!game_version_id || !(await game.getGameVersion(game_version_id))) {
+      return utils.sendError(res, {
+        code: 401,
+        description: "Invalid game version uuid",
+      });
+    }
+
+    events.postSession({
+      external_id,
+      platform,
+      screen_size,
+      software,
+      custom_data,
+      game_version_id,
+    });
+
+    res.json({
+      success: "Success",
+    });
+  })
+);
 
 app.v2
   .route("/session/:id")

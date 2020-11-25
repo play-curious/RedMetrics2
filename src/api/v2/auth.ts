@@ -116,7 +116,6 @@ app.v2
   .put(
     utils.needToken,
     expressAsyncHandler(async (req, res) => {
-      // todo:
       //  Update the given account.
       //  An AccountMeta object should be sent in the body.
       //  Only admins can access accounts other than their own

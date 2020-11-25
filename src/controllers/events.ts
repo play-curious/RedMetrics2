@@ -1,15 +1,19 @@
 import * as app from "../app";
 import * as types from "../types";
 
-export const session = app.database<types.Session>("session");
+export const sessions = app.database<types.Session>("session");
 export const events = app.database<types.RMEvent>("event");
 
 export function getSession(id: string): Promise<types.Session | undefined> {
-  return session.where("id", id).first();
+  return sessions.where("id", id).first();
 }
 
 export function getSessionEvents(id: string): Promise<types.RMEvent[]> {
   return events.where("session_id", id);
+}
+
+export function postSession(session: types.Session) {
+  return sessions.insert(session);
 }
 
 export function getEvent(id: number): Promise<types.RMEvent | undefined> {

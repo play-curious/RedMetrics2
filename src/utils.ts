@@ -60,7 +60,7 @@ export const needToken: express.RequestHandler = (req, res, next) => {
   jwt.verify(
     token,
     process.env.ACCESS_TOKEN_SECRET as string,
-    (err: any, user: any) => {
+    (err, user: any) => {
       if (err)
         return sendError(res, {
           code: 401,
@@ -91,6 +91,6 @@ export function sendError(res: express.Response, error: types.RMError) {
 
 export function isUserReq(
   req: express.Request
-): req is express.Request & { user: any } {
+): req is express.Request & { user: types.Login } {
   return req.hasOwnProperty("user");
 }
