@@ -98,32 +98,60 @@ app.v2
 
 app.v2
   .route("/event")
-  .get((req, res) => {
-    // todo:
-    //  Lists Event objects (see section on Paging below).
-    //  Admin and dev accounts can see the game events they have access to.
-    //  Otherwise restricted to one session id.
-    //  Can be filtered by the following query parameters:
-    //  - game - Id
-    //  - version - String (can be included multiple times to form a list).
-    //  - session - Id (can be included multiple times to form a list)
-    //  - type - EventType (can be included multiple times to form a list)
-    //  - section - Section (level.section.* finds level.section.subsection)
-    //  - after - Date
-    //  - before - Date
-    //  - afterUserTime - Date
-    //  - beforeUserTime - Date
-    res.status(404).json({
-      error: "not implemented, ",
-    });
-  })
-  .post((req, res) => {
-    // todo:
-    //  Adds more event information sent with the Event object, or array or Event objects.
-    //  The gameId query parameters is required.
-    //  If no session is given, a new session will be created and returned.
-    //  Since the progress object cannot be addressed by itself, no Location header will be returned.
-    res.status(404).json({
-      error: "not implemented, ",
-    });
-  });
+  .get(
+    utils.needToken,
+    expressAsyncHandler(async (req, res) => {
+      // todo:
+      //  Lists Event objects (see section on Paging below).
+      //  Admin and dev accounts can see the game events they have access to.
+      //  Otherwise restricted to one session id.
+      //  Can be filtered by the following query parameters:
+      //  - game - Id
+      //  - version - String (can be included multiple times to form a list).
+      //  - session - Id (can be included multiple times to form a list)
+      //  - type - EventType (can be included multiple times to form a list)
+      //  - section - Section (level.section.* finds level.section.subsection)
+      //  - after - Date
+      //  - before - Date
+      //  - afterUserTime - Date
+      //  - beforeUserTime - Date
+
+      res.status(404).json({
+        error: "not implemented, ",
+      });
+    })
+  )
+  .post(
+    utils.needToken,
+    expressAsyncHandler(async (req, res) => {
+      //  Adds more event information sent with the Event object, or array or Event objects.
+      //  The gameVersionId query parameters is required.
+      //  If no session is given, a new session will be created and returned.
+      //  Since the progress object cannot be addressed by itself, no Location header will be returned.
+
+      if (!req.body.game_version_id)
+        return utils.sendError(res, {
+          code: 300,
+          description: "Missing game version id",
+        });
+
+      let session_id = req.body.session_id;
+      if (!req.body.session_id || !(await events.getSession(session_id))) {
+        session_id = await events.postSession({
+          game_version_id: req.body.game_version_id,
+        });
+      }
+
+      const event: types.RMEvent = {
+        session_id,
+        coordinates: req.body.coordinates,
+        custom_data: req.body.custom_data,
+        section: req.body.section,
+        server_time: new Date().toTimeString(),
+        type: req.body.type,
+        user_time: req.body.user_time,
+      };
+
+      res.json(event);
+    })
+  );
