@@ -121,16 +121,21 @@ app.v2
   );
 
 app.v2
-  .route("/game/:uuid/version/:versionId")
-  .get((req, res) => {
-    // todo: Retrieves information about the game version as a GameVersionMeta object
-    res.status(404).json({
-      error: "not implemented, ",
-    });
-  })
-  .put((req, res) => {
-    // todo: Updates game information with the provided GameVersionMeta.
-    res.status(404).json({
-      error: "not implemented, ",
-    });
-  });
+  .route("/version/:versionId")
+  .get(
+    utils.needToken,
+    expressAsyncHandler(async (req, res) => {
+      // Retrieves information about the game version as a GameVersionMeta object
+
+      res.json(await game.getGameVersion(req.params.uuid));
+    })
+  )
+  .put(
+    utils.needToken,
+    expressAsyncHandler(async (req, res) => {
+      // todo: Updates game information with the provided GameVersionMeta.
+      res.status(404).json({
+        error: "not implemented, ",
+      });
+    })
+  );
