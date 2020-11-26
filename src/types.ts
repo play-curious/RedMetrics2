@@ -39,7 +39,7 @@ export interface Session {
  * @property author - Containing the name of the person or organization who created the game
  */
 export interface Game {
-  id: Id;
+  id?: Id;
   name: string;
   author?: string;
   description?: string;
@@ -47,7 +47,7 @@ export interface Game {
 }
 
 export interface GameVersion {
-  id: Id;
+  id?: Id;
   game_id: Id;
   name: string;
   description?: string;

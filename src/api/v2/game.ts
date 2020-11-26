@@ -1,29 +1,55 @@
 import expressAsyncHandler from "express-async-handler";
 import * as app from "../../app";
-import * as game from "../../controllers/game";
 import * as utils from "../../utils";
+import * as types from "../../types";
+import * as game from "../../controllers/game";
 
 app.v2
   .route("/game")
   .get(
     utils.needToken,
     expressAsyncHandler(async (req, res) => {
-      // todo: Lists the games using the service as GameMeta objects (see section on Paging below)
+      // Lists the games using the service as GameMeta objects (see section on Paging below)
       res.json({
         games: await game.getGames(),
       });
     })
   )
-  .post(utils.needToken, (req, res) => {
-    // todo:
-    //  Creates a new game.
-    //  A GameMeta object should be sent in the body.
-    //  A default version of the game will be created.
-    //  The Location response header will contain the URL for the new game.
-    res.status(404).json({
-      error: "not implemented, ",
-    });
-  });
+  .post(
+    utils.needToken,
+    expressAsyncHandler(async (req, res) => {
+      //  Creates a new game.
+      //  A GameMeta object should be sent in the body.
+      //  A default version of the game will be created.
+      //  The Location response header will contain the URL for the new game.
+
+      if (!req.body.name)
+        return utils.sendError(res, {
+          code: 301,
+          description: "Missing game name",
+        });
+
+      const currentGame: types.Game = {
+        author: req.body.author,
+        custom_data: req.body.custom_data,
+        description: req.body.description,
+        name: req.body.name,
+      };
+
+      const game_id = await game.postGame(currentGame);
+
+      const game_version_id = await game.postGameVersion({
+        game_id,
+        name: "default",
+      });
+
+      res.json({
+        game_id,
+        game_version_id,
+        success: "Success",
+      });
+    })
+  );
 
 app.v2
   .route("/game/:uuid")
