@@ -20,7 +20,7 @@ export function updateSession(
   id: string,
   values: Partial<types.Session>
 ): Promise<string> {
-  return sessions.where("id", id).update(values);
+  return sessions.where("id", id).update(values).returning("id");
 }
 
 export function getEvent(id: number): Promise<types.RMEvent | undefined> {

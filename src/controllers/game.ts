@@ -1,5 +1,6 @@
 import * as app from "../app";
 import * as types from "../types";
+import { sessions } from "./events";
 
 export const games = app.database<types.Game>("game");
 export const versions = app.database<types.GameVersion>("game_version");
@@ -14,6 +15,13 @@ export function getGame(id: string): Promise<types.Game | undefined> {
 
 export function postGame(game: types.Game): Promise<string> {
   return games.insert(game).returning("id");
+}
+
+export function updateGame(
+  id: string,
+  values: Partial<types.Game>
+): Promise<string> {
+  return games.where("id", id).update(values).returning("id");
 }
 
 export function getGameVersion(id: string): Promise<types.GameVersion[]> {

@@ -54,19 +54,31 @@ app.v2
 app.v2
   .route("/game/:uuid")
   .get(
+    utils.needToken,
     expressAsyncHandler(async (req, res) => {
-      // todo: Retrieves information about the game with that Id as a GameMeta object
+      // Retrieves information about the game with that Id as a GameMeta object
 
       // todo: add a v2.param("uuid") to check his validity automatically
       res.json({ game: await game.getGame(req.params.uuid) });
     })
   )
-  .put((req, res) => {
-    // todo: Updates game information with the provided GameMeta.
-    res.status(404).json({
-      error: "not implemented, ",
-    });
-  });
+  .put(
+    utils.needToken,
+    expressAsyncHandler(async (req, res) => {
+      // Updates game information with the provided GameMeta.
+
+      await game.updateGame(req.params.uuid, {
+        name: req.body.name,
+        description: req.body.description,
+        custom_data: req.body.custom_data,
+        author: req.body.author,
+      });
+
+      res.json({
+        success: "Success",
+      });
+    })
+  );
 
 app.v2
   .route("/game/:uuid/version")

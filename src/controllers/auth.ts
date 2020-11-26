@@ -17,8 +17,11 @@ export function postAccount(account: types.Account): Promise<string> {
   return accounts.insert(account).returning("id");
 }
 
-export function updateAccount(id: string, account: Partial<types.Account>) {
-  return accounts.where("id", id).update(account);
+export function updateAccount(
+  id: string,
+  account: Partial<types.Account>
+): Promise<string> {
+  return accounts.where("id", id).update(account).returning("id");
 }
 
 export function countAccounts(): Promise<number> {
@@ -33,5 +36,5 @@ export async function getAccountGames(id: string): Promise<string[]> {
     .leftJoin("game", "game_account.game_id", "game.id")
     .where("account.id", id)
     .groupBy("game.id");
-  return games.map((game) => game.id);
+  return games.map((game) => game.id as string);
 }
