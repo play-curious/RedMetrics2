@@ -8,7 +8,6 @@ app.v2.post(
   "/session",
   utils.needToken,
   expressAsyncHandler(async (req, res) => {
-    // todo:
     //  Creates a new session.
     //  A SessionMeta object should be sent in the body.
     //  The Location response header will contain the URL for the new session.
@@ -48,17 +47,26 @@ app.v2.post(
 
 app.v2
   .route("/session/:id")
-  .get((req, res) => {
-    // todo: Retrieves the SessionMeta for the identified session
-    res.status(404).json({
-      error: "not implemented, ",
-    });
-  })
+  .get(
+    utils.needToken,
+    expressAsyncHandler(async (req, res) => {
+      // Retrieves the SessionMeta for the identified session
+
+      const session = await events.getSession(req.params.id);
+
+      if (!session)
+        return utils.sendError(res, {
+          code: 404,
+          description: "Unknown session uuid",
+        });
+
+      res.json(session);
+    })
+  )
   .put((req, res) => {
     // todo: Updates the SessionMeta. Only accessible to dev and admin.
-    res.status(404).json({
-      error: "not implemented, ",
-    });
+
+
   });
 
 app.v2
