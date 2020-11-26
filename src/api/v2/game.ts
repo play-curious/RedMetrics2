@@ -121,7 +121,7 @@ app.v2
   );
 
 app.v2
-  .route("/version/:versionId")
+  .route("/version/:uuid")
   .get(
     utils.needToken,
     expressAsyncHandler(async (req, res) => {
@@ -133,9 +133,27 @@ app.v2
   .put(
     utils.needToken,
     expressAsyncHandler(async (req, res) => {
-      // todo: Updates game information with the provided GameVersionMeta.
-      res.status(404).json({
-        error: "not implemented, ",
+      // Updates game information with the provided GameVersionMeta.
+
+      const version = await game.getGameVersion(req.params.uuid);
+
+      if (!version)
+        return utils.sendError(res, {
+          code: 300,
+          description: "Unknown version",
+        });
+
+      const values: Partial<types.GameVersion> = {
+        name: req.body.name,
+        description: req.body.description,
+        custom_data: req.body.custom_data,
+      };
+
+      const id = await game.updateGameVersion(req.params.uuid, values);
+
+      res.json({
+        id,
+        success: "Success",
       });
     })
   );

@@ -37,3 +37,10 @@ export function postGameVersion(
 export function getGameVersions(id: string): Promise<types.GameVersion[]> {
   return versions.where("game_id", id);
 }
+
+export function updateGameVersion(
+  id: string,
+  values: Partial<types.GameVersion>
+): Promise<string> {
+  return versions.where("id", id).update(values).returning("id");
+}
