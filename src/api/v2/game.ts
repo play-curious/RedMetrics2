@@ -82,21 +82,43 @@ app.v2
 
 app.v2
   .route("/game/:uuid/version")
-  .get((req, res) => {
-    // todo: Lists versions of the the game with that Id as GameVersionMeta objects (see section on Paging below)
-    res.status(404).json({
-      error: "not implemented, ",
-    });
-  })
-  .post((req, res) => {
-    // todo:
-    //  Creates a new version of the game.
-    //  A GameVersionMeta object should be sent in the body.
-    //  The Location response header will contain the URL for the new game.
-    res.status(404).json({
-      error: "not implemented, ",
-    });
-  });
+  .get(
+    utils.needToken,
+    expressAsyncHandler(async (req, res) => {
+      // Lists versions of the the game with that Id as GameVersionMeta objects (see section on Paging below)
+
+      res.json(await game.getGameVersions(req.params.uuid));
+    })
+  )
+  .post(
+    utils.needToken,
+    expressAsyncHandler(async (req, res) => {
+      //  Creates a new version of the game.
+      //  A GameVersionMeta object should be sent in the body.
+      //  The Location response header will contain the URL for the new game.
+
+      if (!req.body.name)
+        return utils.sendError(res, {
+          code: 300,
+          description: "Missing version name",
+        });
+
+      const targetGame = await game.getGame(req.params.id);
+
+      if (!targetGame)
+        return utils.sendError(res, {
+          code: 300,
+          description: "Unknown target game",
+        });
+
+      await game.postGameVersion({
+        name: req.body.name,
+        game_id: targetGame.id as string,
+        custom_data: req.body.custom_data,
+        description: req.body.description,
+      });
+    })
+  );
 
 app.v2
   .route("/game/:uuid/version/:versionId")
