@@ -16,6 +16,13 @@ export function postSession(session: types.Session): Promise<string> {
   return sessions.insert(session).returning("id");
 }
 
+export function updateSession(
+  id: string,
+  values: Partial<types.Session>
+): Promise<string> {
+  return sessions.where("id", id).update(values);
+}
+
 export function getEvent(id: number): Promise<types.RMEvent | undefined> {
   return events.where("id", id).first();
 }

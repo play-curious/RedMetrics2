@@ -1,5 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
 import * as app from "../../app";
+import * as types from "../../types";
 import * as utils from "../../utils";
 import * as events from "../../controllers/events";
 import * as game from "../../controllers/game";
@@ -63,11 +64,37 @@ app.v2
       res.json(session);
     })
   )
-  .put((req, res) => {
-    // todo: Updates the SessionMeta. Only accessible to dev and admin.
+  .put(
+    utils.needToken,
+    expressAsyncHandler(async (req, res) => {
+      // Updates the SessionMeta. Only accessible to dev and admin.
 
+      const values: Partial<types.Session> = {
+        custom_data: req.body.custom_data,
+        software: req.body.software,
+        screen_size: req.body.screen_size,
+        platform: req.body.platform,
+        external_id: req.body.external_id,
+      };
 
-  });
+      const id = req.params.id;
+
+      const updated = await events.getSession(id);
+
+      if (!updated)
+        return utils.sendError(res, {
+          code: 404,
+          description: "Unknown session uuid",
+        });
+
+      await events.updateSession(id, values);
+
+      res.json({
+        id,
+        success: "Success",
+      });
+    })
+  );
 
 app.v2
   .route("/event")
