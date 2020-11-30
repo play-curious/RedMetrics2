@@ -101,13 +101,12 @@ app.v2
   .get(
     utils.needToken,
     expressAsyncHandler(async (req, res) => {
-      // todo:
       //  Lists Event objects (see section on Paging below).
       //  Admin and dev accounts can see the game events they have access to.
       //  Otherwise restricted to one session id.
       //  Can be filtered by the following query parameters:
       //  - game - Id
-      //  - version - String (can be included multiple times to form a list).
+      //  - version - String (can be included multiple times to form a list)
       //  - session - Id (can be included multiple times to form a list)
       //  - type - EventType (can be included multiple times to form a list)
       //  - section - Section (level.section.* finds level.section.subsection)
@@ -116,9 +115,25 @@ app.v2
       //  - afterUserTime - Date
       //  - beforeUserTime - Date
 
-      res.status(404).json({
-        error: "not implemented, ",
-      });
+      let query = events.events;
+      if (req.body.game_id) {
+        query = query
+          .leftJoin("game_version", "game_version.id", "event.game_version_id")
+          .leftJoin("game", "game.id", "game_version.game_id")
+          .where("game.id", req.body.game_id);
+      }
+      if (req.body.version)
+        query = query.andWhere("game_version.name", req.body.version);
+      if (req.body.session_id)
+        query = query.andWhere("session_id", req.body.session_id);
+      if (req.body.type) query = query.andWhere("type", req.body.type);
+      if (req.body.section) query = query.andWhere("section", req.body.section);
+      if (req.body.after)
+        query = query.andWhere("server_time", ">", req.body.after);
+      if (req.body.before)
+        query = query.andWhere("server_time", "<", req.body.before);
+
+      res.json(await query);
     })
   )
   .post(

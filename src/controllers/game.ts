@@ -1,6 +1,5 @@
 import * as app from "../app";
 import * as types from "../types";
-import { sessions } from "./events";
 
 export const games = app.database<types.Game>("game");
 export const versions = app.database<types.GameVersion>("game_version");
