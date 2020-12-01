@@ -1,4 +1,4 @@
 const request = require("supertest");
-const app = require("../../dist/app");
+const app = require("../../../dist/app");
 
 describe();
