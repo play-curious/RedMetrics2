@@ -1,6 +1,10 @@
 const request = require("supertest");
 const app = require("../../../dist/app");
 
+const accounts = [];
+
+process.accounts = accounts;
+
 describe("auth", () => {
   describe("register", () => {
     const route = "/api/v2/rest/account";
@@ -147,8 +151,25 @@ describe("auth", () => {
             password: "test",
           })
           .expect(200)
-          .end(done);
+          .end((err, res) => {
+            accounts.push(res.body.token);
+            done(err);
+          });
       });
+    });
+  });
+
+  describe("account", () => {
+    describe("get", () => {
+      describe("fails", () => {});
+
+      describe("success", () => {});
+    });
+
+    describe("update", () => {
+      describe("fails", () => {});
+
+      describe("success", () => {});
     });
   });
 });
