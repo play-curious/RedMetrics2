@@ -68,7 +68,7 @@ describe("auth", () => {
         request(app.server)
           .post("/api/v2/rest/account")
           .send({
-            email: "test@test.test",
+            email: "user@test.test",
             password: "test",
             type: "user",
           })
