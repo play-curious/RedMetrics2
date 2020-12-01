@@ -1,19 +1,6 @@
-import path from "path";
 import chalk from "chalk";
-import * as utils from "./utils";
+import * as app from "./app";
 
-utils
-  .forFiles(
-    path.join(__dirname, "api"),
-    (filepath) => {
-      require(filepath);
-      console.log(chalk.blue("loaded"), filepath);
-    },
-    {
-      recursive: true,
-      filters: {
-        filename: /\.js$/i,
-      },
-    }
-  )
-  .catch(console.error);
+app.server.listen(process.env.SERVER_PORT ?? 6627, () => {
+  console.log(chalk.magenta("listening"), process.env.SERVER_PORT ?? 6627);
+});

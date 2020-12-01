@@ -4,6 +4,7 @@ import relative from "dayjs/plugin/relativeTime";
 import express from "express";
 import dotenv from "dotenv";
 import dayjs from "dayjs";
+import chalk from "chalk";
 import knex from "knex";
 import path from "path";
 import fs from "fs";
@@ -37,8 +38,6 @@ export const database = knex({
 export const server = express();
 export const v2 = express.Router();
 
-server.listen(process.env.SERVER_PORT ?? 6627);
-
 server.use("/api/v2/rest", v2);
 
 // View Engine
@@ -71,3 +70,24 @@ server.use(
     graphiql: true,
   })
 );
+
+// Load routes
+
+import * as utils from "./utils";
+
+utils
+  .forFiles(
+    path.join(__dirname, "api"),
+    (filepath) => {
+      require(filepath);
+      console.log(chalk.blue("loaded"), filepath);
+    },
+    {
+      recursive: true,
+      filters: {
+        filename: /\.js$/i,
+      },
+    }
+  )
+  .then(() => console.log(chalk.green("ready")))
+  .catch(console.error);
