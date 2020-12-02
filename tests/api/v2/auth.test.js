@@ -204,7 +204,9 @@ describe("auth", () => {
     });
 
     describe("update", () => {
-      describe("fails", () => {});
+      describe("fails", () => {
+
+      });
 
       describe("success", () => {});
     });

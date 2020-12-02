@@ -91,6 +91,7 @@ app.v2.post(
 app.v2
   .route("/account/:id")
   .get(
+    utils.needToken,
     expressAsyncHandler(async (req, res) => {
       //  Retrieves the AccountMeta for the given account.
       //  Only admins can access accounts other than their own
