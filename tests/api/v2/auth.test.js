@@ -160,7 +160,7 @@ describe("auth", () => {
           })
           .expect(200)
           .end((err, res) => {
-            tokens.push(res.body.token);
+            tokens.set("user", res.body.token);
             done(err);
           });
       });
@@ -172,14 +172,18 @@ describe("auth", () => {
 
     describe("get", () => {
       describe("fails", () => {
-        test("unknown account", (done) => {
-          request(app.server).get(route(-1)).expect(404).end(done);
-        });
-
         test("missing token", (done) => {
           request(app.server)
             .get(route(ids.get("admin")))
             .expect(401)
+            .end(done);
+        });
+
+        test("unknown account", (done) => {
+          request(app.server)
+            .get(route(-1))
+            .set("Authorization", `bearer ${tokens.get("user")}`)
+            .expect(404)
             .end(done);
         });
 
@@ -205,7 +209,41 @@ describe("auth", () => {
 
     describe("update", () => {
       describe("fails", () => {
+        test("missing token", (done) => {
+          request(app.server)
+            .put(route(ids.get("admin")))
+            .expect(401)
+            .end(done);
+        });
 
+        test("unknown account", (done) => {
+          request(app.server)
+            .put(route(-1))
+            .set("Authorization", `bearer ${tokens.get("user")}`)
+            .send({
+              email: "email@user.user",
+            })
+            .expect(404)
+            .end(done);
+        });
+
+        test("admin only", (done) => {
+          request(app.server)
+            .put(route(ids.get("user")))
+            .set("Authorization", `bearer ${tokens.get("user")}`)
+            .expect(300)
+            .end(done);
+        });
+
+        test("invalid email", (done) => {
+          request(app.server)
+            .put(route(ids.get("admin")))
+            .send({
+              email: "test",
+            })
+            .expect(401)
+            .end(done);
+        });
       });
 
       describe("success", () => {});
