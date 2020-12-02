@@ -1,9 +1,11 @@
 const request = require("supertest");
 const app = require("../../../dist/app");
 
-const accounts = [];
+const tokens = new Map();
+const ids = new Map();
 
-process.accounts = accounts;
+process.tokens = tokens;
+process.ids = ids;
 
 describe("auth", () => {
   describe("register", () => {
@@ -55,7 +57,10 @@ describe("auth", () => {
             type: "user",
           })
           .expect(200)
-          .end(done);
+          .end((err, res) => {
+            ids.set("user", res.body.id);
+            done(err);
+          });
       });
 
       test("register as dev", (done) => {
@@ -67,7 +72,10 @@ describe("auth", () => {
             type: "dev",
           })
           .expect(200)
-          .end(done);
+          .end((err, res) => {
+            ids.set("dev", res.body.id);
+            done(err);
+          });
       });
 
       test("register as already registered user", (done) => {
@@ -152,7 +160,7 @@ describe("auth", () => {
           })
           .expect(200)
           .end((err, res) => {
-            accounts.push(res.body.token);
+            tokens.push(res.body.token);
             done(err);
           });
       });
@@ -160,10 +168,39 @@ describe("auth", () => {
   });
 
   describe("account", () => {
-    describe("get", () => {
-      describe("fails", () => {});
+    const route = (id) => `/api/v2/rest/account/${id}`;
 
-      describe("success", () => {});
+    describe("get", () => {
+      describe("fails", () => {
+        test("unknown account", (done) => {
+          request(app.server).get(route(-1)).expect(404).end(done);
+        });
+
+        test("missing token", (done) => {
+          request(app.server)
+            .get(route(ids.get("admin")))
+            .expect(401)
+            .end(done);
+        });
+
+        test("admin only", (done) => {
+          request(app.server)
+            .get(route(ids.get("user")))
+            .set("Authorization", `bearer ${tokens.get("user")}`)
+            .expect(300)
+            .end(done);
+        });
+      });
+
+      describe("success", () => {
+        test("get account", (done) => {
+          request(app.server)
+            .get(route(ids.get("user")))
+            .set("Authorization", `bearer ${tokens.get("admin")}`)
+            .expect(200)
+            .end(done);
+        });
+      });
     });
 
     describe("update", () => {
