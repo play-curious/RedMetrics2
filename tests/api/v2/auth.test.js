@@ -211,7 +211,7 @@ describe("auth", () => {
       describe("fails", () => {
         test("missing token", (done) => {
           request(app.server)
-            .put(route(ids.get("admin")))
+            .put(route(ids.get("user")))
             .expect(401)
             .end(done);
         });
@@ -219,7 +219,7 @@ describe("auth", () => {
         test("unknown account", (done) => {
           request(app.server)
             .put(route(-1))
-            .set("Authorization", `bearer ${tokens.get("user")}`)
+            .set("Authorization", `bearer ${tokens.get("admin")}`)
             .send({
               email: "email@user.user",
             })
@@ -237,7 +237,8 @@ describe("auth", () => {
 
         test("invalid email", (done) => {
           request(app.server)
-            .put(route(ids.get("admin")))
+            .put(route(ids.get("user")))
+            .set("Authorization", `bearer ${tokens.get("admin")}`)
             .send({
               email: "test",
             })
@@ -246,7 +247,20 @@ describe("auth", () => {
         });
       });
 
-      describe("success", () => {});
+      describe("success", () => {
+        test("update user", (done) => {
+          request(app.server)
+            .put(route(ids.get("user")))
+            .set("Authorization", `bearer ${tokens.get("admin")}`)
+            .send({
+              email: "email@uer.user",
+              password: "password",
+              type: "dev",
+            })
+            .expect(200)
+            .end(done);
+        });
+      });
     });
   });
 });
