@@ -50,5 +50,34 @@ describe("events", () => {
         });
       });
     });
+
+    {
+      const route = (id) => `/session/${id}`
+
+      describe("get", () => {
+        describe("fails", () => {
+          test("missing token", (done) => {
+
+          })
+        })
+
+        describe("success", () => {
+
+        })
+      })
+
+      describe("update", () => {
+        describe("fails", () => {
+          test("missing token", (done) => {
+
+          })
+        })
+
+        describe("success", () => {
+
+        })
+      })
+    }
+
   });
 });
