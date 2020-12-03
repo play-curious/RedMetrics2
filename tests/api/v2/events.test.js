@@ -96,10 +96,52 @@ describe("events", () => {
 
       describe("update", () => {
         describe("fails", () => {
-          test("missing token", (done) => {});
+          test("missing token", (done) => {
+            request(app.server)
+              .put(route(session_ids.get("session")))
+              .send({
+                platform: "Mac OSX",
+                software: "Safari",
+                custom_data: {
+                  test: false,
+                },
+              })
+              .expect(401)
+              .end(done);
+          });
+
+          test("missing session", (done) => {
+            request(app.server)
+              .put(route(-1))
+              .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+              .send({
+                platform: "Mac OSX",
+                software: "Safari",
+                custom_data: {
+                  test: false,
+                },
+              })
+              .expect(404)
+              .end(done);
+          });
         });
 
-        describe("success", () => {});
+        describe("success", () => {
+          test("update session", (done) => {
+            request(app.server)
+              .put(route(session_ids.get("session")))
+              .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+              .send({
+                platform: "Mac OSX",
+                software: "Safari",
+                custom_data: {
+                  test: false,
+                },
+              })
+              .expect(404)
+              .end(done);
+          });
+        });
       });
     }
   });
