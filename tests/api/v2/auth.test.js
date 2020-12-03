@@ -1,11 +1,13 @@
 const request = require("supertest");
 const app = require("../../../dist/app");
 
-const tokens = new Map();
-const ids = new Map();
+const user_tokens = new Map();
+const user_ids = new Map();
 
-process.tokens = tokens;
-process.ids = ids;
+module.exports = {
+  user_tokens,
+  user_ids,
+};
 
 describe("auth", () => {
   describe("register", () => {
@@ -58,7 +60,7 @@ describe("auth", () => {
           })
           .expect(200)
           .end((err, res) => {
-            ids.set("user", res.body.id);
+            user_ids.set("user", res.body.id);
             done(err);
           });
       });
@@ -73,7 +75,7 @@ describe("auth", () => {
           })
           .expect(200)
           .end((err, res) => {
-            ids.set("dev", res.body.id);
+            user_ids.set("dev", res.body.id);
             done(err);
           });
       });
@@ -160,7 +162,7 @@ describe("auth", () => {
           })
           .expect(200)
           .end((err, res) => {
-            tokens.set("user", res.body.token);
+            user_tokens.set("user", res.body.token);
             done(err);
           });
       });
@@ -174,7 +176,7 @@ describe("auth", () => {
       describe("fails", () => {
         test("missing token", (done) => {
           request(app.server)
-            .get(route(ids.get("admin")))
+            .get(route(user_ids.get("admin")))
             .expect(401)
             .end(done);
         });
@@ -182,15 +184,15 @@ describe("auth", () => {
         test("unknown account", (done) => {
           request(app.server)
             .get(route(-1))
-            .set("Authorization", `bearer ${tokens.get("user")}`)
+            .set("Authorization", `bearer ${user_tokens.get("user")}`)
             .expect(404)
             .end(done);
         });
 
         test("admin only", (done) => {
           request(app.server)
-            .get(route(ids.get("user")))
-            .set("Authorization", `bearer ${tokens.get("user")}`)
+            .get(route(user_ids.get("user")))
+            .set("Authorization", `bearer ${user_tokens.get("user")}`)
             .expect(300)
             .end(done);
         });
@@ -199,8 +201,8 @@ describe("auth", () => {
       describe("success", () => {
         test("get account", (done) => {
           request(app.server)
-            .get(route(ids.get("user")))
-            .set("Authorization", `bearer ${tokens.get("admin")}`)
+            .get(route(user_ids.get("user")))
+            .set("Authorization", `bearer ${user_tokens.get("admin")}`)
             .expect(200)
             .end(done);
         });
@@ -211,7 +213,7 @@ describe("auth", () => {
       describe("fails", () => {
         test("missing token", (done) => {
           request(app.server)
-            .put(route(ids.get("user")))
+            .put(route(user_ids.get("user")))
             .expect(401)
             .end(done);
         });
@@ -219,7 +221,7 @@ describe("auth", () => {
         test("unknown account", (done) => {
           request(app.server)
             .put(route(-1))
-            .set("Authorization", `bearer ${tokens.get("admin")}`)
+            .set("Authorization", `bearer ${user_tokens.get("admin")}`)
             .send({
               email: "email@user.user",
             })
@@ -229,16 +231,16 @@ describe("auth", () => {
 
         test("admin only", (done) => {
           request(app.server)
-            .put(route(ids.get("user")))
-            .set("Authorization", `bearer ${tokens.get("user")}`)
+            .put(route(user_ids.get("user")))
+            .set("Authorization", `bearer ${user_tokens.get("user")}`)
             .expect(300)
             .end(done);
         });
 
         test("invalid email", (done) => {
           request(app.server)
-            .put(route(ids.get("user")))
-            .set("Authorization", `bearer ${tokens.get("admin")}`)
+            .put(route(user_ids.get("user")))
+            .set("Authorization", `bearer ${user_tokens.get("admin")}`)
             .send({
               email: "test",
             })
@@ -250,8 +252,8 @@ describe("auth", () => {
       describe("success", () => {
         test("update user", (done) => {
           request(app.server)
-            .put(route(ids.get("user")))
-            .set("Authorization", `bearer ${tokens.get("admin")}`)
+            .put(route(user_ids.get("user")))
+            .set("Authorization", `bearer ${user_tokens.get("admin")}`)
             .send({
               email: "email@uer.user",
               password: "password",
