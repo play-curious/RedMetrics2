@@ -11,7 +11,7 @@ module.exports = { session_ids };
 describe("events", () => {
   describe("session", () => {
     describe("post", () => {
-      const route = "/session";
+      const route = "/api/v2/rest/session";
 
       describe("fails", () => {
         test("missing token", (done) => {
@@ -59,7 +59,7 @@ describe("events", () => {
     });
 
     {
-      const route = (id) => `/session/${id}`;
+      const route = (id) => `/api/v2/rest/session/${id}`;
 
       describe("get", () => {
         describe("fails", () => {
@@ -144,5 +144,57 @@ describe("events", () => {
         });
       });
     }
+  });
+
+  describe("event", () => {
+    const route = "/api/v2/rest/event";
+
+    describe("get", () => {
+      test("missing token", (done) => {
+        request(app.server)
+          .get(route)
+          .send({
+            // filtres
+          })
+          .expect(401)
+          .end(done);
+      });
+    });
+
+    describe("post", () => {
+      describe("fails", () => {
+        test("missing token", (done) => {
+          request(app.server)
+            .post(route)
+            .send({
+              game_version_id: game_version_ids.get("version"),
+            })
+            .expect(401)
+            .end(done);
+        });
+
+        test("missing version", (done) => {
+          request(app.server)
+            .post(route)
+            .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+            .send({})
+            .expect(300)
+            .end(done);
+        });
+      });
+
+      describe("success", () => {
+        test("emit event", (done) => {
+          request(app.server)
+            .post(route)
+            .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+            .send({
+              game_version_id: game_version_ids.get("version"),
+            })
+            .expect(200)
+            .end(done);
+        });
+      });
+    });
   });
 });
