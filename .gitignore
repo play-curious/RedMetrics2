@@ -3,4 +3,5 @@ node_modules/
 .vscode/
 dist/
 package-lock.json
+yarn.lock
 .env
