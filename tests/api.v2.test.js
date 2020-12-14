@@ -4,6 +4,7 @@ const app = require("../dist/app");
 const user_tokens = new Map();
 const user_ids = new Map();
 const session_ids = new Map();
+const game_ids = new Map();
 const game_version_ids = new Map();
 
 describe("🔒 Auth", () => {
@@ -479,12 +480,38 @@ describe("🎮 Games", () => {
             name: "Game name",
           })
           .expect(200)
-          .end(done);
+          .end((err, res) => {
+            game_ids.set("game", res.body.game_id);
+            done(err);
+          });
       });
     });
   });
 
-  describe("/game/:id", () => {});
+  describe("/game/:id", () => {
+    const route = (id) => "/api/v2/rest/game/" + id;
+
+    describe("GET", () => {
+      describe("missing token", (done) => {
+        request(app.server)
+          .get(route(game_ids.get("game")))
+          .expect(401)
+          .end(done);
+      });
+
+      // todo: add 404
+
+      describe("success", (done) => {
+        request(app.server)
+          .get(route(game_ids.get("game")))
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .expect(200)
+          .end(done);
+      });
+    });
+
+    describe("PUT", () => {});
+  });
 
   describe("/version", () => {});
 
