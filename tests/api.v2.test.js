@@ -286,7 +286,7 @@ describe("🔔 Events", () => {
             external_id: "id",
             platform: "Microsoft Windows",
             software: "Firefox",
-            game_version_id: game_version_ids.get("game"),
+            game_version_id: game_version_ids.get("version"),
             custom_data: {
               test: true,
             },
@@ -625,5 +625,34 @@ describe("🎮 Games", () => {
     });
   });
 
-  describe("/version/:id", () => {});
+  describe("/version/:id", () => {
+    const route = (id) => "/version/" + id;
+
+    describe("GET", () => {
+      describe("missing token", (done) => {
+        request(app.server)
+          .get(route(game_version_ids.get("version")))
+          .expect(401)
+          .end(done);
+      });
+
+      describe("unknown version", (done) => {
+        request(app.server)
+          .get(route(-1))
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .expect(404)
+          .end(done);
+      });
+
+      describe("success", (done) => {
+        request(app.server)
+          .get(route(game_version_ids.get("version")))
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .expect(200)
+          .end(done);
+      });
+    });
+
+    describe("PUT", () => {});
+  });
 });
