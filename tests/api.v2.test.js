@@ -554,7 +554,36 @@ describe("🎮 Games", () => {
     });
   });
 
-  describe("/version", () => {});
+  describe("/game/:id/version", () => {
+    const route = (id) => `/api/v2/rest/game/${id}/version`;
+
+    describe("GET", () => {
+      describe("missing token", (done) => {
+        request(app.server)
+          .get(route(game_ids.get("game")))
+          .expect(401)
+          .end(done);
+      });
+
+      describe("unknown game", (done) => {
+        request(app.server)
+          .get(route(-1))
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .expect(404)
+          .end(done);
+      });
+
+      describe("success", (done) => {
+        request(app.server)
+          .get(route(game_ids.get("game")))
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .expect(200)
+          .end(done);
+      });
+    });
+
+    describe("POST", () => {});
+  });
 
   describe("/version/:id", () => {});
 });
