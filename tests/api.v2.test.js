@@ -653,6 +653,41 @@ describe("🎮 Games", () => {
       });
     });
 
-    describe("PUT", () => {});
+    describe("PUT", () => {
+      describe("missing token", (done) => {
+        request(app.server)
+          .put(route(game_version_ids.get("version")))
+          .send({
+            name: "New Name",
+            description: "New Description",
+          })
+          .expect(401)
+          .end(done);
+      });
+
+      describe("unknown version", (done) => {
+        request(app.server)
+          .put(route(-1))
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .send({
+            name: "New Name",
+            description: "New Description",
+          })
+          .expect(404)
+          .end(done);
+      });
+
+      describe("success", (done) => {
+        request(app.server)
+          .put(route(game_version_ids.get("version")))
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .send({
+            name: "New Name",
+            description: "New Description",
+          })
+          .expect(200)
+          .end(done);
+      });
+    });
   });
 });
