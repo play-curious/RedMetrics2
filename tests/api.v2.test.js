@@ -253,188 +253,6 @@ describe("🔒 Auth", () => {
   });
 });
 
-describe("🔔 Events", () => {
-  describe("/session", () => {
-    const route = "/api/v2/rest/session";
-
-    describe("POST", () => {
-      test("missing token", (done) => {
-        request(app.server).post(route).expect(401).end(done);
-      });
-
-      test("missing game version", (done) => {
-        request(app.server)
-          .post(route)
-          .set("Authorization", `bearer ${user_tokens.get("user")}`)
-          .send({
-            external_id: "id",
-            platform: "Microsoft Windows",
-            software: "Firefox",
-            custom_data: {
-              test: true,
-            },
-          })
-          .expect(401)
-          .end(done);
-      });
-
-      test("success", (done) => {
-        request(app.server)
-          .post(route)
-          .set("Authorization", `bearer ${user_tokens.get("user")}`)
-          .send({
-            external_id: "id",
-            platform: "Microsoft Windows",
-            software: "Firefox",
-            game_version_id: game_version_ids.get("version"),
-            custom_data: {
-              test: true,
-            },
-          })
-          .expect(200)
-          .end((err, res) => {
-            session_ids.set("session", res.body.id);
-            done(err);
-          });
-      });
-    });
-  });
-
-  describe("/session/:id", () => {
-    const route = (id) => `/api/v2/rest/session/${id}`;
-
-    describe("GET", () => {
-      test("missing token", (done) => {
-        request(app.server)
-          .get(route(session_ids.get("session")))
-          .expect(401)
-          .end(done);
-      });
-
-      test("missing session", (done) => {
-        request(app.server)
-          .get(route(-1))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
-          .expect(404)
-          .end(done);
-      });
-
-      test("success", (done) => {
-        request(app.server)
-          .get(route(session_ids.get("session")))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
-          .expect(404)
-          .end(done);
-      });
-    });
-
-    describe("PUT", () => {
-      test("missing token", (done) => {
-        request(app.server)
-          .put(route(session_ids.get("session")))
-          .send({
-            platform: "Mac OSX",
-            software: "Safari",
-            custom_data: {
-              test: false,
-            },
-          })
-          .expect(401)
-          .end(done);
-      });
-
-      test("missing session", (done) => {
-        request(app.server)
-          .put(route(-1))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
-          .send({
-            platform: "Mac OSX",
-            software: "Safari",
-            custom_data: {
-              test: false,
-            },
-          })
-          .expect(404)
-          .end(done);
-      });
-
-      test("success", (done) => {
-        request(app.server)
-          .put(route(session_ids.get("session")))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
-          .send({
-            platform: "Mac OSX",
-            software: "Safari",
-            custom_data: {
-              test: false,
-            },
-          })
-          .expect(404)
-          .end(done);
-      });
-    });
-  });
-
-  describe("/event", () => {
-    const route = "/api/v2/rest/event";
-
-    describe("GET", () => {
-      test("missing token", (done) => {
-        request(app.server)
-          .get(route)
-          .send({
-            // filtres
-          })
-          .expect(401)
-          .end(done);
-      });
-
-      test("success", (done) => {
-        request(app.server)
-          .get(route)
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
-          .send({
-            // filtres
-          })
-          .expect(200)
-          .end(done);
-      });
-    });
-
-    describe("POST", () => {
-      test("missing token", (done) => {
-        request(app.server)
-          .post(route)
-          .send({
-            game_version_id: game_version_ids.get("version"),
-          })
-          .expect(401)
-          .end(done);
-      });
-
-      test("missing version", (done) => {
-        request(app.server)
-          .post(route)
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
-          .send({})
-          .expect(300)
-          .end(done);
-      });
-
-      test("success", (done) => {
-        request(app.server)
-          .post(route)
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
-          .send({
-            game_version_id: game_version_ids.get("version"),
-          })
-          .expect(200)
-          .end(done);
-      });
-    });
-  });
-});
-
 describe("🎮 Games", () => {
   describe("/game", () => {
     const route = "/api/v2/rest/game";
@@ -620,7 +438,10 @@ describe("🎮 Games", () => {
             name: "Version 1",
           })
           .expect(200)
-          .end(done);
+          .end((err, res) => {
+            game_version_ids.set("version", res.body.id);
+            done(err);
+          });
       });
     });
   });
@@ -684,6 +505,188 @@ describe("🎮 Games", () => {
           .send({
             name: "New Name",
             description: "New Description",
+          })
+          .expect(200)
+          .end(done);
+      });
+    });
+  });
+});
+
+describe("🔔 Events", () => {
+  describe("/session", () => {
+    const route = "/api/v2/rest/session";
+
+    describe("POST", () => {
+      test("missing token", (done) => {
+        request(app.server).post(route).expect(401).end(done);
+      });
+
+      test("missing game version", (done) => {
+        request(app.server)
+          .post(route)
+          .set("Authorization", `bearer ${user_tokens.get("user")}`)
+          .send({
+            external_id: "id",
+            platform: "Microsoft Windows",
+            software: "Firefox",
+            custom_data: {
+              test: true,
+            },
+          })
+          .expect(401)
+          .end(done);
+      });
+
+      test("success", (done) => {
+        request(app.server)
+          .post(route)
+          .set("Authorization", `bearer ${user_tokens.get("user")}`)
+          .send({
+            external_id: "id",
+            platform: "Microsoft Windows",
+            software: "Firefox",
+            game_version_id: game_version_ids.get("version"),
+            custom_data: {
+              test: true,
+            },
+          })
+          .expect(200)
+          .end((err, res) => {
+            session_ids.set("session", res.body.id);
+            done(err);
+          });
+      });
+    });
+  });
+
+  describe("/session/:id", () => {
+    const route = (id) => `/api/v2/rest/session/${id}`;
+
+    describe("GET", () => {
+      test("missing token", (done) => {
+        request(app.server)
+          .get(route(session_ids.get("session")))
+          .expect(401)
+          .end(done);
+      });
+
+      test("missing session", (done) => {
+        request(app.server)
+          .get(route(-1))
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .expect(404)
+          .end(done);
+      });
+
+      test("success", (done) => {
+        request(app.server)
+          .get(route(session_ids.get("session")))
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .expect(404)
+          .end(done);
+      });
+    });
+
+    describe("PUT", () => {
+      test("missing token", (done) => {
+        request(app.server)
+          .put(route(session_ids.get("session")))
+          .send({
+            platform: "Mac OSX",
+            software: "Safari",
+            custom_data: {
+              test: false,
+            },
+          })
+          .expect(401)
+          .end(done);
+      });
+
+      test("missing session", (done) => {
+        request(app.server)
+          .put(route(-1))
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .send({
+            platform: "Mac OSX",
+            software: "Safari",
+            custom_data: {
+              test: false,
+            },
+          })
+          .expect(404)
+          .end(done);
+      });
+
+      test("success", (done) => {
+        request(app.server)
+          .put(route(session_ids.get("session")))
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .send({
+            platform: "Mac OSX",
+            software: "Safari",
+            custom_data: {
+              test: false,
+            },
+          })
+          .expect(404)
+          .end(done);
+      });
+    });
+  });
+
+  describe("/event", () => {
+    const route = "/api/v2/rest/event";
+
+    describe("GET", () => {
+      test("missing token", (done) => {
+        request(app.server)
+          .get(route)
+          .send({
+            // filtres
+          })
+          .expect(401)
+          .end(done);
+      });
+
+      test("success", (done) => {
+        request(app.server)
+          .get(route)
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .send({
+            // filtres
+          })
+          .expect(200)
+          .end(done);
+      });
+    });
+
+    describe("POST", () => {
+      test("missing token", (done) => {
+        request(app.server)
+          .post(route)
+          .send({
+            game_version_id: game_version_ids.get("version"),
+          })
+          .expect(401)
+          .end(done);
+      });
+
+      test("missing version", (done) => {
+        request(app.server)
+          .post(route)
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .send({})
+          .expect(300)
+          .end(done);
+      });
+
+      test("success", (done) => {
+        request(app.server)
+          .post(route)
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .send({
+            game_version_id: game_version_ids.get("version"),
           })
           .expect(200)
           .end(done);
