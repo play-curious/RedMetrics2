@@ -499,7 +499,13 @@ describe("🎮 Games", () => {
           .end(done);
       });
 
-      // todo: add 404
+      describe("unknown game", (done) => {
+        request(app.server)
+          .get(route(-1))
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .expect(404)
+          .end(done);
+      });
 
       describe("success", (done) => {
         request(app.server)
@@ -522,7 +528,17 @@ describe("🎮 Games", () => {
           .end(done);
       });
 
-      // todo: add 404
+      describe("unknown game", (done) => {
+        request(app.server)
+          .put(route(-1))
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .send({
+            name: "New Name",
+            description: "New Description",
+          })
+          .expect(404)
+          .end(done);
+      });
 
       describe("success", (done) => {
         request(app.server)
