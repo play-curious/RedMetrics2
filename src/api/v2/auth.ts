@@ -10,8 +10,8 @@ app.v2.post(
   expressAsyncHandler(async (req, res) => {
     // Login to the system with valid username and password
 
-    const email = req.body.email,
-      password = req.body.password;
+    const email = req.body?.email,
+      password = req.body?.password;
 
     if (!email || !password)
       return utils.sendError(res, {
@@ -49,13 +49,13 @@ app.v2.post(
     //  An AccountMeta object should be sent in the body.
     //  The Location response header will contain the URL for the new account.
 
-    const email = req.body.email,
-      password = req.body.password,
-      type = req.body.type;
+    const email = req.body?.email,
+      password = req.body?.password,
+      type = req.body?.type;
 
     if (!email || !password)
       return utils.sendError(res, {
-        description: "Missing email or passord",
+        description: "Missing email or password",
         code: 401,
       });
 
@@ -122,9 +122,9 @@ app.v2
       //  Only admins can access accounts other than their own
 
       const id = req.params.id,
-        email = req.body.email,
-        password = req.body.password,
-        type = req.body.type;
+        email = req.body?.email,
+        password = req.body?.password,
+        type = req.body?.type;
 
       if (email && !types.isValidEmail(email)) {
         return utils.sendError(res, {

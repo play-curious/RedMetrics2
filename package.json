@@ -9,7 +9,7 @@
     "format": "yarn prettier",
     "watch": "tsc-watch --onSuccess \"node .\"",
     "prettier": "prettier --write src tests",
-    "test": "jest"
+    "test": "tsc && jest"
   },
   "repository": {
     "type": "git",
