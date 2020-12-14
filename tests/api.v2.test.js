@@ -440,16 +440,51 @@ describe("🎮 Games", () => {
 
     describe("GET", () => {
       test("missing token", (done) => {
+        request(app.server).get(route).expect(401).end(done);
+      });
+
+      test("success", (done) => {
+        request(app.server)
+          .get(route)
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .expect(200)
+          .end(done);
+      });
+    });
+
+    describe("POST", () => {
+      test("missing token", (done) => {
         request(app.server)
           .get(route)
           .send({
-            game_version_id: game_version_ids.get("version"),
+            name: "Game name",
           })
           .expect(401)
           .end(done);
       });
+
+      test("missing name", (done) => {
+        request(app.server)
+          .get(route)
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .expect(301)
+          .end(done);
+      });
+
+      test("success", (done) => {
+        request(app.server)
+          .get(route)
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .send({
+            name: "Game name",
+          })
+          .expect(200)
+          .end(done);
+      });
     });
   });
+
+  describe("/game/:id", () => {});
 
   describe("/version", () => {});
 
