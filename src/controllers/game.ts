@@ -23,8 +23,10 @@ export function updateGame(
   return games.where("id", id).update(values).returning("id");
 }
 
-export function getGameVersion(id: string): Promise<types.GameVersion[]> {
-  return versions.where("id", id);
+export function getGameVersion(
+  id: string
+): Promise<types.GameVersion | undefined> {
+  return versions.where("id", id).first();
 }
 
 export function postGameVersion(

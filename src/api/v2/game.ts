@@ -59,7 +59,16 @@ app.v2
       // Retrieves information about the game with that Id as a GameMeta object
 
       // todo: add a v2.param("uuid") to check his validity automatically
-      res.json({ game: await game.getGame(req.params.uuid) });
+
+      const targetGame = await game.getGame(req.params.uuid);
+
+      if (!targetGame)
+        return utils.sendError(res, {
+          code: 404,
+          description: "Game not fount",
+        });
+
+      res.json(targetGame);
     })
   )
   .put(
@@ -67,12 +76,19 @@ app.v2
     expressAsyncHandler(async (req, res) => {
       // Updates game information with the provided GameMeta.
 
-      await game.updateGame(req.params.uuid, {
-        name: req.body.name,
-        description: req.body.description,
-        custom_data: req.body.custom_data,
-        author: req.body.author,
-      });
+      try {
+        await game.updateGame(req.params.uuid, {
+          name: req.body.name,
+          description: req.body.description,
+          custom_data: req.body.custom_data,
+          author: req.body.author,
+        });
+      } catch (error) {
+        return utils.sendError(res, {
+          code: 404,
+          description: "Game not found",
+        });
+      }
 
       res.json({
         success: "Success",
@@ -87,7 +103,15 @@ app.v2
     expressAsyncHandler(async (req, res) => {
       // Lists versions of the the game with that Id as GameVersionMeta objects (see section on Paging below)
 
-      res.json(await game.getGameVersions(req.params.uuid));
+      const targetGameVersions = await game.getGameVersions(req.params.uuid);
+
+      if (!targetGameVersions)
+        return utils.sendError(res, {
+          code: 404,
+          description: "Game not fount",
+        });
+
+      res.json(targetGameVersions);
     })
   )
   .post(
@@ -107,15 +131,20 @@ app.v2
 
       if (!targetGame)
         return utils.sendError(res, {
-          code: 300,
+          code: 404,
           description: "Unknown target game",
         });
 
-      await game.postGameVersion({
+      const id = await game.postGameVersion({
         name: req.body.name,
         game_id: targetGame.id as string,
         custom_data: req.body.custom_data,
         description: req.body.description,
+      });
+
+      res.json({
+        id,
+        success: "Success",
       });
     })
   );
@@ -127,7 +156,15 @@ app.v2
     expressAsyncHandler(async (req, res) => {
       // Retrieves information about the game version as a GameVersionMeta object
 
-      res.json(await game.getGameVersion(req.params.uuid));
+      const version = await game.getGameVersion(req.params.uuid);
+
+      if (!version)
+        return utils.sendError(res, {
+          code: 404,
+          description: "Version not found",
+        });
+
+      res.json(version);
     })
   )
   .put(
@@ -139,8 +176,8 @@ app.v2
 
       if (!version)
         return utils.sendError(res, {
-          code: 300,
-          description: "Unknown version",
+          code: 404,
+          description: "Version not found",
         });
 
       const values: Partial<types.GameVersion> = {

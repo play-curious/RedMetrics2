@@ -137,8 +137,8 @@ app.v2
 
       if (!account) {
         return utils.sendError(res, {
-          code: 300,
-          description: "Unknown account",
+          code: 404,
+          description: "Account not found",
         });
       }
 
