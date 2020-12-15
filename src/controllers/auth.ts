@@ -10,18 +10,18 @@ export function getAccount(id: string): Promise<types.Account | undefined> {
 export function getAccountByEmail(
   email: types.Email
 ): Promise<types.Account | undefined> {
-  return accounts.where("email", email).first();
+  return accounts.where("email", email).then((emails) => emails[0]);
 }
 
-export function postAccount(account: types.Account): Promise<string> {
+export function postAccount(account: types.Account): Promise<string[]> {
   return accounts.insert(account).returning("id");
 }
 
 export function updateAccount(
   id: string,
   account: Partial<types.Account>
-): Promise<string> {
-  return accounts.where("id", id).update(account).returning("id");
+): Promise<string[]> {
+  return accounts.update(account).where("id", id).returning("id");
 }
 
 export function countAccounts(): Promise<number> {

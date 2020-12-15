@@ -43,7 +43,7 @@ app.v2.post(
 );
 
 app.v2.post(
-  "/account",
+  "/register",
   expressAsyncHandler(async (req, res) => {
     //  Registers a new account.
     //  An AccountMeta object should be sent in the body.
@@ -55,8 +55,8 @@ app.v2.post(
 
     if (!email || !password)
       return utils.sendError(res, {
-        description: "Missing email or password",
         code: 401,
+        description: "Missing email or password",
       });
 
     if (!types.isValidEmail(email)) {
@@ -67,23 +67,20 @@ app.v2.post(
 
     if (account) {
       return utils.sendError(res, {
-        code: 300,
+        code: 401,
         description: "Already used email",
       });
     }
 
     const hash = await bcrypt.hash(password, process.env.SALT as string);
 
-    const id = await auth.postAccount({
+    const [id] = await auth.postAccount({
       email,
       password: hash,
       role: type === "dev" ? "dev" : "user",
     });
 
-    res.json({
-      id,
-      success: "Success",
-    });
+    res.json({ id });
   })
 );
 

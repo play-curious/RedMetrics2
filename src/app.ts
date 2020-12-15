@@ -1,6 +1,7 @@
 import { graphqlHTTP } from "express-graphql";
 import { buildSchema } from "graphql";
 import relative from "dayjs/plugin/relativeTime";
+import bodyParser from "body-parser";
 import express from "express";
 import dotenv from "dotenv";
 import dayjs from "dayjs";
@@ -21,15 +22,15 @@ dotenv.config();
 export const database = knex({
   client: "pg",
   pool: {
-    min: +(process.env.PG_MIN_POOL ?? 0),
+    min: +(process.env.PG_MIN_POOL ?? 2),
     max: +(process.env.PG_MAX_POOL ?? 10),
   },
   connection: {
-    host: process.env.PG_HOST,
-    user: process.env.PG_USER,
-    password: process.env.PG_PASSWORD,
-    database: process.env.PG_DATABASE,
-    port: +(process.env.PG_PORT ?? 6627),
+    host: process.env.PGHOST,
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    database: process.env.PGDATABASE,
+    port: +(process.env.PGPORT ?? 9090),
   },
 });
 
@@ -37,6 +38,8 @@ export const database = knex({
 
 export const server = express();
 export const v2 = express.Router();
+
+server.use(bodyParser.urlencoded({ extended: false }), bodyParser.json());
 
 server.use("/api/v2/rest", v2);
 
@@ -75,19 +78,21 @@ server.use(
 
 import * as utils from "./utils";
 
-utils
-  .forFiles(
-    path.join(__dirname, "api"),
-    (filepath) => {
-      require(filepath);
-      console.log(chalk.blue("loaded"), filepath);
-    },
-    {
-      recursive: true,
-      filters: {
-        filename: /\.js$/i,
+export const loadRoutes = (verbose: boolean) =>
+  utils
+    .forFiles(
+      path.join(__dirname, "api"),
+      (filepath) => {
+        require(filepath);
+        if (verbose) console.log(chalk.blue("loaded"), filepath);
       },
-    }
-  )
-  .then(() => console.log(chalk.green("ready")))
-  .catch(console.error);
+      {
+        recursive: true,
+        filters: {
+          filename: /\.js$/i,
+        },
+      }
+    )
+    .then(() => {
+      if (verbose) console.log(chalk.green("ready"));
+    });
