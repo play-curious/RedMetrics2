@@ -15,7 +15,7 @@ app.v2.post(
 
     if (!email || !password)
       return utils.sendError(res, {
-        description: "Missing email or passord",
+        description: "Missing email or password",
         code: 401,
       });
 

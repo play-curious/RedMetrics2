@@ -9,8 +9,9 @@ app.server.use(
     next: express.NextFunction
   ) => {
     console.error(err.stack);
-    res.status(500).json({
+    res.status(500).render("pages/error", {
       error: err.message,
+      code: 500,
     });
   }
 );
