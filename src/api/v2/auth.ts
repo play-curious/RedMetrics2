@@ -160,13 +160,13 @@ app.v2
 app.v2.post("/account/:id/reset-password", (req, res) => {
   // todo: Request password reset. Requires confirmation by email
   res.status(404).json({
-    error: "not implemented, ",
+    error: "not implemented",
   });
 });
 
 app.v2.post("/account/:id/reset-password/confirm", (req, res) => {
   // todo : Confirms password reset. Password reset token sent as URL param. Returns new password
   res.status(404).json({
-    error: "not implemented, ",
+    error: "not implemented",
   });
 });

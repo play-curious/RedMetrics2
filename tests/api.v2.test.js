@@ -310,14 +310,14 @@ describe("🎮 Games", () => {
     const route = (id) => "/api/v2/rest/game/" + id;
 
     describe("GET", () => {
-      describe("missing token", (done) => {
+      test("missing token", (done) => {
         request(app.server)
           .get(route(game_ids.get("game")))
           .expect(401)
           .end(done);
       });
 
-      describe("unknown game", (done) => {
+      test("unknown game", (done) => {
         request(app.server)
           .get(route(-1))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
@@ -325,7 +325,7 @@ describe("🎮 Games", () => {
           .end(done);
       });
 
-      describe("success", (done) => {
+      test("success", (done) => {
         request(app.server)
           .get(route(game_ids.get("game")))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
@@ -335,7 +335,7 @@ describe("🎮 Games", () => {
     });
 
     describe("PUT", () => {
-      describe("missing token", (done) => {
+      test("missing token", (done) => {
         request(app.server)
           .put(route(game_ids.get("game")))
           .send({
@@ -346,7 +346,7 @@ describe("🎮 Games", () => {
           .end(done);
       });
 
-      describe("unknown game", (done) => {
+      test("unknown game", (done) => {
         request(app.server)
           .put(route(-1))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
@@ -358,7 +358,7 @@ describe("🎮 Games", () => {
           .end(done);
       });
 
-      describe("success", (done) => {
+      test("success", (done) => {
         request(app.server)
           .put(route(game_ids.get("game")))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
@@ -376,14 +376,14 @@ describe("🎮 Games", () => {
     const route = (id) => `/api/v2/rest/game/${id}/version`;
 
     describe("GET", () => {
-      describe("missing token", (done) => {
+      test("missing token", (done) => {
         request(app.server)
           .get(route(game_ids.get("game")))
           .expect(401)
           .end(done);
       });
 
-      describe("unknown game", (done) => {
+      test("unknown game", (done) => {
         request(app.server)
           .get(route(-1))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
@@ -391,7 +391,7 @@ describe("🎮 Games", () => {
           .end(done);
       });
 
-      describe("success", (done) => {
+      test("success", (done) => {
         request(app.server)
           .get(route(game_ids.get("game")))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
@@ -401,7 +401,7 @@ describe("🎮 Games", () => {
     });
 
     describe("POST", () => {
-      describe("missing token", (done) => {
+      test("missing token", (done) => {
         request(app.server)
           .post(route(game_ids.get("game")))
           .send({
@@ -411,7 +411,7 @@ describe("🎮 Games", () => {
           .end(done);
       });
 
-      describe("unknown game", (done) => {
+      test("unknown game", (done) => {
         request(app.server)
           .post(route(-1))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
@@ -422,7 +422,7 @@ describe("🎮 Games", () => {
           .end(done);
       });
 
-      describe("missing name", (done) => {
+      test("missing name", (done) => {
         request(app.server)
           .post(route(game_ids.get("game")))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
@@ -430,7 +430,7 @@ describe("🎮 Games", () => {
           .end(done);
       });
 
-      describe("success", (done) => {
+      test("success", (done) => {
         request(app.server)
           .post(route(game_ids.get("game")))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
@@ -450,14 +450,14 @@ describe("🎮 Games", () => {
     const route = (id) => "/version/" + id;
 
     describe("GET", () => {
-      describe("missing token", (done) => {
+      test("missing token", (done) => {
         request(app.server)
           .get(route(game_version_ids.get("version")))
           .expect(401)
           .end(done);
       });
 
-      describe("unknown version", (done) => {
+      test("unknown version", (done) => {
         request(app.server)
           .get(route(-1))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
@@ -465,7 +465,7 @@ describe("🎮 Games", () => {
           .end(done);
       });
 
-      describe("success", (done) => {
+      test("success", (done) => {
         request(app.server)
           .get(route(game_version_ids.get("version")))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
@@ -475,7 +475,7 @@ describe("🎮 Games", () => {
     });
 
     describe("PUT", () => {
-      describe("missing token", (done) => {
+      test("missing token", (done) => {
         request(app.server)
           .put(route(game_version_ids.get("version")))
           .send({
@@ -486,7 +486,7 @@ describe("🎮 Games", () => {
           .end(done);
       });
 
-      describe("unknown version", (done) => {
+      test("unknown version", (done) => {
         request(app.server)
           .put(route(-1))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
@@ -498,7 +498,7 @@ describe("🎮 Games", () => {
           .end(done);
       });
 
-      describe("success", (done) => {
+      test("success", (done) => {
         request(app.server)
           .put(route(game_version_ids.get("version")))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
