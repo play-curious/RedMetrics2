@@ -51,7 +51,7 @@ app.v2.post(
 
     const email = req.body?.email,
       password = req.body?.password,
-      type = req.body?.type;
+      role = req.body?.role;
 
     if (!email || !password)
       return utils.sendError(res, {
@@ -63,9 +63,7 @@ app.v2.post(
       return utils.sendError(res, { code: 401, description: "Invalid email" });
     }
 
-    const account = await auth.getAccountByEmail(email);
-
-    if (account) {
+    if (await auth.emailAlreadyUsed(email)) {
       return utils.sendError(res, {
         code: 401,
         description: "Already used email",
@@ -77,7 +75,7 @@ app.v2.post(
     const [id] = await auth.postAccount({
       email,
       password: hash,
-      role: type === "dev" ? "dev" : "user",
+      role: role === "dev" ? "dev" : "user",
     });
 
     res.json({ id });

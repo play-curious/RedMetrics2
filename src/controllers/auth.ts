@@ -10,7 +10,18 @@ export function getAccount(id: string): Promise<types.Account | undefined> {
 export function getAccountByEmail(
   email: types.Email
 ): Promise<types.Account | undefined> {
-  return accounts.where("email", email).then((emails) => emails[0]);
+  return accounts.where("email", email).then((account) => account[0]);
+}
+
+export function emailAlreadyUsed(email: types.Email): Promise<boolean> {
+  return accounts
+    .where("email", email)
+    .count("email", { as: "count" })
+    .then((results) => {
+      console.log(results);
+      return results[0];
+    })
+    .then((total) => (total?.count ?? 0) > 0);
 }
 
 export function postAccount(account: types.Account): Promise<string[]> {
