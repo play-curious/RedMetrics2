@@ -47,6 +47,24 @@ export async function forFiles(
   }
 }
 
+export const adminOnly: express.RequestHandler = (req, res, next) => {
+  if (!isUserReq(req)) {
+    return sendError(res, {
+      code: 401,
+      description: "Missing token",
+    });
+  }
+
+  if (req.user.role !== "admin") {
+    return sendError(res, {
+      code: 401,
+      description: "Access refused",
+    });
+  }
+
+  next();
+};
+
 export const needToken: express.RequestHandler = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -57,30 +75,23 @@ export const needToken: express.RequestHandler = (req, res, next) => {
       description: "Missing JWT",
     });
 
-  jwt.verify(
-    token,
-    process.env.ACCESS_TOKEN_SECRET as string,
-    (err, user: any) => {
-      if (err)
-        return sendError(res, {
-          code: 401,
-          description: "Missing JWT",
-        });
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string, (err, user) => {
+    if (err)
+      return sendError(res, {
+        code: 401,
+        description: "Missing JWT",
+      });
 
-      // @ts-ignore
-      req.user = user;
+    // @ts-ignore
+    req.user = user as types.User;
 
-      next();
-    }
-  );
+    next();
+  });
 };
 
-export async function generateAccessToken(login: types.Login): Promise<string> {
-  login.password = await bcrypt.hash(
-    login.password,
-    process.env.SALT as string
-  );
-  return jwt.sign(login, process.env.TOKEN_SECRET as string, {
+export async function generateAccessToken(user: types.User): Promise<string> {
+  user.password = await bcrypt.hash(user.password, process.env.SALT as string);
+  return jwt.sign(user, process.env.TOKEN_SECRET as string, {
     expiresIn: "1800s",
   });
 }
@@ -91,6 +102,6 @@ export function sendError(res: express.Response, error: types.RMError) {
 
 export function isUserReq(
   req: express.Request
-): req is express.Request & { user: types.Login } {
+): req is express.Request & { user: types.User } {
   return req.hasOwnProperty("user");
 }

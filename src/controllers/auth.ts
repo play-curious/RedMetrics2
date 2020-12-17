@@ -1,42 +1,41 @@
 import * as app from "../app";
 import * as types from "../types";
 
-export const accounts = app.database<types.Account>("account");
+export const accounts = () => app.database<types.Account>("account");
 
 export function getAccount(id: string): Promise<types.Account | undefined> {
-  return accounts.where("id", id).first();
+  return accounts().where("id", id).first();
 }
 
 export function getAccountByEmail(
   email: types.Email
 ): Promise<types.Account | undefined> {
-  return accounts.where("email", email).then((account) => account[0]);
+  return accounts()
+    .where("email", email)
+    .then((account) => account[0]);
 }
 
 export function emailAlreadyUsed(email: types.Email): Promise<boolean> {
-  return accounts
+  return accounts()
+    .count("email", { as: "c" })
     .where("email", email)
-    .count("email", { as: "count" })
-    .then((results) => {
-      console.log(results);
-      return results[0];
-    })
-    .then((total) => (total?.count ?? 0) > 0);
+    .then((r) => r[0])
+    .then(({ c }) => (c ?? 0) > 0);
 }
 
 export function postAccount(account: types.Account): Promise<string[]> {
-  return accounts.insert(account).returning("id");
+  return accounts().insert(account).returning("id");
 }
 
 export function updateAccount(
   id: string,
   account: Partial<types.Account>
 ): Promise<string[]> {
-  return accounts.update(account).where("id", id).returning("id");
+  return accounts().update(account).where("id", id).returning("id");
 }
 
 export function countAccounts(): Promise<number> {
-  return accounts.count();
+  return accounts().count();
 }
 
 export async function getAccountGames(id: string): Promise<string[]> {

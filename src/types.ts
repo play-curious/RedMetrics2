@@ -12,10 +12,9 @@ export type Role = "admin" | "dev" | "user";
  */
 export type Id = string;
 
-export interface Account extends Login {
+export interface Account extends User {
   id?: Id;
   password: Hash;
-  role: Role;
   games?: Id[];
 }
 
@@ -123,6 +122,10 @@ export interface Status {
 export interface Login {
   email: Email;
   password: Password;
+}
+
+export interface User extends Login {
+  role: Role;
 }
 
 /**

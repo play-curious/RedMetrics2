@@ -1,4 +1,5 @@
 const request = require("supertest");
+const uuid = require("uuid");
 const app = require("../dist/app");
 
 const user_tokens = new Map();
@@ -6,13 +7,32 @@ const user_ids = new Map();
 const session_ids = new Map();
 const game_ids = new Map();
 const game_version_ids = new Map();
+const emails = new Map([
+  ["admin", "admin@test.test"],
+  ["user", "user@test.test"],
+  ["dev", "dev@test.test"],
+]);
 
 describe("⚙ Config", () => {
-  test("prepare database", (done) => {
-    app.database
-      .raw("START TRANSACTION")
-      .then(() => done())
-      .catch(done);
+  describe("prepare database", () => {
+    test("start transaction", (done) => {
+      app.database
+        .raw("START TRANSACTION")
+        .then(() => done())
+        .catch(done);
+    });
+
+    test("add admin account", (done) => {
+      app
+        .database("account")
+        .insert({
+          email: emails.get("admin"),
+          password: "test",
+          role: "admin",
+        })
+        .then(() => done())
+        .catch(done);
+    });
   });
 
   test("prepare endpoints", (done) => {
@@ -43,7 +63,7 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            email: "test@test.test",
+            email: emails.get("user"),
             type: "user",
           })
           .expect(401)
@@ -66,7 +86,7 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            email: "user@test.test",
+            email: emails.get("user"),
             password: "test",
             role: "user",
           })
@@ -81,7 +101,7 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            email: "dev@test.test",
+            email: emails.get("dev"),
             password: "test",
             role: "dev",
           })
@@ -163,7 +183,7 @@ describe("🔒 Auth", () => {
           .end(done);
       });
 
-      test("success", (done) => {
+      test("login as user", (done) => {
         request(app.server)
           .post(route)
           .send({
@@ -176,6 +196,20 @@ describe("🔒 Auth", () => {
             done(err);
           });
       });
+
+      test("login as admin", (done) => {
+        request(app.server)
+          .post(route)
+          .send({
+            email: emails.get("admin"),
+            password: "test",
+          })
+          .expect(200)
+          .end((err, res) => {
+            user_tokens.set("admin", res.body.token);
+            done(err);
+          });
+      });
     });
   });
 
@@ -185,15 +219,15 @@ describe("🔒 Auth", () => {
     describe("GET", () => {
       test("missing token", (done) => {
         request(app.server)
-          .get(route(user_ids.get("admin")))
+          .get(route(user_ids.get("user")))
           .expect(401)
           .end(done);
       });
 
       test("unknown account", (done) => {
         request(app.server)
-          .get(route(-1))
-          .set("Authorization", `bearer ${user_tokens.get("user")}`)
+          .get(route(uuid.v4()))
+          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
           .expect(404)
           .end(done);
       });
@@ -202,7 +236,7 @@ describe("🔒 Auth", () => {
         request(app.server)
           .get(route(user_ids.get("user")))
           .set("Authorization", `bearer ${user_tokens.get("user")}`)
-          .expect(300)
+          .expect(401)
           .end(done);
       });
 

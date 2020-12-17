@@ -36,7 +36,11 @@ app.v2.post(
       });
     }
 
-    const token = await utils.generateAccessToken({ email, password });
+    const token = await utils.generateAccessToken({
+      email,
+      password,
+      role: account.role,
+    });
 
     res.json({ token });
   })
@@ -78,6 +82,8 @@ app.v2.post(
       role: role === "dev" ? "dev" : "user",
     });
 
+    console.log("returning id:", id);
+
     res.json({ id });
   })
 );
@@ -87,6 +93,7 @@ app.v2
   .route("/account/:id")
   .get(
     utils.needToken,
+    utils.adminOnly,
     expressAsyncHandler(async (req, res) => {
       //  Retrieves the AccountMeta for the given account.
       //  Only admins can access accounts other than their own
