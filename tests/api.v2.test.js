@@ -1,13 +1,17 @@
 const request = require("supertest");
+const dotenv = require("dotenv");
+const bcrypt = require("bcrypt");
 const uuid = require("uuid");
 const app = require("../dist/app");
+
+dotenv.config();
 
 const user_tokens = new Map();
 const user_ids = new Map();
 const session_ids = new Map();
 const game_ids = new Map();
 const game_version_ids = new Map();
-const emails = new Map([
+const user_emails = new Map([
   ["admin", "admin@test.test"],
   ["user", "user@test.test"],
   ["dev", "dev@test.test"],
@@ -26,8 +30,8 @@ describe("⚙ Config", () => {
       app
         .database("account")
         .insert({
-          email: emails.get("admin"),
-          password: "test",
+          email: user_emails.get("admin"),
+          password: bcrypt.hashSync("test", process.env.SALT),
           role: "admin",
         })
         .then(() => done())
@@ -53,7 +57,7 @@ describe("🔒 Auth", () => {
           .post(route)
           .send({
             password: "test",
-            type: "user",
+            role: "user",
           })
           .expect(401)
           .end(done);
@@ -63,8 +67,8 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            email: emails.get("user"),
-            type: "user",
+            email: user_emails.get("user"),
+            role: "user",
           })
           .expect(401)
           .end(done);
@@ -86,7 +90,7 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            email: emails.get("user"),
+            email: user_emails.get("user"),
             password: "test",
             role: "user",
           })
@@ -101,7 +105,7 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            email: emails.get("dev"),
+            email: user_emails.get("dev"),
             password: "test",
             role: "dev",
           })
@@ -176,7 +180,7 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            email: "user@test.test",
+            email: user_emails.get("user"),
             password: "incorrect",
           })
           .expect(401)
@@ -187,7 +191,7 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            email: "user@test.test",
+            email: user_emails.get("user"),
             password: "test",
           })
           .expect(200)
@@ -201,7 +205,7 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            email: emails.get("admin"),
+            email: user_emails.get("admin"),
             password: "test",
           })
           .expect(200)
@@ -259,7 +263,7 @@ describe("🔒 Auth", () => {
 
       test("unknown account", (done) => {
         request(app.server)
-          .put(route(-1))
+          .put(route(uuid.v4()))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
           .send({
             email: "email@user.user",
@@ -272,7 +276,7 @@ describe("🔒 Auth", () => {
         request(app.server)
           .put(route(user_ids.get("user")))
           .set("Authorization", `bearer ${user_tokens.get("user")}`)
-          .expect(300)
+          .expect(401)
           .end(done);
       });
 
@@ -294,7 +298,7 @@ describe("🔒 Auth", () => {
           .send({
             email: "email@uer.user",
             password: "password",
-            type: "dev",
+            role: "dev",
           })
           .expect(200)
           .end(done);

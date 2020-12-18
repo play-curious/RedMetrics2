@@ -82,8 +82,6 @@ app.v2.post(
       role: role === "dev" ? "dev" : "user",
     });
 
-    console.log("returning id:", id);
-
     res.json({ id });
   })
 );
@@ -118,6 +116,7 @@ app.v2
   )
   .put(
     utils.needToken,
+    utils.adminOnly,
     expressAsyncHandler(async (req, res) => {
       //  Update the given account.
       //  An AccountMeta object should be sent in the body.
@@ -144,7 +143,11 @@ app.v2
         });
       }
 
-      const hash = await bcrypt.hash(password, process.env.SALT as string);
+      let hash: string | undefined;
+
+      if (password) {
+        hash = await bcrypt.hash(password, process.env.SALT as string);
+      }
 
       await auth.updateAccount(id, {
         email,
