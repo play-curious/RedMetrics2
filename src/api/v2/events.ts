@@ -115,7 +115,7 @@ app.v2
       //  - afterUserTime - Date
       //  - beforeUserTime - Date
 
-      let query = events.events;
+      let query = events.events();
       if (req.body.game_id) {
         query = query
           .leftJoin("game_version", "game_version.id", "event.game_version_id")

@@ -637,7 +637,7 @@ describe("🔔 Events", () => {
         request(app.server)
           .get(route(session_ids.get("session")))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
-          .expect(404)
+          .expect(200)
           .end(done);
       });
     });
@@ -659,7 +659,7 @@ describe("🔔 Events", () => {
 
       test("missing session", (done) => {
         request(app.server)
-          .put(route(-1))
+          .put(route(uuid.v4()))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
           .send({
             platform: "Mac OSX",
@@ -683,7 +683,7 @@ describe("🔔 Events", () => {
               test: false,
             },
           })
-          .expect(404)
+          .expect(200)
           .end(done);
       });
     });
