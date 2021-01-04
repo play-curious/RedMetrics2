@@ -1,4 +1,7 @@
+<%- include("../partials/header", { locale }) %>
+
 <h1> Status RedMetrics </h1>
+
 <table>
     <tr>
         <th>deployedAt</th><td><%= deployedAt %></td>
@@ -16,3 +19,5 @@
         <th>license</th><td><%= license %></td>
     </tr>
 </table>
+
+<%- include("../partials/footer") %>
