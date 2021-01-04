@@ -53,25 +53,39 @@ app.v2.post(
     //  An AccountMeta object should be sent in the body.
     //  The Location response header will contain the URL for the new account.
 
+    const redirectToView = !!req.query.view;
+
     const email = req.body?.email,
       password = req.body?.password,
       role = req.body?.role;
 
     if (!email || !password)
-      return utils.sendError(res, {
-        code: 401,
-        description: "Missing email or password",
-      });
+      return utils.sendError(
+        res,
+        {
+          code: 401,
+          description: "Missing email or password",
+        },
+        redirectToView
+      );
 
     if (!types.isValidEmail(email)) {
-      return utils.sendError(res, { code: 401, description: "Invalid email" });
+      return utils.sendError(
+        res,
+        { code: 401, description: "Invalid email" },
+        redirectToView
+      );
     }
 
     if (await auth.emailAlreadyUsed(email)) {
-      return utils.sendError(res, {
-        code: 401,
-        description: "Already used email",
-      });
+      return utils.sendError(
+        res,
+        {
+          code: 401,
+          description: "Already used email",
+        },
+        redirectToView
+      );
     }
 
     const hash = await bcrypt.hash(password, process.env.SALT as string);
@@ -81,6 +95,12 @@ app.v2.post(
       password: hash,
       role: role === "dev" ? "dev" : "user",
     });
+
+    if (redirectToView) {
+      // todo: stock token in cookie
+
+      return res.render("pages/home", { locale: "en" });
+    }
 
     res.json({ id });
   })

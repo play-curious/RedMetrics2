@@ -38,14 +38,19 @@ export const database = knex({
 
 export const server = express();
 export const v2 = express.Router();
+export const view = express.Router();
 
 server.use(bodyParser.urlencoded({ extended: false }), bodyParser.json());
 
 server.use("/api/v2/rest", v2);
+server.use("/api/v2/view", view);
 
 // View Engine
 
+server.use("/public", express.static("public"));
+
 server.locals.site = {
+  name: "RedMetrics",
   deployedAt: Date.now(),
   deployedSince() {
     return dayjs(this.deployedAt).fromNow();

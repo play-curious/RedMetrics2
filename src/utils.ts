@@ -96,8 +96,14 @@ export async function generateAccessToken(user: types.User): Promise<string> {
   });
 }
 
-export function sendError(res: express.Response, error: types.RMError) {
-  return res.status(error.code).json(error);
+export function sendError(
+  res: express.Response,
+  error: types.RMError,
+  redirectToView?: boolean
+) {
+  return redirectToView
+    ? res.render("pages/error", { error: error.description, code: error.code })
+    : res.status(error.code).json(error);
 }
 
 export function isUserReq(

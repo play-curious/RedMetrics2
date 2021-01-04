@@ -1,1 +1,13 @@
+<%- includes("partials/header", { locale }) %>
+
 <h1> Register </h1>
+
+<form action="/api/v2/rest/register?view=1" method="post">
+    <input type="text" name="email" placeholder="email">
+    <input type="password" name="password" placeholder="Password">
+    <label><input type="radio" name="role" value="user">as user</label>
+    <label><input type="radio" name="role" value="dev">as dev</label>
+    <input type="submit" value="Register">
+</form>
+
+<%- includes("partials/footer") %>
