@@ -373,7 +373,7 @@ describe("🎮 Games", () => {
 
       test("unknown game", (done) => {
         request(app.server)
-          .get(route(-1))
+          .get(route(uuid.v4()))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
           .expect(404)
           .end(done);
@@ -402,7 +402,7 @@ describe("🎮 Games", () => {
 
       test("unknown game", (done) => {
         request(app.server)
-          .put(route(-1))
+          .put(route(uuid.v4()))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
           .send({
             name: "New Name",
@@ -439,7 +439,7 @@ describe("🎮 Games", () => {
 
       test("unknown game", (done) => {
         request(app.server)
-          .get(route(-1))
+          .get(route(uuid.v4()))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
           .expect(404)
           .end(done);
@@ -467,12 +467,12 @@ describe("🎮 Games", () => {
 
       test("unknown game", (done) => {
         request(app.server)
-          .post(route(-1))
+          .post(route(uuid.v4()))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
           .send({
             name: "Version 1",
           })
-          .expect(300)
+          .expect(404)
           .end(done);
       });
 
@@ -480,7 +480,7 @@ describe("🎮 Games", () => {
         request(app.server)
           .post(route(game_ids.get("game")))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
-          .expect(300)
+          .expect(400)
           .end(done);
       });
 
@@ -501,7 +501,7 @@ describe("🎮 Games", () => {
   });
 
   describe("/version/:id", () => {
-    const route = (id) => "/version/" + id;
+    const route = (id) => "/api/v2/rest/version/" + id;
 
     describe("GET", () => {
       test("missing token", (done) => {
@@ -513,7 +513,7 @@ describe("🎮 Games", () => {
 
       test("unknown version", (done) => {
         request(app.server)
-          .get(route(-1))
+          .get(route(uuid.v4()))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
           .expect(404)
           .end(done);
@@ -542,7 +542,7 @@ describe("🎮 Games", () => {
 
       test("unknown version", (done) => {
         request(app.server)
-          .put(route(-1))
+          .put(route(uuid.v4()))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
           .send({
             name: "New Name",
@@ -627,7 +627,7 @@ describe("🔔 Events", () => {
 
       test("missing session", (done) => {
         request(app.server)
-          .get(route(-1))
+          .get(route(uuid.v4()))
           .set("Authorization", `bearer ${user_tokens.get("admin")}`)
           .expect(404)
           .end(done);

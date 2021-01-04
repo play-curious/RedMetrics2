@@ -65,7 +65,7 @@ app.v2
       if (!targetGame)
         return utils.sendError(res, {
           code: 404,
-          description: "Game not fount",
+          description: "Game not found",
         });
 
       res.json(targetGame);
@@ -76,19 +76,21 @@ app.v2
     expressAsyncHandler(async (req, res) => {
       // Updates game information with the provided GameMeta.
 
-      try {
-        await game.updateGame(req.params.uuid, {
-          name: req.body.name,
-          description: req.body.description,
-          custom_data: req.body.custom_data,
-          author: req.body.author,
-        });
-      } catch (error) {
+      const targetGame = await game.getGame(req.params.uuid);
+
+      if (!targetGame) {
         return utils.sendError(res, {
           code: 404,
           description: "Game not found",
         });
       }
+
+      await game.updateGame(req.params.uuid, {
+        name: req.body.name,
+        description: req.body.description,
+        custom_data: req.body.custom_data,
+        author: req.body.author,
+      });
 
       res.json({
         success: "Success",
@@ -103,13 +105,16 @@ app.v2
     expressAsyncHandler(async (req, res) => {
       // Lists versions of the the game with that Id as GameVersionMeta objects (see section on Paging below)
 
-      const targetGameVersions = await game.getGameVersions(req.params.uuid);
+      const targetGame = await game.getGame(req.params.uuid);
 
-      if (!targetGameVersions)
+      if (!targetGame) {
         return utils.sendError(res, {
           code: 404,
-          description: "Game not fount",
+          description: "Game not found",
         });
+      }
+
+      const targetGameVersions = await game.getGameVersions(req.params.uuid);
 
       res.json(targetGameVersions);
     })
@@ -123,16 +128,16 @@ app.v2
 
       if (!req.body.name)
         return utils.sendError(res, {
-          code: 300,
+          code: 400,
           description: "Missing version name",
         });
 
-      const targetGame = await game.getGame(req.params.id);
+      const targetGame = await game.getGame(req.params.uuid);
 
       if (!targetGame)
         return utils.sendError(res, {
           code: 404,
-          description: "Unknown target game",
+          description: "Game not found",
         });
 
       const id = await game.postGameVersion({
