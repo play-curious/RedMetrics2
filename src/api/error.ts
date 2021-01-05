@@ -1,5 +1,6 @@
 import express from "express";
 import * as app from "../app";
+import * as utils from "../utils";
 
 app.server.use(
   (
@@ -11,6 +12,7 @@ app.server.use(
     console.error(err.stack);
     if (req.query.view) {
       res.status(500).render("pages/error", {
+        locale: utils.extractLocale(req),
         error: err.message,
         code: 500,
       });

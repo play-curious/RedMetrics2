@@ -52,7 +52,10 @@ app.v2.post(
           maxAge: 1800,
         })
       );
-      return res.render("pages/home", { locale: utils.extractLocale(req) });
+
+      res.status(301);
+
+      return res.redirect("/api/v2/view/home");
     }
 
     res.json({ token });
@@ -123,7 +126,9 @@ app.v2.post(
         })
       );
 
-      return res.render("pages/home", { locale: utils.extractLocale(req) });
+      res.status(301);
+
+      return res.redirect("/api/v2/view/home");
     }
 
     res.json({ id, token });

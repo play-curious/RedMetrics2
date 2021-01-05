@@ -103,7 +103,11 @@ export function sendError(
   redirectToView?: boolean
 ) {
   return redirectToView
-    ? res.render("pages/error", { error: error.description, code: error.code })
+    ? res.render("pages/error", {
+        error: error.description,
+        code: error.code,
+        locale: "en",
+      })
     : res.status(error.code).json(error);
 }
 
