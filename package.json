@@ -5,7 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "tsc && node .",
+    "serve": "tsc && node .",
+    "migrate": "yarn knex migrate:latest",
+    "start": "yarn migrate && yarn serve",
     "format": "yarn prettier",
     "watch": "tsc-watch --onSuccess \"node .\"",
     "prettier": "prettier --write src tests",
@@ -36,7 +38,7 @@
     "express-graphql": "^0.11.0",
     "graphql": "^15.4.0",
     "jsonwebtoken": "^8.5.1",
-    "knex": "^0.21.12",
+    "knex": "^0.21.15",
     "pg": "^8.5.0",
     "tsc-watch": "^4.2.9",
     "uuid": "^8.3.2"
