@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import express from "express";
 import fsp from "fs/promises";
 import * as types from "./types";
+import dayjs from "dayjs";
 
 interface ForFilesOptions {
   recursive?: boolean;
@@ -91,7 +92,7 @@ export const needToken: express.RequestHandler = (req, res, next) => {
 
 export async function generateAccessToken(user: types.User): Promise<string> {
   user.password = await bcrypt.hash(user.password, process.env.SALT as string);
-  return jwt.sign(user, process.env.TOKEN_SECRET as string, {
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET as string, {
     expiresIn: "1800s",
   });
 }
@@ -111,3 +112,20 @@ export function isUserReq(
 ): req is express.Request & { user: types.User } {
   return req.hasOwnProperty("user");
 }
+
+export function extractLocale(req: express.Request): string {
+  return typeof req.query.locale === "string" ? req.query.locale : "en";
+}
+
+export const checkConnexionCookie: express.RequestHandler = (
+  req,
+  res,
+  next
+) => {
+  console.log(req.cookies, req.signedCookies);
+  next();
+};
+
+export const checkAdmin: express.RequestHandler = (req, res, next) => {
+  next();
+};

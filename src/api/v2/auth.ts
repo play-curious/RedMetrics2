@@ -1,5 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
+import cookie from "cookie";
 import * as app from "../../app";
 import * as types from "../../types";
 import * as utils from "../../utils";
@@ -9,6 +10,8 @@ app.v2.post(
   "/login",
   expressAsyncHandler(async (req, res) => {
     // Login to the system with valid username and password
+
+    const redirectToView = !!req.query.view;
 
     const email = req.body?.email,
       password = req.body?.password;
@@ -42,6 +45,16 @@ app.v2.post(
       role: account.role,
     });
 
+    if (redirectToView) {
+      res.setHeader(
+        "Set-Cookie",
+        cookie.serialize("token", token, {
+          maxAge: 1800,
+        })
+      );
+      return res.render("pages/home", { locale: utils.extractLocale(req) });
+    }
+
     res.json({ token });
   })
 );
@@ -57,7 +70,7 @@ app.v2.post(
 
     const email = req.body?.email,
       password = req.body?.password,
-      role = req.body?.role;
+      role = req.body?.role === "dev" ? "dev" : "user";
 
     if (!email || !password)
       return utils.sendError(
@@ -93,16 +106,27 @@ app.v2.post(
     const [id] = await auth.postAccount({
       email,
       password: hash,
-      role: role === "dev" ? "dev" : "user",
+      role,
+    });
+
+    const token = await utils.generateAccessToken({
+      email,
+      password: hash,
+      role,
     });
 
     if (redirectToView) {
-      // todo: stock token in cookie
+      res.setHeader(
+        "Set-Cookie",
+        cookie.serialize("token", token, {
+          maxAge: 1800,
+        })
+      );
 
-      return res.render("pages/home", { locale: "en" });
+      return res.render("pages/home", { locale: utils.extractLocale(req) });
     }
 
-    res.json({ id });
+    res.json({ id, token });
   })
 );
 
