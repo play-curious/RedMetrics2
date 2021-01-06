@@ -2,8 +2,10 @@ import * as Knex from "knex";
 
 
 export async function up(knex: Knex): Promise<void> {
+  await knex.raw(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
+
   return knex.schema.createTable("game", (table) => {
-    table.uuid("id").primary().defaultTo("uuid_generate_v4()");
+    table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
     table.string("name").notNullable();
     table.string("author");
     table.text("description");
