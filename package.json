@@ -4,14 +4,16 @@
   "description": "Open game analytics",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "serve": "tsc && node .",
-    "migrate": "yarn knex migrate:latest",
+    "build": "tsc -p tsconfig.app.json",
+    "serve": "yarn build && node .",
+    "build-migrations": "tsc -p tsconfig.migrations.json",
+    "migrate": "yarn build-migrations && yarn knex migrate:latest",
     "start": "yarn migrate && yarn serve",
     "format": "yarn prettier",
     "watch": "tsc-watch --onSuccess \"node .\"",
     "prettier": "prettier --write src tests",
-    "test": "tsc && jest"
+    "test": "tsc && jest",
+    "docker": "docker-compose up --build"
   },
   "repository": {
     "type": "git",
