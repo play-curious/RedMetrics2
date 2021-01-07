@@ -99,16 +99,9 @@ export async function generateAccessToken(user: types.User): Promise<string> {
 
 export function sendError(
   res: express.Response,
-  error: types.RMError,
-  redirectToView?: boolean
+  error: types.RMError
 ) {
-  return redirectToView
-    ? res.render("pages/error", {
-        error: error.description,
-        code: error.code,
-        locale: "en",
-      })
-    : res.status(error.code).json(error);
+  return res.status(error.code).json(error);
 }
 
 export function isUserReq(

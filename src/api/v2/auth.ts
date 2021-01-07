@@ -1,6 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
-import cookie from "cookie";
 import * as app from "../../app";
 import * as types from "../../types";
 import * as utils from "../../utils";
@@ -10,8 +9,6 @@ app.v2.post(
   "/login",
   expressAsyncHandler(async (req, res) => {
     // Login to the system with valid username and password
-
-    const redirectToView = !!req.query.view;
 
     const email = req.body?.email,
       password = req.body?.password;
@@ -45,19 +42,6 @@ app.v2.post(
       role: account.role,
     });
 
-    if (redirectToView) {
-      res.setHeader(
-        "Set-Cookie",
-        cookie.serialize("token", token, {
-          maxAge: 1800,
-        })
-      );
-
-      res.status(301);
-
-      return res.redirect("/api/v2/view/home");
-    }
-
     res.json({ token });
   })
 );
@@ -68,8 +52,6 @@ app.v2.post(
     //  Registers a new account.
     //  An AccountMeta object should be sent in the body.
     //  The Location response header will contain the URL for the new account.
-
-    const redirectToView = !!req.query.view;
 
     const email = req.body?.email,
       password = req.body?.password,
@@ -82,14 +64,12 @@ app.v2.post(
           code: 401,
           description: "Missing email or password",
         },
-        redirectToView
       );
 
     if (!types.isValidEmail(email)) {
       return utils.sendError(
         res,
         { code: 401, description: "Invalid email" },
-        redirectToView
       );
     }
 
@@ -100,7 +80,6 @@ app.v2.post(
           code: 401,
           description: "Already used email",
         },
-        redirectToView
       );
     }
 
@@ -117,19 +96,6 @@ app.v2.post(
       password: hash,
       role,
     });
-
-    if (redirectToView) {
-      res.setHeader(
-        "Set-Cookie",
-        cookie.serialize("token", token, {
-          maxAge: 1800,
-        })
-      );
-
-      res.status(301);
-
-      return res.redirect("/api/v2/view/home");
-    }
 
     res.json({ id, token });
   })
