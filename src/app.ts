@@ -2,7 +2,6 @@ import { graphqlHTTP } from "express-graphql";
 import { buildSchema } from "graphql";
 import relative from "dayjs/plugin/relativeTime";
 import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
 import express from "express";
 import dotenv from "dotenv";
 import dayjs from "dayjs";
@@ -41,11 +40,7 @@ export const server = express();
 export const v2 = express.Router();
 export const view = express.Router();
 
-server.use(
-  bodyParser.urlencoded({ extended: false }),
-  bodyParser.json(),
-  cookieParser(process.env.ACCESS_TOKEN_SECRET)
-);
+server.use(bodyParser.urlencoded({ extended: false }), bodyParser.json());
 
 server.use("/api/v2/rest", v2);
 server.use("/api/v2/view", view);

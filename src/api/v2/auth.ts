@@ -58,29 +58,20 @@ app.v2.post(
       role = req.body?.role === "dev" ? "dev" : "user";
 
     if (!email || !password)
-      return utils.sendError(
-        res,
-        {
-          code: 401,
-          description: "Missing email or password",
-        },
-      );
+      return utils.sendError(res, {
+        code: 401,
+        description: "Missing email or password",
+      });
 
     if (!types.isValidEmail(email)) {
-      return utils.sendError(
-        res,
-        { code: 401, description: "Invalid email" },
-      );
+      return utils.sendError(res, { code: 401, description: "Invalid email" });
     }
 
     if (await auth.emailAlreadyUsed(email)) {
-      return utils.sendError(
-        res,
-        {
-          code: 401,
-          description: "Already used email",
-        },
-      );
+      return utils.sendError(res, {
+        code: 401,
+        description: "Already used email",
+      });
     }
 
     const hash = await bcrypt.hash(password, process.env.SALT as string);

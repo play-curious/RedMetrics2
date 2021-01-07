@@ -97,10 +97,7 @@ export async function generateAccessToken(user: types.User): Promise<string> {
   });
 }
 
-export function sendError(
-  res: express.Response,
-  error: types.RMError
-) {
+export function sendError(res: express.Response, error: types.RMError) {
   return res.status(error.code).json(error);
 }
 
