@@ -8,10 +8,16 @@ Open game analytics
     ```cp .env.template .env```
 
 2. To recreate container (after changing docker file)
-    ```docker-compose up --build```
+    ```yarn docker```
 
 3. To test docker container by logging into CLI
     1) start container
         ```docker run -td test-docker-compose_web```
     2) enter container
-        ```docker exec -it interesting_robinson /bin/bash```
+        ```docker exec -it redmetrics2 /bin/bash```
+
+## Developing the database
+
+Migrations are created in TypeScript in the `migrations_src` directory and compiled to the standard `migrations` directory in JS, before being run.
+
+To build and run the migrations, use `yarn knex migrate`.

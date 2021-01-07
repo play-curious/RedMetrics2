@@ -3,12 +3,12 @@ services:
   web:
     build: .
     ports:
-      - "6627:6627"
+      - "${SERVER_PORT}:${SERVER_PORT}"
     environment: 
       PGHOST: db
-      PGUSER: postgres
-      PGDATABASE: postgres
-      PGPASSWORD: example
+      PGUSER: "${PGUSER}"
+      PGDATABASE: "${PGDATABASE}"
+      PGPASSWORD: "${PGPASSWORD}"
     volumes:
       - ./src:/usr/src/app/src:ro
 
@@ -16,7 +16,9 @@ services:
     image: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: example
+      POSTGRES_USER: "${PGUSER}"
+      POSTGRES_DB: "${PGDATABASE}"
+      POSTGRES_PASSWORD: "${PGPASSWORD}"
 
   adminer:
     image: adminer
