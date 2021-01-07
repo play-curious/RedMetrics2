@@ -5,19 +5,19 @@ import './App.css';
 
 class App extends React.Component {
   state: {
-    role: "nobody" | "admin" | "dev" | "user"
+    apiKey: string | null
   } = {
-    role: "nobody"
+    apiKey: null
   }
 
   render() {
-    if(this.state.role === "nobody"){
+    if(!this.state.apiKey){
       const apiKey = sessionStorage.getItem("apiKey")
 
       if(!apiKey) {
         return <Register/>;
       }else{
-        // setState
+        this.setState({ apiKey })
       }
     }else{
       return <Home/>;
