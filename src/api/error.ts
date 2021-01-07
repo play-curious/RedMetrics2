@@ -10,17 +10,9 @@ app.server.use(
     next: express.NextFunction
   ) => {
     console.error(err.stack);
-    if (req.query.view) {
-      res.status(500).render("pages/error", {
-        locale: utils.extractLocale(req),
-        error: err.message,
-        code: 500,
-      });
-    } else {
-      res.status(500).json({
-        error: err.message,
-        code: 500,
-      });
-    }
+    res.status(500).json({
+      error: err.message,
+      code: 500,
+    });
   }
 );

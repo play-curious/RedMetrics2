@@ -42,23 +42,7 @@ export const view = express.Router();
 
 server.use(bodyParser.urlencoded({ extended: false }), bodyParser.json());
 
-server.use("/api/v2/rest", v2);
-server.use("/api/v2/view", view);
-
-// View Engine
-
-server.use("/public", express.static("public"));
-
-server.locals.site = {
-  name: "RedMetrics",
-  deployedAt: Date.now(),
-  deployedSince() {
-    return dayjs(this.deployedAt).fromNow();
-  },
-};
-
-server.set("view engine", "ejs");
-server.set("views", path.join(__dirname, "..", "views"));
+server.use("/v2", v2);
 
 // GraphQL
 
@@ -71,7 +55,7 @@ const schema = fs.readFileSync(
 );
 
 server.use(
-  "/api/v2/graphql",
+  "/v2/graphql",
   graphqlHTTP({
     schema: buildSchema(schema),
     rootValue,
