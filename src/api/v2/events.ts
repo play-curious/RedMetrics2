@@ -69,7 +69,7 @@ app.v2
     expressAsyncHandler(async (req, res) => {
       // Updates the SessionMeta. Only accessible to dev and admin.
 
-      const values: Partial<types.Session> = {
+      const values: Partial<types.GameSession> = {
         custom_data: req.body.custom_data,
         software: req.body.software,
         screen_size: req.body.screen_size,

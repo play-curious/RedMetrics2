@@ -49,7 +49,7 @@ describe("⚙ Config", () => {
 
 describe("🔒 Auth", () => {
   describe("/register", () => {
-    const route = "/api/v2/rest/register";
+    const route = "/v2/register";
 
     describe("POST", () => {
       test("missing email", (done) => {
@@ -131,7 +131,7 @@ describe("🔒 Auth", () => {
   });
 
   describe("/login", () => {
-    const route = "/api/v2/rest/login";
+    const route = "/v2/login";
 
     describe("POST", () => {
       test("missing email", (done) => {
@@ -218,7 +218,7 @@ describe("🔒 Auth", () => {
   });
 
   describe("/account/:id", () => {
-    const route = (id) => `/api/v2/rest/account/${id}`;
+    const route = (id) => `/v2/account/${id}`;
 
     describe("GET", () => {
       test("missing token", (done) => {
@@ -309,7 +309,7 @@ describe("🔒 Auth", () => {
 
 describe("🎮 Games", () => {
   describe("/game", () => {
-    const route = "/api/v2/rest/game";
+    const route = "/v2/game";
 
     describe("GET", () => {
       test("missing token", (done) => {
@@ -361,7 +361,7 @@ describe("🎮 Games", () => {
   });
 
   describe("/game/:id", () => {
-    const route = (id) => "/api/v2/rest/game/" + id;
+    const route = (id) => "/v2/game/" + id;
 
     describe("GET", () => {
       test("missing token", (done) => {
@@ -427,7 +427,7 @@ describe("🎮 Games", () => {
   });
 
   describe("/game/:id/version", () => {
-    const route = (id) => `/api/v2/rest/game/${id}/version`;
+    const route = (id) => `/v2/game/${id}/version`;
 
     describe("GET", () => {
       test("missing token", (done) => {
@@ -501,7 +501,7 @@ describe("🎮 Games", () => {
   });
 
   describe("/version/:id", () => {
-    const route = (id) => "/api/v2/rest/version/" + id;
+    const route = (id) => "/v2/version/" + id;
 
     describe("GET", () => {
       test("missing token", (done) => {
@@ -569,7 +569,7 @@ describe("🎮 Games", () => {
 
 describe("🔔 Events", () => {
   describe("/session", () => {
-    const route = "/api/v2/rest/session";
+    const route = "/v2/session";
 
     describe("POST", () => {
       test("missing token", (done) => {
@@ -615,7 +615,7 @@ describe("🔔 Events", () => {
   });
 
   describe("/session/:id", () => {
-    const route = (id) => `/api/v2/rest/session/${id}`;
+    const route = (id) => `/v2/session/${id}`;
 
     describe("GET", () => {
       test("missing token", (done) => {
@@ -690,7 +690,7 @@ describe("🔔 Events", () => {
   });
 
   describe("/event", () => {
-    const route = "/api/v2/rest/event";
+    const route = "/v2/event";
 
     describe("GET", () => {
       test("missing token", (done) => {
