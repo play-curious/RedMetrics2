@@ -18,6 +18,13 @@ export interface Account extends User {
   games?: Id[];
 }
 
+export interface Session {
+  start_at: RMDate;
+  apikey: Id;
+  account_id: Id;
+  type: "game" | "connexion" | "analytic";
+}
+
 /**
  * A game  Since RedMetrics data is open, <br>
  * is is vital that no personally identifiable information is stored about a player.
@@ -26,7 +33,7 @@ export interface Account extends User {
  */
 export interface GameSession {
   id?: Id;
-  game_version_id: string;
+  game_version_id: Id;
   platform?: string;
   screen_size?: string;
   software?: string;
@@ -94,7 +101,7 @@ export type CustomData = object;
  */
 export interface RMEvent {
   id?: number;
-  session_id: string;
+  session_id: Id;
   type: EventType;
   server_time: RMDate;
   user_time?: RMDate;

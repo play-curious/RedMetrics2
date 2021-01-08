@@ -1,5 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
+import uuid from "uuid";
 import * as app from "../../app";
 import * as types from "../../types";
 import * as utils from "../../utils";
@@ -36,13 +37,16 @@ app.v2.post(
       });
     }
 
-    const token = await utils.generateAccessToken({
-      email,
-      password,
-      role: account.role,
+    const apiKey = uuid.v4();
+
+    await auth.postSession({
+      apikey: apiKey,
+      account_id: account.id as string,
+      start_at: new Date().toTimeString(),
+      type: "connexion",
     });
 
-    res.json({ token });
+    res.json({ apiKey });
   })
 );
 
@@ -82,13 +86,16 @@ app.v2.post(
       role,
     });
 
-    const token = await utils.generateAccessToken({
-      email,
-      password: hash,
-      role,
+    const apiKey = uuid.v4();
+
+    await auth.postSession({
+      apikey: apiKey,
+      account_id: id,
+      start_at: new Date().toTimeString(),
+      type: "connexion",
     });
 
-    res.json({ id, token });
+    res.json({ id, apiKey });
   })
 );
 

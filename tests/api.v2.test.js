@@ -6,7 +6,7 @@ const app = require("../dist/app");
 
 dotenv.config();
 
-const user_tokens = new Map();
+const user_apiKeys = new Map();
 const user_ids = new Map();
 const session_ids = new Map();
 const game_ids = new Map();
@@ -196,7 +196,7 @@ describe("🔒 Auth", () => {
           })
           .expect(200)
           .end((err, res) => {
-            user_tokens.set("user", res.body.token);
+            user_apiKeys.set("user", res.body.apiKey);
             done(err);
           });
       });
@@ -210,7 +210,7 @@ describe("🔒 Auth", () => {
           })
           .expect(200)
           .end((err, res) => {
-            user_tokens.set("admin", res.body.token);
+            user_apiKeys.set("admin", res.body.apiKey);
             done(err);
           });
       });
@@ -231,7 +231,7 @@ describe("🔒 Auth", () => {
       test("unknown account", (done) => {
         request(app.server)
           .get(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .expect(404)
           .end(done);
       });
@@ -239,7 +239,7 @@ describe("🔒 Auth", () => {
       test("admin only", (done) => {
         request(app.server)
           .get(route(user_ids.get("user")))
-          .set("Authorization", `bearer ${user_tokens.get("user")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("user")}`)
           .expect(401)
           .end(done);
       });
@@ -247,7 +247,7 @@ describe("🔒 Auth", () => {
       test("success", (done) => {
         request(app.server)
           .get(route(user_ids.get("user")))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .expect(200)
           .end(done);
       });
@@ -264,7 +264,7 @@ describe("🔒 Auth", () => {
       test("unknown account", (done) => {
         request(app.server)
           .put(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .send({
             email: "email@user.user",
           })
@@ -275,7 +275,7 @@ describe("🔒 Auth", () => {
       test("admin only", (done) => {
         request(app.server)
           .put(route(user_ids.get("user")))
-          .set("Authorization", `bearer ${user_tokens.get("user")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("user")}`)
           .expect(401)
           .end(done);
       });
@@ -283,7 +283,7 @@ describe("🔒 Auth", () => {
       test("invalid email", (done) => {
         request(app.server)
           .put(route(user_ids.get("user")))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .send({
             email: "test",
           })
@@ -294,7 +294,7 @@ describe("🔒 Auth", () => {
       test("success", (done) => {
         request(app.server)
           .put(route(user_ids.get("user")))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .send({
             email: "email@uer.user",
             password: "password",
@@ -319,7 +319,7 @@ describe("🎮 Games", () => {
       test("success", (done) => {
         request(app.server)
           .get(route)
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .expect(200)
           .end(done);
       });
@@ -339,7 +339,7 @@ describe("🎮 Games", () => {
       test("missing name", (done) => {
         request(app.server)
           .post(route)
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .expect(301)
           .end(done);
       });
@@ -347,7 +347,7 @@ describe("🎮 Games", () => {
       test("success", (done) => {
         request(app.server)
           .post(route)
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .send({
             name: "Game name",
           })
@@ -374,7 +374,7 @@ describe("🎮 Games", () => {
       test("unknown game", (done) => {
         request(app.server)
           .get(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .expect(404)
           .end(done);
       });
@@ -382,7 +382,7 @@ describe("🎮 Games", () => {
       test("success", (done) => {
         request(app.server)
           .get(route(game_ids.get("game")))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .expect(200)
           .end(done);
       });
@@ -403,7 +403,7 @@ describe("🎮 Games", () => {
       test("unknown game", (done) => {
         request(app.server)
           .put(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .send({
             name: "New Name",
             description: "New Description",
@@ -415,7 +415,7 @@ describe("🎮 Games", () => {
       test("success", (done) => {
         request(app.server)
           .put(route(game_ids.get("game")))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .send({
             name: "New Name",
             description: "New Description",
@@ -440,7 +440,7 @@ describe("🎮 Games", () => {
       test("unknown game", (done) => {
         request(app.server)
           .get(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .expect(404)
           .end(done);
       });
@@ -448,7 +448,7 @@ describe("🎮 Games", () => {
       test("success", (done) => {
         request(app.server)
           .get(route(game_ids.get("game")))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .expect(200)
           .end(done);
       });
@@ -468,7 +468,7 @@ describe("🎮 Games", () => {
       test("unknown game", (done) => {
         request(app.server)
           .post(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .send({
             name: "Version 1",
           })
@@ -479,7 +479,7 @@ describe("🎮 Games", () => {
       test("missing name", (done) => {
         request(app.server)
           .post(route(game_ids.get("game")))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .expect(400)
           .end(done);
       });
@@ -487,7 +487,7 @@ describe("🎮 Games", () => {
       test("success", (done) => {
         request(app.server)
           .post(route(game_ids.get("game")))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .send({
             name: "Version 1",
           })
@@ -514,7 +514,7 @@ describe("🎮 Games", () => {
       test("unknown version", (done) => {
         request(app.server)
           .get(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .expect(404)
           .end(done);
       });
@@ -522,7 +522,7 @@ describe("🎮 Games", () => {
       test("success", (done) => {
         request(app.server)
           .get(route(game_version_ids.get("version")))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .expect(200)
           .end(done);
       });
@@ -543,7 +543,7 @@ describe("🎮 Games", () => {
       test("unknown version", (done) => {
         request(app.server)
           .put(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .send({
             name: "New Name",
             description: "New Description",
@@ -555,7 +555,7 @@ describe("🎮 Games", () => {
       test("success", (done) => {
         request(app.server)
           .put(route(game_version_ids.get("version")))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .send({
             name: "New Name",
             description: "New Description",
@@ -579,7 +579,7 @@ describe("🔔 Events", () => {
       test("missing game version", (done) => {
         request(app.server)
           .post(route)
-          .set("Authorization", `bearer ${user_tokens.get("user")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("user")}`)
           .send({
             external_id: "id",
             platform: "Microsoft Windows",
@@ -595,7 +595,7 @@ describe("🔔 Events", () => {
       test("success", (done) => {
         request(app.server)
           .post(route)
-          .set("Authorization", `bearer ${user_tokens.get("user")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("user")}`)
           .send({
             external_id: "id",
             platform: "Microsoft Windows",
@@ -628,7 +628,7 @@ describe("🔔 Events", () => {
       test("missing session", (done) => {
         request(app.server)
           .get(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .expect(404)
           .end(done);
       });
@@ -636,7 +636,7 @@ describe("🔔 Events", () => {
       test("success", (done) => {
         request(app.server)
           .get(route(session_ids.get("session")))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .expect(200)
           .end(done);
       });
@@ -660,7 +660,7 @@ describe("🔔 Events", () => {
       test("missing session", (done) => {
         request(app.server)
           .put(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .send({
             platform: "Mac OSX",
             software: "Safari",
@@ -675,7 +675,7 @@ describe("🔔 Events", () => {
       test("success", (done) => {
         request(app.server)
           .put(route(session_ids.get("session")))
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .send({
             platform: "Mac OSX",
             software: "Safari",
@@ -706,7 +706,7 @@ describe("🔔 Events", () => {
       test("success", (done) => {
         request(app.server)
           .get(route)
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .send({
             // filtres
           })
@@ -729,7 +729,7 @@ describe("🔔 Events", () => {
       test("missing version", (done) => {
         request(app.server)
           .post(route)
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .send({})
           .expect(300)
           .end(done);
@@ -738,7 +738,7 @@ describe("🔔 Events", () => {
       test("success", (done) => {
         request(app.server)
           .post(route)
-          .set("Authorization", `bearer ${user_tokens.get("admin")}`)
+          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
           .send({
             game_version_id: game_version_ids.get("version"),
           })

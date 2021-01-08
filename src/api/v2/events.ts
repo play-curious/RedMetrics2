@@ -30,7 +30,7 @@ app.v2.post(
       });
     }
 
-    const id = await events.postSession({
+    const id = await events.postGameSession({
       external_id,
       platform,
       screen_size,
@@ -53,7 +53,7 @@ app.v2
     expressAsyncHandler(async (req, res) => {
       // Retrieves the SessionMeta for the identified session
 
-      const session = await events.getSession(req.params.id);
+      const session = await events.getGameSession(req.params.id);
 
       if (!session)
         return utils.sendError(res, {
@@ -79,7 +79,7 @@ app.v2
 
       const id = req.params.id;
 
-      const updated = await events.getSession(id);
+      const updated = await events.getGameSession(id);
 
       if (!updated)
         return utils.sendError(res, {
@@ -87,7 +87,7 @@ app.v2
           description: "Unknown session uuid",
         });
 
-      await events.updateSession(id, values);
+      await events.updateGameSession(id, values);
 
       res.json({
         id,
@@ -151,8 +151,8 @@ app.v2
         });
 
       let session_id = req.body.session_id;
-      if (!req.body.session_id || !(await events.getSession(session_id))) {
-        session_id = await events.postSession({
+      if (!req.body.session_id || !(await events.getGameSession(session_id))) {
+        session_id = await events.postGameSession({
           game_version_id: req.body.game_version_id,
         });
       }

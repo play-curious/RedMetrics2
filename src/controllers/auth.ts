@@ -2,6 +2,7 @@ import * as app from "../app";
 import * as types from "../types";
 
 export const accounts = () => app.database<types.Account>("account");
+export const sessions = () => app.database<types.Session>("session");
 
 export function getAccount(id: string): Promise<types.Account | undefined> {
   return accounts().where("id", id).first();
@@ -25,6 +26,10 @@ export function emailAlreadyUsed(email: types.Email): Promise<boolean> {
 
 export function postAccount(account: types.Account): Promise<string[]> {
   return accounts().insert(account).returning("id");
+}
+
+export async function postSession(session: types.Session): Promise<void> {
+  await sessions().insert(session);
 }
 
 export function updateAccount(
