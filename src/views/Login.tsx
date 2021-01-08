@@ -29,24 +29,26 @@ export default class Login extends React.Component {
   render() {
     return (
       <div className="Login">
-        <h1> Login </h1>
-        <form onSubmit={this.handleSubmit}>
-          <input
-            type="email"
-            name="email"
-            value={this.state.email}
-            placeholder="Email"
-            onChange={this.handleChange}
-          />
-          <input
-            type="password"
-            name="password"
-            value={this.state.password}
-            placeholder="Password"
-            onChange={this.handleChange}
-          />
-          <input type="submit" value="Go" />
-        </form>
+        <div className="center">
+          <h1> Login </h1>
+          <form onSubmit={this.handleSubmit}>
+            <input
+              type="email"
+              name="email"
+              value={this.state.email}
+              placeholder="Email"
+              onChange={this.handleChange}
+            />
+            <input
+              type="password"
+              name="password"
+              value={this.state.password}
+              placeholder="Password"
+              onChange={this.handleChange}
+            />
+            <input type="submit" value="Go" />
+          </form>
+        </div>
       </div>
     );
   }

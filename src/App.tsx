@@ -3,7 +3,7 @@ import Register from "./views/Register";
 import Login from "./views/Login";
 import Home from "./views/Home";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import "./App.css";
+import "./App.scss";
 
 class App extends React.Component {
   state: {

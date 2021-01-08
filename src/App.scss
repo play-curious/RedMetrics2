@@ -1,0 +1,33 @@
+.button {
+  display: inline-block;
+  border: 1px solid #111;
+  border-bottom: 3px solid #111;
+  padding: 10px;
+  text-decoration: none;
+  color: inherit;
+  margin: 3px;
+
+  &:hover {
+    border-bottom: 2px solid #111;
+    transform: translateY(1px);
+  }
+
+  &:focus {
+    border-bottom: 1px solid #111;
+    transform: translateY(2px);
+  }
+}
+
+.radio {
+  * {
+    padding-right: 10px;
+  }
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+}

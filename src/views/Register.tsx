@@ -32,41 +32,52 @@ export default class Register extends React.Component {
   render() {
     return (
       <div className="Register">
-        <h1> Register </h1>
-        <form onSubmit={this.handleSubmit}>
-          <input
-            type="email"
-            name="email"
-            value={this.state.email}
-            placeholder="Email"
-            onChange={this.handleChange}
-          />
-          <input
-            type="password"
-            name="password"
-            value={this.state.password}
-            placeholder="Password"
-            onChange={this.handleChange}
-          />
-          <input
-            type="radio"
-            name="role"
-            value="user"
-            checked={this.state.role === "user"}
-            onChange={this.handleChange}
-          />
-          <input
-            type="radio"
-            name="role"
-            value="dev"
-            checked={this.state.role === "dev"}
-            onChange={this.handleChange}
-          />
-          <input type="submit" value="Go" />
-        </form>
-        <Link className="button" to={{ pathname: "/login" }}>
-          Just login
-        </Link>
+        <div className="center">
+          <h1> Register </h1>
+          <form onSubmit={this.handleSubmit}>
+            <input
+              type="email"
+              name="email"
+              value={this.state.email}
+              placeholder="Email"
+              onChange={this.handleChange}
+            />
+            <input
+              type="password"
+              name="password"
+              value={this.state.password}
+              placeholder="Password"
+              onChange={this.handleChange}
+            />
+            <div className="radio">
+              <span> as </span>
+              <label>
+                user
+                <input
+                  type="radio"
+                  name="role"
+                  value="user"
+                  checked={this.state.role === "user"}
+                  onChange={this.handleChange}
+                />
+              </label>
+              <label>
+                dev
+                <input
+                  type="radio"
+                  name="role"
+                  value="dev"
+                  checked={this.state.role === "dev"}
+                  onChange={this.handleChange}
+                />
+              </label>
+            </div>
+            <input type="submit" value="Go" />
+          </form>
+          <Link className="button" to={{ pathname: "/login" }}>
+            Just login
+          </Link>
+        </div>
       </div>
     );
   }
