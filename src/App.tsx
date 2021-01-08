@@ -27,7 +27,7 @@ class App extends React.Component {
             <Register setAPIKey={this.setAPIKey} />
           </Route>
           <Route exact path="/login">
-            <Login />
+            <Login setAPIKey={this.setAPIKey} />
           </Route>
         </Switch>
       </Router>
