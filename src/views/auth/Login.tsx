@@ -2,6 +2,7 @@ import axios from "axios";
 import React from "react";
 import { Redirect } from "react-router";
 import { Link } from "react-router-dom";
+import * as constants from "../../constants";
 
 export default class Login extends React.Component {
   props: {
@@ -37,11 +38,13 @@ export default class Login extends React.Component {
           password: this.state.password,
         },
         {
-          baseURL: "http://localhost:6627/",
+          baseURL: constants.apiBaseURL,
         }
       );
 
       this.props.onApiKeyChange?.(response.data.apiKey);
+
+      sessionStorage.setItem("apiKey", response.data.apiKey);
 
       this.setState({ redirect: "/home", password: "" });
     } catch (error) {

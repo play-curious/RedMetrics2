@@ -1,9 +1,8 @@
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import React from "react";
 import Register from "./views/auth/Register";
 import Login from "./views/auth/Login";
 import Home from "./views/user/Home";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import "./App.scss";
 import AppError from "./views/system/AppError";
 import Accounts from "./views/admin/Accounts";
 import Documentation from "./views/info/Documentation";
@@ -11,12 +10,22 @@ import GettingStarted from "./views/info/GettingStarted";
 import Search from "./views/user/Search";
 import Profile from "./views/user/Profile";
 
+import "./App.scss";
+
 class App extends React.Component {
   state: {
     apiKey: string | null;
   } = {
     apiKey: null,
   };
+
+  componentDidMount() {
+    const apiKey = sessionStorage.getItem("apiKey");
+
+    if (apiKey) {
+      this.setState({ apiKey });
+    }
+  }
 
   handleApiKeyChange = (apiKey: string) => {
     this.setState({ apiKey });
