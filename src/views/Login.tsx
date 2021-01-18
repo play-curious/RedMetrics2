@@ -1,6 +1,7 @@
 import axios from "axios";
 import React from "react";
 import { Redirect } from "react-router";
+import { Link } from "react-router-dom";
 
 export default class Login extends React.Component {
   props: {
@@ -69,9 +70,12 @@ export default class Login extends React.Component {
               placeholder="Password"
               onChange={this.handleChange}
             />
-            <input type="submit" value="Go" />
+            <input className="button" type="submit" value="Go" />
           </form>
         </div>
+        <Link className="button" to={{ pathname: "/login" }}>
+          Register
+        </Link>
       </div>
     );
   }

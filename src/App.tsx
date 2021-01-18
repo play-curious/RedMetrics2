@@ -5,6 +5,11 @@ import Home from "./views/Home";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./App.scss";
 import AppError from "./views/AppError";
+import Admin from "./views/Admin";
+import Documentation from "./views/Documentation";
+import GettingStarted from "./views/GettingStarted";
+import Search from "./views/Search";
+import Profile from "./views/Profile";
 
 class App extends React.Component {
   state: {
@@ -32,6 +37,21 @@ class App extends React.Component {
           </Route>
           <Route exact path="/error">
             <AppError code={0} message={""} />
+          </Route>
+          <Route exact path="/admin">
+            <Admin />
+          </Route>
+          <Route exact path="/docs">
+            <Documentation />
+          </Route>
+          <Route exact path="/tutorial">
+            <GettingStarted />
+          </Route>
+          <Route exact path="/search">
+            <Search />
+          </Route>
+          <Route exact path="/profile">
+            <Profile />
           </Route>
         </Switch>
       </Router>

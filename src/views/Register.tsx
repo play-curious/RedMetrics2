@@ -71,7 +71,7 @@ export default class Register extends React.Component {
                 />
               </label>
             </div>
-            <input type="submit" value="Go" />
+            <input className="button" type="submit" value="Go" />
           </form>
           <Link className="button" to={{ pathname: "/login" }}>
             Just login

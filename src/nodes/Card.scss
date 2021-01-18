@@ -1,4 +1,6 @@
 .card {
+  text-decoration: none;
+  color: inherit;
   padding: 15px;
   margin: 15px;
 
@@ -8,5 +10,10 @@
   > div {
     display: flex;
     justify-content: space-between;
+  }
+
+  &:hover {
+    text-decoration: none;
+    color: inherit;
   }
 }
