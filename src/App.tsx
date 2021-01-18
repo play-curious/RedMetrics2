@@ -1,15 +1,15 @@
 import React from "react";
-import Register from "./views/Register";
-import Login from "./views/Login";
-import Home from "./views/Home";
+import Register from "./views/auth/Register";
+import Login from "./views/auth/Login";
+import Home from "./views/user/Home";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./App.scss";
-import AppError from "./views/AppError";
-import Admin from "./views/Admin";
-import Documentation from "./views/Documentation";
-import GettingStarted from "./views/GettingStarted";
-import Search from "./views/Search";
-import Profile from "./views/Profile";
+import AppError from "./views/system/AppError";
+import Accounts from "./views/admin/Accounts";
+import Documentation from "./views/info/Documentation";
+import GettingStarted from "./views/info/GettingStarted";
+import Search from "./views/user/Search";
+import Profile from "./views/user/Profile";
 
 class App extends React.Component {
   state: {
@@ -38,8 +38,8 @@ class App extends React.Component {
           <Route exact path="/error">
             <AppError code={0} message={""} />
           </Route>
-          <Route exact path="/admin">
-            <Admin />
+          <Route exact path="/accounts">
+            <Accounts />
           </Route>
           <Route exact path="/docs">
             <Documentation />
