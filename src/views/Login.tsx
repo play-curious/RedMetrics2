@@ -1,9 +1,10 @@
+import axios from "axios";
 import React from "react";
-import App from "../App";
+import { Redirect } from "react-router";
 
 export default class Login extends React.Component {
   props: {
-    setAPIKey: ((this: App, apiKey: string) => void) | null;
+    setAPIKey: ((apiKey: string) => void) | null;
   } = {
     setAPIKey: null,
   };
@@ -11,9 +12,11 @@ export default class Login extends React.Component {
   state: {
     email: string;
     password: string;
+    redirect: null | string;
   } = {
     email: "",
     password: "",
+    redirect: null
   };
 
   handleChange = (event: any) => {
@@ -22,13 +25,29 @@ export default class Login extends React.Component {
     });
   };
 
-  handleSubmit = (event: React.FormEvent) => {
+  handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
+    try {
+      const response = await axios.post("login", {
+        email: this.state.email,
+        password: this.state.password,
+      }, {
+        baseURL: "http://localhost:6627/"
+      })
+
+      this.props.setAPIKey?.(response.data.apiKey);
+
+      this.setState({ redirect: "/home" })
+    }catch (error) {
+      this.setState({ redirect: "/error" })
+    }
   };
 
   render() {
     return (
       <div className="Login">
+        {this.state.redirect && <Redirect to={this.state.redirect} />}
         <div className="center">
           <h1> Login </h1>
           <form onSubmit={this.handleSubmit}>

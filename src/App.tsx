@@ -4,6 +4,7 @@ import Login from "./views/Login";
 import Home from "./views/Home";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "./App.scss";
+import AppError from "./views/AppError";
 
 class App extends React.Component {
   state: {
@@ -28,6 +29,9 @@ class App extends React.Component {
           </Route>
           <Route exact path="/login">
             <Login setAPIKey={this.setAPIKey} />
+          </Route>
+          <Route exact path="/error">
+            <AppError code={0} message={""} />
           </Route>
         </Switch>
       </Router>
