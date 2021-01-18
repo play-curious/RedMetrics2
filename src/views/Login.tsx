@@ -4,9 +4,9 @@ import { Redirect } from "react-router";
 
 export default class Login extends React.Component {
   props: {
-    setAPIKey: ((apiKey: string) => void) | null;
+    onApiKeyChange: ((apiKey: string) => void) | null;
   } = {
-    setAPIKey: null,
+    onApiKeyChange: null,
   };
 
   state: {
@@ -16,7 +16,7 @@ export default class Login extends React.Component {
   } = {
     email: "",
     password: "",
-    redirect: null
+    redirect: null,
   };
 
   handleChange = (event: any) => {
@@ -29,18 +29,22 @@ export default class Login extends React.Component {
     event.preventDefault();
 
     try {
-      const response = await axios.post("login", {
-        email: this.state.email,
-        password: this.state.password,
-      }, {
-        baseURL: "http://localhost:6627/"
-      })
+      const response = await axios.post(
+        "login",
+        {
+          email: this.state.email,
+          password: this.state.password,
+        },
+        {
+          baseURL: "http://localhost:6627/",
+        }
+      );
 
-      this.props.setAPIKey?.(response.data.apiKey);
+      this.props.onApiKeyChange?.(response.data.apiKey);
 
-      this.setState({ redirect: "/home" })
-    }catch (error) {
-      this.setState({ redirect: "/error" })
+      this.setState({ redirect: "/home", password: "" });
+    } catch (error) {
+      this.setState({ redirect: "/error", password: "" });
     }
   };
 

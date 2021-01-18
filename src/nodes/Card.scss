@@ -1,0 +1,12 @@
+.card {
+  padding: 15px;
+  margin: 15px;
+
+  > h3 {
+  }
+
+  > div {
+    display: flex;
+    justify-content: space-between;
+  }
+}

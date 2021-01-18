@@ -13,7 +13,7 @@ class App extends React.Component {
     apiKey: null,
   };
 
-  setAPIKey = (apiKey: string) => {
+  handleApiKeyChange = (apiKey: string) => {
     this.setState({ apiKey });
   };
 
@@ -25,10 +25,10 @@ class App extends React.Component {
             <Home apiKey={this.state.apiKey} />
           </Route>
           <Route exact path="/register">
-            <Register setAPIKey={this.setAPIKey} />
+            <Register onApiKeyChange={this.handleApiKeyChange} />
           </Route>
           <Route exact path="/login">
-            <Login setAPIKey={this.setAPIKey} />
+            <Login onApiKeyChange={this.handleApiKeyChange} />
           </Route>
           <Route exact path="/error">
             <AppError code={0} message={""} />

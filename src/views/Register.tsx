@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 
 export default class Register extends React.Component {
   props: {
-    setAPIKey: ((apiKey: string) => void) | null;
+    onApiKeyChange: ((apiKey: string) => void) | null;
   } = {
-    setAPIKey: null,
+    onApiKeyChange: null,
   };
 
   state: {
