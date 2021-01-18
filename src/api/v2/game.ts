@@ -7,7 +7,7 @@ import * as game from "../../controllers/game";
 app.v2
   .route("/game")
   .get(
-    utils.needToken,
+    utils.needRole("user"),
     expressAsyncHandler(async (req, res) => {
       // Lists the games using the service as GameMeta objects (see section on Paging below)
       res.json({
@@ -16,7 +16,7 @@ app.v2
     })
   )
   .post(
-    utils.needToken,
+    utils.needRole("dev"),
     expressAsyncHandler(async (req, res) => {
       //  Creates a new game.
       //  A GameMeta object should be sent in the body.
@@ -54,7 +54,7 @@ app.v2
 app.v2
   .route("/game/:uuid")
   .get(
-    utils.needToken,
+    utils.needRole("user"),
     expressAsyncHandler(async (req, res) => {
       // Retrieves information about the game with that Id as a GameMeta object
 
@@ -72,7 +72,7 @@ app.v2
     })
   )
   .put(
-    utils.needToken,
+    utils.needRole("dev"),
     expressAsyncHandler(async (req, res) => {
       // Updates game information with the provided GameMeta.
 
@@ -101,7 +101,7 @@ app.v2
 app.v2
   .route("/game/:uuid/version")
   .get(
-    utils.needToken,
+    utils.needRole("user"),
     expressAsyncHandler(async (req, res) => {
       // Lists versions of the the game with that Id as GameVersionMeta objects (see section on Paging below)
 
@@ -120,7 +120,7 @@ app.v2
     })
   )
   .post(
-    utils.needToken,
+    utils.needRole("dev"),
     expressAsyncHandler(async (req, res) => {
       //  Creates a new version of the game.
       //  A GameVersionMeta object should be sent in the body.
@@ -157,7 +157,7 @@ app.v2
 app.v2
   .route("/version/:uuid")
   .get(
-    utils.needToken,
+    utils.needRole("user"),
     expressAsyncHandler(async (req, res) => {
       // Retrieves information about the game version as a GameVersionMeta object
 
@@ -173,7 +173,7 @@ app.v2
     })
   )
   .put(
-    utils.needToken,
+    utils.needRole("dev"),
     expressAsyncHandler(async (req, res) => {
       // Updates game information with the provided GameVersionMeta.
 

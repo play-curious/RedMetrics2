@@ -1,10 +1,10 @@
 import path from "path";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 import express from "express";
 import fsp from "fs/promises";
+import expressAsyncHandler from "express-async-handler";
+import * as uuid from "uuid";
 import * as types from "./types";
-import dayjs from "dayjs";
+import * as auth from "./controllers/auth";
 
 interface ForFilesOptions {
   recursive?: boolean;
@@ -48,53 +48,57 @@ export async function forFiles(
   }
 }
 
-export const adminOnly: express.RequestHandler = (req, res, next) => {
-  if (!isUserReq(req)) {
-    return sendError(res, {
-      code: 401,
-      description: "Missing token",
-    });
-  }
+export function needRole(role: types.Role): express.RequestHandler {
+  return expressAsyncHandler(async (req, res, next) => {
+    const apiKey = req.query.apikey;
 
-  if (req.user.role !== "admin") {
-    return sendError(res, {
-      code: 401,
-      description: "Access refused",
-    });
-  }
-
-  next();
-};
-
-export const needToken: express.RequestHandler = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (token == null)
-    return sendError(res, {
-      code: 401,
-      description: "Missing JWT",
-    });
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string, (err, user) => {
-    if (err)
+    if (apiKey == null)
       return sendError(res, {
         code: 401,
-        description: "Missing JWT",
+        description: "Missing apiKey",
+      });
+
+    if (typeof apiKey !== "string" || !uuid.validate(apiKey))
+      return sendError(res, {
+        code: 400,
+        description: "Invalid apiKey",
+      });
+
+    const session = await auth.getSession(apiKey);
+
+    if (!session)
+      return sendError(res, {
+        code: 401,
+        description: "Expired session",
+      });
+
+    const account = await auth.getAccount(session.account_id);
+
+    if (!account)
+      return sendError(res, {
+        code: 404,
+        description: "Account not found",
+      });
+
+    if (roleRank(account.role) < roleRank(role))
+      return sendError(res, {
+        code: 401,
+        description: "Access denied",
       });
 
     // @ts-ignore
-    req.user = user as types.User;
+    req.user = {
+      role: account.role,
+      email: account.email,
+      password: account.password,
+    } as types.User;
 
     next();
   });
-};
+}
 
-export async function generateAccessToken(user: types.User): Promise<string> {
-  user.password = await bcrypt.hash(user.password, process.env.SALT as string);
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET as string, {
-    expiresIn: "1800s",
-  });
+export function roleRank(role: types.Role): 0 | 1 | 2 {
+  return ["user", "dev", "admin"].indexOf(role) as 0 | 1 | 2;
 }
 
 export function sendError(res: express.Response, error: types.RMError) {
@@ -117,9 +121,5 @@ export const checkConnexionCookie: express.RequestHandler = (
   next
 ) => {
   console.log(req.cookies, req.signedCookies);
-  next();
-};
-
-export const checkAdmin: express.RequestHandler = (req, res, next) => {
   next();
 };

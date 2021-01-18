@@ -20,7 +20,7 @@ export interface Account extends User {
 
 export interface Session {
   start_at: RMDate;
-  apikey: Id;
+  api_key: Id;
   account_id: Id;
   type: "game" | "connexion" | "analytic";
 }

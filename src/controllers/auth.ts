@@ -1,3 +1,4 @@
+import * as uuid from "uuid";
 import * as app from "../app";
 import * as types from "../types";
 
@@ -28,6 +29,12 @@ export function postAccount(account: types.Account): Promise<string[]> {
   return accounts().insert(account).returning("id");
 }
 
+export async function getSession(
+  apikey: types.Id
+): Promise<types.Session | undefined> {
+  return sessions().where("api_key", apikey).first();
+}
+
 export async function postSession(session: types.Session): Promise<void> {
   await sessions().insert(session);
 }
@@ -43,7 +50,7 @@ export function countAccounts(): Promise<number> {
   return accounts().count();
 }
 
-export async function getAccountGames(id: string): Promise<string[]> {
+export async function getAccountGames(id: types.Id): Promise<string[]> {
   const games: types.Game[] = await app.database
     .select("game.id")
     .from("account")

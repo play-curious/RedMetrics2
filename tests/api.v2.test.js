@@ -1,3 +1,4 @@
+const { test, describe } = require("@jest/globals");
 const request = require("supertest");
 const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
@@ -6,16 +7,38 @@ const app = require("../dist/app");
 
 dotenv.config();
 
-const user_apiKeys = new Map();
-const user_ids = new Map();
-const session_ids = new Map();
-const game_ids = new Map();
-const game_version_ids = new Map();
-const user_emails = new Map([
-  ["admin", "admin@test.test"],
-  ["user", "user@test.test"],
-  ["dev", "dev@test.test"],
-]);
+const users = {
+  user: {
+    apiKey: null,
+    id: null,
+    email: "user@test.test",
+  },
+  dev: {
+    apiKey: null,
+    id: null,
+    email: "dev@test.test",
+  },
+  admin: {
+    apiKey: null,
+    id: null,
+    email: "admin@test.test",
+  },
+};
+
+const games = {
+  game: {
+    versions: {
+      version: {
+        id: null,
+      },
+    },
+    sessions: {
+      session: {
+        id: null,
+      },
+    },
+  },
+};
 
 describe("⚙ Config", () => {
   describe("prepare database", () => {
@@ -30,7 +53,7 @@ describe("⚙ Config", () => {
       app
         .database("account")
         .insert({
-          email: user_emails.get("admin"),
+          email: users.admin.email,
           password: bcrypt.hashSync("test", process.env.SALT),
           role: "admin",
         })
@@ -41,7 +64,7 @@ describe("⚙ Config", () => {
 
   test("prepare endpoints", (done) => {
     app
-      .loadRoutes(false)
+      .loadRoutes(true)
       .then(() => done())
       .catch(done);
   });
@@ -67,7 +90,7 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            email: user_emails.get("user"),
+            email: users.user.email,
             role: "user",
           })
           .expect(401)
@@ -90,13 +113,13 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            email: user_emails.get("user"),
+            email: users.user.email,
             password: "test",
             role: "user",
           })
           .expect(200)
           .end((err, res) => {
-            user_ids.set("user", res.body.id);
+            users.user.id = res.body.id;
             done(err);
           });
       });
@@ -105,13 +128,13 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            email: user_emails.get("dev"),
+            email: users.dev.email,
             password: "test",
             role: "dev",
           })
           .expect(200)
           .end((err, res) => {
-            user_ids.set("dev", res.body.id);
+            users.dev.id = res.body.id;
             done(err);
           });
       });
@@ -165,7 +188,7 @@ describe("🔒 Auth", () => {
           .end(done);
       });
 
-      test("unknown email", (done) => {
+      test("email not found", (done) => {
         request(app.server)
           .post(route)
           .send({
@@ -180,7 +203,7 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            email: user_emails.get("user"),
+            email: users.user.email,
             password: "incorrect",
           })
           .expect(401)
@@ -191,12 +214,26 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            email: user_emails.get("user"),
+            email: users.user.email,
             password: "test",
           })
           .expect(200)
           .end((err, res) => {
-            user_apiKeys.set("user", res.body.apiKey);
+            users.user.apiKey = res.body.apiKey;
+            done(err);
+          });
+      });
+
+      test("login as dev", (done) => {
+        request(app.server)
+          .post(route)
+          .send({
+            email: users.dev.email,
+            password: "test",
+          })
+          .expect(200)
+          .end((err, res) => {
+            users.dev.apiKey = res.body.apiKey;
             done(err);
           });
       });
@@ -205,12 +242,12 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            email: user_emails.get("admin"),
+            email: users.admin.email,
             password: "test",
           })
           .expect(200)
           .end((err, res) => {
-            user_apiKeys.set("admin", res.body.apiKey);
+            users.admin.apiKey = res.body.apiKey;
             done(err);
           });
       });
@@ -218,53 +255,44 @@ describe("🔒 Auth", () => {
   });
 
   describe("/account/:id", () => {
-    const route = (id) => `/v2/account/${id}`;
+    const route = (id, apiKey) =>
+      `/v2/account/${id}${apiKey ? "?apikey=" + apiKey : ""}`;
 
     describe("GET", () => {
-      test("missing token", (done) => {
-        request(app.server)
-          .get(route(user_ids.get("user")))
-          .expect(401)
-          .end(done);
+      test("missing apikey", (done) => {
+        request(app.server).get(route(users.user.id)).expect(401).end(done);
       });
 
-      test("unknown account", (done) => {
+      test("account not found", (done) => {
         request(app.server)
-          .get(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .get(route(uuid.v4(), users.admin.apiKey))
           .expect(404)
           .end(done);
       });
 
       test("admin only", (done) => {
         request(app.server)
-          .get(route(user_ids.get("user")))
-          .set("Authorization", `bearer ${user_apiKeys.get("user")}`)
+          .get(route(users.user.id, users.user.apiKey))
           .expect(401)
           .end(done);
       });
 
       test("success", (done) => {
         request(app.server)
-          .get(route(user_ids.get("user")))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .get(route(users.user.id, users.admin.apiKey))
           .expect(200)
           .end(done);
       });
     });
 
     describe("PUT", () => {
-      test("missing token", (done) => {
-        request(app.server)
-          .put(route(user_ids.get("user")))
-          .expect(401)
-          .end(done);
+      test("missing apikey", (done) => {
+        request(app.server).put(route(users.user.id)).expect(401).end(done);
       });
 
-      test("unknown account", (done) => {
+      test("account not found", (done) => {
         request(app.server)
-          .put(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .put(route(uuid.v4(), users.admin.apiKey))
           .send({
             email: "email@user.user",
           })
@@ -274,16 +302,14 @@ describe("🔒 Auth", () => {
 
       test("admin only", (done) => {
         request(app.server)
-          .put(route(user_ids.get("user")))
-          .set("Authorization", `bearer ${user_apiKeys.get("user")}`)
+          .put(route(users.user.id, users.user.apiKey))
           .expect(401)
           .end(done);
       });
 
       test("invalid email", (done) => {
         request(app.server)
-          .put(route(user_ids.get("user")))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .put(route(users.user.id, users.admin.apiKey))
           .send({
             email: "test",
           })
@@ -293,8 +319,7 @@ describe("🔒 Auth", () => {
 
       test("success", (done) => {
         request(app.server)
-          .put(route(user_ids.get("user")))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .put(route(users.user.id, users.admin.apiKey))
           .send({
             email: "email@uer.user",
             password: "password",
@@ -309,26 +334,25 @@ describe("🔒 Auth", () => {
 
 describe("🎮 Games", () => {
   describe("/game", () => {
-    const route = "/v2/game";
+    const route = (apikey) => "/v2/game" + (apikey ? "?apikey=" + apikey : "");
 
     describe("GET", () => {
-      test("missing token", (done) => {
-        request(app.server).get(route).expect(401).end(done);
+      test("missing apikey", (done) => {
+        request(app.server).get(route()).expect(401).end(done);
       });
 
       test("success", (done) => {
         request(app.server)
-          .get(route)
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .get(route(users.admin.apiKey))
           .expect(200)
           .end(done);
       });
     });
 
     describe("POST", () => {
-      test("missing token", (done) => {
+      test("missing apikey", (done) => {
         request(app.server)
-          .post(route)
+          .post(route())
           .send({
             name: "Game name",
           })
@@ -338,22 +362,20 @@ describe("🎮 Games", () => {
 
       test("missing name", (done) => {
         request(app.server)
-          .post(route)
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .post(route(users.admin.apiKey))
           .expect(301)
           .end(done);
       });
 
       test("success", (done) => {
         request(app.server)
-          .post(route)
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .post(route(users.admin.apiKey))
           .send({
             name: "Game name",
           })
           .expect(200)
           .end((err, res) => {
-            game_ids.set("game", res.body.game_id);
+            games.game.id = res.body.game_id;
             done(err);
           });
       });
@@ -361,37 +383,33 @@ describe("🎮 Games", () => {
   });
 
   describe("/game/:id", () => {
-    const route = (id) => "/v2/game/" + id;
+    const route = (id, apikey) =>
+      "/v2/game/" + id + (apikey ? "?apikey=" + apikey : "");
 
     describe("GET", () => {
-      test("missing token", (done) => {
-        request(app.server)
-          .get(route(game_ids.get("game")))
-          .expect(401)
-          .end(done);
+      test("missing apikey", (done) => {
+        request(app.server).get(route(games.game.id)).expect(401).end(done);
       });
 
-      test("unknown game", (done) => {
+      test("game not found", (done) => {
         request(app.server)
-          .get(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .get(route(uuid.v4(), users.admin.apiKey))
           .expect(404)
           .end(done);
       });
 
       test("success", (done) => {
         request(app.server)
-          .get(route(game_ids.get("game")))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .get(route(games.game.id, users.admin.apiKey))
           .expect(200)
           .end(done);
       });
     });
 
     describe("PUT", () => {
-      test("missing token", (done) => {
+      test("missing apikey", (done) => {
         request(app.server)
-          .put(route(game_ids.get("game")))
+          .put(route(games.game.id))
           .send({
             name: "New Name",
             description: "New Description",
@@ -400,10 +418,9 @@ describe("🎮 Games", () => {
           .end(done);
       });
 
-      test("unknown game", (done) => {
+      test("game not found", (done) => {
         request(app.server)
-          .put(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .put(route(uuid.v4(), users.admin.apiKey))
           .send({
             name: "New Name",
             description: "New Description",
@@ -414,8 +431,7 @@ describe("🎮 Games", () => {
 
       test("success", (done) => {
         request(app.server)
-          .put(route(game_ids.get("game")))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .put(route(games.game.id, users.admin.apiKey))
           .send({
             name: "New Name",
             description: "New Description",
@@ -427,37 +443,33 @@ describe("🎮 Games", () => {
   });
 
   describe("/game/:id/version", () => {
-    const route = (id) => `/v2/game/${id}/version`;
+    const route = (id, apikey) =>
+      `/v2/game/${id}/version${apikey ? "?apikey=" + apikey : ""}`;
 
     describe("GET", () => {
-      test("missing token", (done) => {
-        request(app.server)
-          .get(route(game_ids.get("game")))
-          .expect(401)
-          .end(done);
+      test("missing apikey", (done) => {
+        request(app.server).get(route(games.game.id)).expect(401).end(done);
       });
 
-      test("unknown game", (done) => {
+      test("game not found", (done) => {
         request(app.server)
-          .get(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .get(route(uuid.v4(), users.admin.apiKey))
           .expect(404)
           .end(done);
       });
 
       test("success", (done) => {
         request(app.server)
-          .get(route(game_ids.get("game")))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .get(route(games.game.id, users.admin.apiKey))
           .expect(200)
           .end(done);
       });
     });
 
     describe("POST", () => {
-      test("missing token", (done) => {
+      test("missing apikey", (done) => {
         request(app.server)
-          .post(route(game_ids.get("game")))
+          .post(route(games.game.id))
           .send({
             name: "Version 1",
           })
@@ -465,10 +477,9 @@ describe("🎮 Games", () => {
           .end(done);
       });
 
-      test("unknown game", (done) => {
+      test("game not found", (done) => {
         request(app.server)
-          .post(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .post(route(uuid.v4(), users.admin.apiKey))
           .send({
             name: "Version 1",
           })
@@ -478,22 +489,20 @@ describe("🎮 Games", () => {
 
       test("missing name", (done) => {
         request(app.server)
-          .post(route(game_ids.get("game")))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .post(route(games.game.id, users.admin.apiKey))
           .expect(400)
           .end(done);
       });
 
       test("success", (done) => {
         request(app.server)
-          .post(route(game_ids.get("game")))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .post(route(games.game.id, users.admin.apiKey))
           .send({
             name: "Version 1",
           })
           .expect(200)
           .end((err, res) => {
-            game_version_ids.set("version", res.body.id);
+            games.game.versions.version.id = res.body.id;
             done(err);
           });
       });
@@ -501,37 +510,36 @@ describe("🎮 Games", () => {
   });
 
   describe("/version/:id", () => {
-    const route = (id) => "/v2/version/" + id;
+    const route = (id, apikey) =>
+      "/v2/version/" + id + (apikey ? "?apikey=" + apikey : "");
 
     describe("GET", () => {
-      test("missing token", (done) => {
+      test("missing apikey", (done) => {
         request(app.server)
-          .get(route(game_version_ids.get("version")))
+          .get(route(games.game.versions.version.id))
           .expect(401)
           .end(done);
       });
 
-      test("unknown version", (done) => {
+      test("version not found", (done) => {
         request(app.server)
-          .get(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .get(route(uuid.v4(), users.admin.apiKey))
           .expect(404)
           .end(done);
       });
 
       test("success", (done) => {
         request(app.server)
-          .get(route(game_version_ids.get("version")))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .get(route(games.game.versions.version.id, users.admin.apiKey))
           .expect(200)
           .end(done);
       });
     });
 
     describe("PUT", () => {
-      test("missing token", (done) => {
+      test("missing apikey", (done) => {
         request(app.server)
-          .put(route(game_version_ids.get("version")))
+          .put(route(games.game.versions.version.id))
           .send({
             name: "New Name",
             description: "New Description",
@@ -540,10 +548,9 @@ describe("🎮 Games", () => {
           .end(done);
       });
 
-      test("unknown version", (done) => {
+      test("version not found", (done) => {
         request(app.server)
-          .put(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .put(route(uuid.v4(), users.admin.apiKey))
           .send({
             name: "New Name",
             description: "New Description",
@@ -554,8 +561,7 @@ describe("🎮 Games", () => {
 
       test("success", (done) => {
         request(app.server)
-          .put(route(game_version_ids.get("version")))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .put(route(games.game.versions.version.id, users.admin.apiKey))
           .send({
             name: "New Name",
             description: "New Description",
@@ -569,17 +575,17 @@ describe("🎮 Games", () => {
 
 describe("🔔 Events", () => {
   describe("/session", () => {
-    const route = "/v2/session";
+    const route = (apikey) =>
+      "/v2/session" + (apikey ? "?apikey=" + apikey : "");
 
     describe("POST", () => {
-      test("missing token", (done) => {
-        request(app.server).post(route).expect(401).end(done);
+      test("missing apikey", (done) => {
+        request(app.server).post(route()).expect(401).end(done);
       });
 
       test("missing game version", (done) => {
         request(app.server)
-          .post(route)
-          .set("Authorization", `bearer ${user_apiKeys.get("user")}`)
+          .post(route(users.user.apiKey))
           .send({
             external_id: "id",
             platform: "Microsoft Windows",
@@ -594,20 +600,19 @@ describe("🔔 Events", () => {
 
       test("success", (done) => {
         request(app.server)
-          .post(route)
-          .set("Authorization", `bearer ${user_apiKeys.get("user")}`)
+          .post(route(users.dev.apiKey))
           .send({
             external_id: "id",
             platform: "Microsoft Windows",
             software: "Firefox",
-            game_version_id: game_version_ids.get("version"),
+            game_version_id: games.game.versions.version.id,
             custom_data: {
               test: true,
             },
           })
           .expect(200)
           .end((err, res) => {
-            session_ids.set("session", res.body.id);
+            games.game.sessions.session.id = res.body.id;
             done(err);
           });
       });
@@ -615,37 +620,36 @@ describe("🔔 Events", () => {
   });
 
   describe("/session/:id", () => {
-    const route = (id) => `/v2/session/${id}`;
+    const route = (id, apikey) =>
+      `/v2/session/${id}${apikey ? "?apikey=" + apikey : ""}`;
 
     describe("GET", () => {
-      test("missing token", (done) => {
+      test("missing apikey", (done) => {
         request(app.server)
-          .get(route(session_ids.get("session")))
+          .get(route(games.game.sessions.session.id))
           .expect(401)
           .end(done);
       });
 
       test("missing session", (done) => {
         request(app.server)
-          .get(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .get(route(uuid.v4(), users.admin.apiKey))
           .expect(404)
           .end(done);
       });
 
       test("success", (done) => {
         request(app.server)
-          .get(route(session_ids.get("session")))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .get(route(games.game.sessions.session.id, users.admin.apiKey))
           .expect(200)
           .end(done);
       });
     });
 
     describe("PUT", () => {
-      test("missing token", (done) => {
+      test("missing apikey", (done) => {
         request(app.server)
-          .put(route(session_ids.get("session")))
+          .put(route(games.game.sessions.session.id))
           .send({
             platform: "Mac OSX",
             software: "Safari",
@@ -659,8 +663,7 @@ describe("🔔 Events", () => {
 
       test("missing session", (done) => {
         request(app.server)
-          .put(route(uuid.v4()))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .put(route(uuid.v4(), users.admin.apiKey))
           .send({
             platform: "Mac OSX",
             software: "Safari",
@@ -674,8 +677,7 @@ describe("🔔 Events", () => {
 
       test("success", (done) => {
         request(app.server)
-          .put(route(session_ids.get("session")))
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .put(route(games.game.sessions.session.id, users.admin.apiKey))
           .send({
             platform: "Mac OSX",
             software: "Safari",
@@ -690,12 +692,12 @@ describe("🔔 Events", () => {
   });
 
   describe("/event", () => {
-    const route = "/v2/event";
+    const route = (apikey) => "/v2/event" + (apikey ? "?apikey=" + apikey : "");
 
     describe("GET", () => {
-      test("missing token", (done) => {
+      test("missing apikey", (done) => {
         request(app.server)
-          .get(route)
+          .get(route())
           .send({
             // filtres
           })
@@ -705,8 +707,7 @@ describe("🔔 Events", () => {
 
       test("success", (done) => {
         request(app.server)
-          .get(route)
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .get(route(users.admin.apiKey))
           .send({
             // filtres
           })
@@ -716,11 +717,11 @@ describe("🔔 Events", () => {
     });
 
     describe("POST", () => {
-      test("missing token", (done) => {
+      test("missing apikey", (done) => {
         request(app.server)
-          .post(route)
+          .post(route())
           .send({
-            game_version_id: game_version_ids.get("version"),
+            game_version_id: games.game.versions.version.id,
           })
           .expect(401)
           .end(done);
@@ -728,8 +729,7 @@ describe("🔔 Events", () => {
 
       test("missing version", (done) => {
         request(app.server)
-          .post(route)
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .post(route(users.admin.apiKey))
           .send({})
           .expect(300)
           .end(done);
@@ -737,10 +737,9 @@ describe("🔔 Events", () => {
 
       test("success", (done) => {
         request(app.server)
-          .post(route)
-          .set("Authorization", `bearer ${user_apiKeys.get("admin")}`)
+          .post(route(users.admin.apiKey))
           .send({
-            game_version_id: game_version_ids.get("version"),
+            game_version_id: games.game.versions.version.id,
           })
           .expect(200)
           .end(done);

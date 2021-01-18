@@ -7,7 +7,7 @@ import * as game from "../../controllers/game";
 
 app.v2.post(
   "/session",
-  utils.needToken,
+  utils.needRole("dev"),
   expressAsyncHandler(async (req, res) => {
     //  Creates a new session.
     //  A SessionMeta object should be sent in the body.
@@ -49,7 +49,7 @@ app.v2.post(
 app.v2
   .route("/session/:id")
   .get(
-    utils.needToken,
+    utils.needRole("user"),
     expressAsyncHandler(async (req, res) => {
       // Retrieves the SessionMeta for the identified session
 
@@ -65,7 +65,7 @@ app.v2
     })
   )
   .put(
-    utils.needToken,
+    utils.needRole("dev"),
     expressAsyncHandler(async (req, res) => {
       // Updates the SessionMeta. Only accessible to dev and admin.
 
@@ -99,7 +99,7 @@ app.v2
 app.v2
   .route("/event")
   .get(
-    utils.needToken,
+    utils.needRole("user"),
     expressAsyncHandler(async (req, res) => {
       //  Lists Event objects (see section on Paging below).
       //  Admin and dev accounts can see the game events they have access to.
@@ -137,7 +137,7 @@ app.v2
     })
   )
   .post(
-    utils.needToken,
+    utils.needRole("dev"),
     expressAsyncHandler(async (req, res) => {
       //  Adds more event information sent with the Event object, or array or Event objects.
       //  The gameVersionId query parameters is required.

@@ -1,6 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
-import uuid from "uuid";
+import * as uuid from "uuid";
 import * as app from "../../app";
 import * as types from "../../types";
 import * as utils from "../../utils";
@@ -40,9 +40,9 @@ app.v2.post(
     const apiKey = uuid.v4();
 
     await auth.postSession({
-      apikey: apiKey,
+      api_key: apiKey,
       account_id: account.id as string,
-      start_at: new Date().toTimeString(),
+      start_at: new Date().toISOString(),
       type: "connexion",
     });
 
@@ -89,9 +89,9 @@ app.v2.post(
     const apiKey = uuid.v4();
 
     await auth.postSession({
-      apikey: apiKey,
+      api_key: apiKey,
       account_id: id,
-      start_at: new Date().toTimeString(),
+      start_at: new Date().toISOString(),
       type: "connexion",
     });
 
@@ -103,8 +103,7 @@ app.v2.post(
 app.v2
   .route("/account/:id")
   .get(
-    utils.needToken,
-    utils.adminOnly,
+    utils.needRole("admin"),
     expressAsyncHandler(async (req, res) => {
       //  Retrieves the AccountMeta for the given account.
       //  Only admins can access accounts other than their own
@@ -128,8 +127,7 @@ app.v2
     })
   )
   .put(
-    utils.needToken,
-    utils.adminOnly,
+    utils.needRole("admin"),
     expressAsyncHandler(async (req, res) => {
       //  Update the given account.
       //  An AccountMeta object should be sent in the body.

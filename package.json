@@ -43,7 +43,7 @@
     "knex": "^0.21.15",
     "pg": "^8.5.0",
     "tsc-watch": "^4.2.9",
-    "uuid": "8.3.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
