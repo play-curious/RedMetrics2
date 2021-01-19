@@ -1,9 +1,11 @@
 import React, { FunctionComponent } from "react";
 import { Redirect } from "react-router";
 import { Link } from "react-router-dom";
+import * as types from "../../types";
 
 const Home: FunctionComponent<{
   apiKey: string | null;
+  role: types.Role;
 }> = ({ apiKey }) => (
   <>
     {!apiKey && <Redirect to="/register" />}

@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Register from "./views/auth/Register";
 import Login from "./views/auth/Login";
 import Home from "./views/user/Home";
@@ -10,6 +11,9 @@ import Tutorial from "./views/info/Tutorial";
 import Search from "./views/user/Search";
 import Profile from "./views/user/Profile";
 
+import * as types from "./types";
+import * as constants from "./constants";
+
 import "./App.scss";
 
 export default function App() {
@@ -17,11 +21,25 @@ export default function App() {
     sessionStorage.getItem("apiKey")
   );
 
+  const [role, setRole] = useState<types.Role>("user");
+
+  useEffect(() => {
+    if (apiKey !== null)
+      axios
+        .get("account?apikey=" + apiKey, { baseURL: constants.apiBaseURL })
+        .then((response) => {
+          setRole(response.data.role);
+        })
+        .catch(() => {
+          setApiKey(null);
+        });
+  }, [apiKey]);
+
   return (
     <Router>
       <Switch>
         <Route exact path="/">
-          <Home apiKey={apiKey} />
+          <Home apiKey={apiKey} role={role} />
         </Route>
         <Route exact path="/register">
           <Register onApiKeyChange={setApiKey} />
