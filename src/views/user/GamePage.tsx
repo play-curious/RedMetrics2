@@ -30,7 +30,7 @@ export default function GamePage() {
   return (
     <>
       <h1> {game.name} </h1>
-      <p> {game.description} </p>
+      <p> {game.description ?? "No description"} </p>
       <div>
         {versions.map((version) => {
           return (
