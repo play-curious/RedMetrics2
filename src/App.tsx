@@ -6,7 +6,7 @@ import Home from "./views/user/Home";
 import AppError from "./views/system/AppError";
 import Accounts from "./views/admin/Accounts";
 import Documentation from "./views/info/Documentation";
-import GettingStarted from "./views/info/GettingStarted";
+import Tutorial from "./views/info/Tutorial";
 import Search from "./views/user/Search";
 import Profile from "./views/user/Profile";
 
@@ -39,7 +39,7 @@ export default function App() {
           <Documentation />
         </Route>
         <Route exact path="/tutorial">
-          <GettingStarted />
+          <Tutorial />
         </Route>
         <Route exact path="/search">
           <Search />
