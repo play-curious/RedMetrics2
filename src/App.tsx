@@ -61,7 +61,11 @@ export default function App() {
             path="/error"
             children={<AppError code={0} message={""} />}
           />
-          <Route exact path="/accounts" children={<Accounts />} />
+          <Route
+            exact
+            path="/accounts"
+            children={<Accounts role={role} apiKey={apiKey} />}
+          />
           <Route exact path="/docs" children={<Documentation />} />
           <Route exact path="/tutorial" children={<Tutorial />} />
           <Route exact path="/search" children={<Search />} />
