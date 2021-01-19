@@ -64,7 +64,7 @@ describe("⚙ Config", () => {
 
   test("prepare endpoints", (done) => {
     app
-      .loadRoutes(true)
+      .loadRoutes(false)
       .then(() => done())
       .catch(done);
   });

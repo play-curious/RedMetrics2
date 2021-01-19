@@ -99,6 +99,14 @@ app.v2.post(
   })
 );
 
+app.v2.get(
+  "/account",
+  utils.needRole("user"),
+  expressAsyncHandler(async (req, res) => {
+    if (utils.isUserReq(req)) res.json(req.user);
+  })
+);
+
 /** “me” can be used instead of id to reference own account */
 app.v2
   .route("/account/:id")
