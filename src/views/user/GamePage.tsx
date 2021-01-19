@@ -1,52 +1,48 @@
-import React from "react";
+import React, { useState } from "react";
+import { useParams } from "react-router";
 import axios from "axios";
-import * as constants from "../../constants";
-import * as types from "../../types";
 import VersionCard from "../../nodes/VersionCard";
 
-export default class GamePage extends React.Component {
-  props: {
-    gameId: string | null;
-  } = {
-    gameId: null,
-  };
+import * as constants from "../../constants";
+import * as types from "../../types";
 
-  async getGame(): Promise<types.Game> {
-    const response = await axios.get("game/" + this.props.gameId, {
+export default function GamePage() {
+  const { id } = useParams<{ id: string }>();
+
+  const [game, setGame] = useState<types.Game>({
+    name: "...",
+  });
+
+  const [versions, setVersions] = useState<types.GameVersion[]>([]);
+
+  axios
+    .get("game/" + id, {
       baseURL: constants.apiBaseURL,
-    });
+    })
+    .then((response) => setGame(response.data));
 
-    return response.data;
-  }
-
-  async getVersions(): Promise<types.GameVersion[]> {
-    const response = await axios.get(`game/${this.props.gameId}/version/`, {
+  axios
+    .get(`game/${id}/version/`, {
       baseURL: constants.apiBaseURL,
-    });
+    })
+    .then((response) => setVersions(response.data));
 
-    return response.data;
-  }
-
-  async render() {
-    const game = await this.getGame();
-    const versions = await this.getVersions();
-    return (
-      <div className="game-page">
-        <h1> {game.name} </h1>
-        <p> {game.description} </p>
-        <div>
-          {versions.map((version) => {
-            return (
-              <VersionCard
-                title={version.name}
-                description={version.description ?? "No description."}
-                fields={[]}
-                url={"/version/" + version.id}
-              />
-            );
-          })}
-        </div>
+  return (
+    <>
+      <h1> {game.name} </h1>
+      <p> {game.description} </p>
+      <div>
+        {versions.map((version) => {
+          return (
+            <VersionCard
+              title={version.name}
+              description={version.description ?? "No description."}
+              fields={[]}
+              url={"/version/" + version.id}
+            />
+          );
+        })}
       </div>
-    );
-  }
+    </>
+  );
 }

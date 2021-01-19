@@ -1,3 +1,5 @@
 import React from "react";
 
-export default class Accounts extends React.Component {}
+export default function Accounts() {
+  return <h1> WIP </h1>;
+}

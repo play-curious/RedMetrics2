@@ -1,71 +1,75 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Register from "./views/auth/Register";
 import Login from "./views/auth/Login";
 import Home from "./views/user/Home";
 import AppError from "./views/system/AppError";
 import Accounts from "./views/admin/Accounts";
 import Documentation from "./views/info/Documentation";
-import GettingStarted from "./views/info/GettingStarted";
+import Tutorial from "./views/info/Tutorial";
 import Search from "./views/user/Search";
 import Profile from "./views/user/Profile";
+import GamePage from "./views/user/GamePage";
+import AddGame from "./views/dev/AddGame";
+
+import * as types from "./types";
+import * as constants from "./constants";
 
 import "./App.scss";
 
-class App extends React.Component {
-  state: {
-    apiKey: string | null;
-  } = {
-    apiKey: null,
-  };
+export default function App() {
+  const [apiKey, setApiKey] = useState<string | null>(
+    sessionStorage.getItem("apiKey")
+  );
 
-  componentDidMount() {
-    const apiKey = sessionStorage.getItem("apiKey");
+  const [role, setRole] = useState<types.Role>("user");
 
-    if (apiKey) {
-      this.setState({ apiKey });
-    }
-  }
+  useEffect(() => {
+    if (apiKey !== null)
+      axios
+        .get("account?apikey=" + apiKey, { baseURL: constants.apiBaseURL })
+        .then((response) => {
+          setRole(response.data.role);
+        })
+        .catch(() => {
+          setApiKey(null);
+        });
+  }, [apiKey]);
 
-  handleApiKeyChange = (apiKey: string) => {
-    this.setState({ apiKey });
-  };
-
-  render() {
-    return (
+  return (
+    <>
       <Router>
         <Switch>
-          <Route exact path="/">
-            <Home apiKey={this.state.apiKey} />
-          </Route>
-          <Route exact path="/register">
-            <Register onApiKeyChange={this.handleApiKeyChange} />
-          </Route>
-          <Route exact path="/login">
-            <Login onApiKeyChange={this.handleApiKeyChange} />
-          </Route>
-          <Route exact path="/error">
-            <AppError code={0} message={""} />
-          </Route>
-          <Route exact path="/accounts">
-            <Accounts />
-          </Route>
-          <Route exact path="/docs">
-            <Documentation />
-          </Route>
-          <Route exact path="/tutorial">
-            <GettingStarted />
-          </Route>
-          <Route exact path="/search">
-            <Search />
-          </Route>
-          <Route exact path="/profile">
-            <Profile />
-          </Route>
+          <Route
+            exact
+            path="/"
+            children={<Home apiKey={apiKey} role={role} />}
+          />
+          <Route
+            exact
+            path="/register"
+            children={<Register onApiKeyChange={setApiKey} />}
+          />
+          <Route
+            exact
+            path="/login"
+            children={<Login onApiKeyChange={setApiKey} />}
+          />
+          <Route
+            exact
+            path="/error"
+            children={<AppError code={0} message={""} />}
+          />
+          <Route exact path="/accounts" children={<Accounts />} />
+          <Route exact path="/docs" children={<Documentation />} />
+          <Route exact path="/tutorial" children={<Tutorial />} />
+          <Route exact path="/search" children={<Search />} />
+          <Route exact path="/profile" children={<Profile />} />
+          <Route exact path="/game/:id" children={<GamePage />} />
+          <Route exact path="/add-game" children={<AddGame role={role} />} />
         </Switch>
       </Router>
-    );
-  }
+    </>
+  );
 }
-
-export default App;

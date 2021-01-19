@@ -1,20 +1,13 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 
-export default class AppError extends React.Component {
-  props: {
-    code: number;
-    message: string;
-  } = {
-    code: 0,
-    message: "Unknown error occurred",
-  };
+const AppError: FunctionComponent<{
+  code: number;
+  message: string;
+}> = ({ code, message }) => (
+  <>
+    <h1> Error {code} </h1>
+    <p> {message} </p>
+  </>
+);
 
-  render() {
-    return (
-      <div className="error">
-        <h1> Error {this.props.code} </h1>
-        <p> {this.props.message} </p>
-      </div>
-    );
-  }
-}
+export default AppError;
