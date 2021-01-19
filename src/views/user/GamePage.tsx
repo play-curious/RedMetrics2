@@ -4,6 +4,8 @@ import * as constants from "../../constants";
 import * as types from "../../types";
 import VersionCard from "../../nodes/VersionCard";
 
+// todo: const { id } = useParams()
+
 export default class GamePage extends React.Component {
   props: {
     gameId: string | null;

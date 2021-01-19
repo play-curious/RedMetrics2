@@ -10,6 +10,8 @@ import Documentation from "./views/info/Documentation";
 import Tutorial from "./views/info/Tutorial";
 import Search from "./views/user/Search";
 import Profile from "./views/user/Profile";
+import GamePage from "./views/user/GamePage";
+import AddGame from "./views/dev/AddGame";
 
 import * as types from "./types";
 import * as constants from "./constants";
@@ -36,36 +38,38 @@ export default function App() {
   }, [apiKey]);
 
   return (
-    <Router>
-      <Switch>
-        <Route exact path="/">
-          <Home apiKey={apiKey} role={role} />
-        </Route>
-        <Route exact path="/register">
-          <Register onApiKeyChange={setApiKey} />
-        </Route>
-        <Route exact path="/login">
-          <Login onApiKeyChange={setApiKey} />
-        </Route>
-        <Route exact path="/error">
-          <AppError code={0} message={""} />
-        </Route>
-        <Route exact path="/accounts">
-          <Accounts />
-        </Route>
-        <Route exact path="/docs">
-          <Documentation />
-        </Route>
-        <Route exact path="/tutorial">
-          <Tutorial />
-        </Route>
-        <Route exact path="/search">
-          <Search />
-        </Route>
-        <Route exact path="/profile">
-          <Profile />
-        </Route>
-      </Switch>
-    </Router>
+    <>
+      <Router>
+        <Switch>
+          <Route
+            exact
+            path="/"
+            children={<Home apiKey={apiKey} role={role} />}
+          />
+          <Route
+            exact
+            path="/register"
+            children={<Register onApiKeyChange={setApiKey} />}
+          />
+          <Route
+            exact
+            path="/login"
+            children={<Login onApiKeyChange={setApiKey} />}
+          />
+          <Route
+            exact
+            path="/error"
+            children={<AppError code={0} message={""} />}
+          />
+          <Route exact path="/accounts" children={<Accounts />} />
+          <Route exact path="/docs" children={<Documentation />} />
+          <Route exact path="/tutorial" children={<Tutorial />} />
+          <Route exact path="/search" children={<Search />} />
+          <Route exact path="/profile" children={<Profile />} />
+          <Route exact path="/game/:id" children={<GamePage />} />
+          <Route exact path="/add-game" children={<AddGame role={role} />} />
+        </Switch>
+      </Router>
+    </>
   );
 }
