@@ -6,6 +6,7 @@ import express from "express";
 import dotenv from "dotenv";
 import dayjs from "dayjs";
 import chalk from "chalk";
+import cors from "cors";
 import knex from "knex";
 import path from "path";
 import fs from "fs";
@@ -40,7 +41,11 @@ export const server = express();
 export const v2 = express.Router();
 export const view = express.Router();
 
-server.use(bodyParser.urlencoded({ extended: false }), bodyParser.json());
+server.use(
+  bodyParser.urlencoded({ extended: false }),
+  bodyParser.json(),
+  cors()
+);
 
 server.use("/v2", v2);
 
