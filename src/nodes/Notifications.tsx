@@ -1,5 +1,7 @@
 import React, { FunctionComponent } from "react";
 
+import "./Notifications.scss";
+
 export interface INotification {
   text: string;
   type: "error" | "info" | "success" | "warn";

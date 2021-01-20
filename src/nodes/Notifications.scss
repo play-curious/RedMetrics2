@@ -1,0 +1,22 @@
+.notifications {
+  position: fixed;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+
+  .notification {
+    &.error {
+      background-color: red;
+    }
+    &.info {
+      background-color: aqua;
+      color: #000;
+    }
+    &.success {
+      background-color: forestgreen;
+    }
+    &.warn {
+      background-color: orange;
+    }
+  }
+}

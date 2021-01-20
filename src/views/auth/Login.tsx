@@ -62,12 +62,15 @@ const Login: FunctionComponent<{
               placeholder="Password"
               ref={register({})}
             />
-            <input className="button" type="submit" value="Go" />
+            <div className="flex">
+              <input className="button" type="submit" value="Go" />
+              <Link className="button" to={{ pathname: "/register" }}>
+                Register
+              </Link>
+            </div>
           </form>
         </div>
-        <Link className="button" to={{ pathname: "/login" }}>
-          Register
-        </Link>
+
         <NotificationStack notifications={notifications} />
       </div>
     </>

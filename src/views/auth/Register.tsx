@@ -49,7 +49,7 @@ const Register: FunctionComponent<{
       <div className="register">
         {redirect && <Redirect to={redirect} />}
         <div className="center">
-          <h1> Login </h1>
+          <h1> Register </h1>
           <form onSubmit={handleSubmit(submit)}>
             <input
               type="email"
@@ -79,12 +79,15 @@ const Register: FunctionComponent<{
                 />
               </label>
             </div>
-            <input className="button" type="submit" value="Go" />
+            <div className="flex">
+              <input className="button" type="submit" value="Go" />
+              <Link className="button" to={{ pathname: "/login" }}>
+                Login
+              </Link>
+            </div>
           </form>
         </div>
-        <Link className="button" to={{ pathname: "/login" }}>
-          Register
-        </Link>
+
         <NotificationStack notifications={notifications} />
       </div>
     </>
