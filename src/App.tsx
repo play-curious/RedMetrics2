@@ -4,7 +4,6 @@ import axios from "axios";
 import Register from "./views/auth/Register";
 import Login from "./views/auth/Login";
 import Home from "./views/user/Home";
-import AppError from "./views/system/AppError";
 import Accounts from "./views/admin/Accounts";
 import Documentation from "./views/info/Documentation";
 import Tutorial from "./views/info/Tutorial";
@@ -18,6 +17,7 @@ import * as types from "./types";
 import * as constants from "./constants";
 
 import "./App.scss";
+import NotFound from "./views/system/NotFound";
 
 export default function App() {
   const [apiKey, setApiKey] = useState<string | null>(
@@ -49,6 +49,11 @@ export default function App() {
           />
           <Route
             exact
+            path="/home"
+            children={<Home apiKey={apiKey} role={role} />}
+          />
+          <Route
+            exact
             path="/register"
             children={<Register onApiKeyChange={setApiKey} />}
           />
@@ -56,11 +61,6 @@ export default function App() {
             exact
             path="/login"
             children={<Login onApiKeyChange={setApiKey} />}
-          />
-          <Route
-            exact
-            path="/error"
-            children={<AppError code={0} message={""} />}
           />
           <Route
             exact
@@ -78,6 +78,7 @@ export default function App() {
             path="/game/:id/version/add"
             children={<AddVersion role={role} />}
           />
+          <Route component={NotFound} />
         </Switch>
       </Router>
     </>

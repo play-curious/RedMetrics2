@@ -19,9 +19,13 @@ export const NotificationStack: FunctionComponent<{
     <>
       <div className="notifications">
         {notifications
-          .map((notification) => {
+          .map((notification, i) => {
             return (
-              <Notification text={notification.text} type={notification.type} />
+              <Notification
+                key={i}
+                text={notification.text}
+                type={notification.type}
+              />
             );
           })
           .reverse()}

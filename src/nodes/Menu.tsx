@@ -7,10 +7,12 @@ const Menu: FunctionComponent<{ links: { path: string; name: string }[] }> = ({
   return (
     <>
       <div className="menu">
-        {links.map((link) => {
+        {links.map((link, i) => {
           return (
             <div className="menu-item">
-              <Link to={link.path}>{link.name}</Link>
+              <Link key={i} to={link.path}>
+                {link.name}
+              </Link>
             </div>
           );
         })}
