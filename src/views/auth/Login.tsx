@@ -70,7 +70,6 @@ const Login: FunctionComponent<{
             </div>
           </form>
         </div>
-
         <NotificationStack notifications={notifications} />
       </div>
     </>

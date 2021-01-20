@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 
 import "./Notifications.scss";
 
@@ -7,16 +7,22 @@ export interface INotification {
   type: "error" | "info" | "success" | "warn";
 }
 
-export const Notification: FunctionComponent<INotification> = ({
-  text,
-  type,
-}) => {
-  return <div className={"notification " + type}>{text}</div>;
+export const Notification: FunctionComponent<{
+  notification: INotification;
+  remove: () => void;
+}> = ({ notification: { text, type }, remove }) => {
+  return (
+    <div className={"notification " + type}>
+      {text} <i className="fas fa-times pointer" onClick={remove} />
+    </div>
+  );
 };
 
 export const NotificationStack: FunctionComponent<{
   notifications: INotification[];
-}> = ({ notifications }) => {
+}> = ({ notifications: n }) => {
+  const [notifications, setNotifications] = useState(n);
+
   return (
     <>
       <div className="notifications">
@@ -25,8 +31,12 @@ export const NotificationStack: FunctionComponent<{
             return (
               <Notification
                 key={i}
-                text={notification.text}
-                type={notification.type}
+                notification={notification}
+                remove={() => {
+                  const n2 = notifications.slice();
+                  n2.splice(n2.indexOf(notification), 1);
+                  setNotifications(n2);
+                }}
               />
             );
           })
