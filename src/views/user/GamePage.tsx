@@ -6,6 +6,7 @@ import Card from "../../nodes/Card";
 
 import * as constants from "../../constants";
 import * as types from "../../types";
+import Menu from "../../nodes/Menu";
 
 export default function GamePage() {
   const { id } = useParams<{ id: string }>();
@@ -30,19 +31,22 @@ export default function GamePage() {
 
   return (
     <>
-      <h1> {game.name} </h1>
-      <p> {game.description ?? "No description"} </p>
-      <div>
-        {versions.map((version) => {
-          return (
-            <Card
-              title={version.name}
-              description={version.description ?? "No description."}
-              fields={[]}
-              url={"/version/" + version.id}
-            />
-          );
-        })}
+      <Menu links={[{ path: "/home", name: "Home" }]} />
+      <div className="game-page">
+        <h1> {game.name} </h1>
+        <p> {game.description ?? "No description"} </p>
+        <div>
+          {versions.map((version) => {
+            return (
+              <Card
+                title={version.name}
+                description={version.description ?? "No description."}
+                fields={[]}
+                url={"/version/" + version.id}
+              />
+            );
+          })}
+        </div>
       </div>
     </>
   );

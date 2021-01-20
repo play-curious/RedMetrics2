@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import { NotificationStack, INotification } from "../../nodes/Notifications";
 
 import * as constants from "../../constants";
+import Menu from "../../nodes/Menu";
 
 interface LoginForm {
   email: string;
@@ -43,29 +44,32 @@ const Login: FunctionComponent<{
 
   return (
     <>
-      {redirect && <Redirect to={redirect} />}
-      <div className="center">
-        <h1> Login </h1>
-        <form onSubmit={handleSubmit(submit)}>
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            ref={register({ required: true })}
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            ref={register({})}
-          />
-          <input className="button" type="submit" value="Go" />
-        </form>
+      <Menu links={[{ path: "/home", name: "Home" }]} />
+      <div className="login">
+        {redirect && <Redirect to={redirect} />}
+        <div className="center">
+          <h1> Login </h1>
+          <form onSubmit={handleSubmit(submit)}>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              ref={register({ required: true })}
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              ref={register({})}
+            />
+            <input className="button" type="submit" value="Go" />
+          </form>
+        </div>
+        <Link className="button" to={{ pathname: "/login" }}>
+          Register
+        </Link>
+        <NotificationStack notifications={notifications} />
       </div>
-      <Link className="button" to={{ pathname: "/login" }}>
-        Register
-      </Link>
-      <NotificationStack notifications={notifications} />
     </>
   );
 };

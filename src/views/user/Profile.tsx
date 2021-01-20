@@ -1,3 +1,5 @@
 import React from "react";
 
-export default class Profile extends React.Component {}
+export default function Profile() {
+  return <h1> WIP </h1>;
+}

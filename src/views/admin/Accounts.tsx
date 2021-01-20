@@ -7,6 +7,7 @@ import Card from "../../nodes/Card";
 import * as types from "../../types";
 import * as utils from "../../utils";
 import * as constants from "../../constants";
+import Menu from "../../nodes/Menu";
 
 const Accounts: FunctionComponent<{
   role: types.Role;
@@ -25,18 +26,21 @@ const Accounts: FunctionComponent<{
 
   return (
     <>
-      {utils.roleRank(role) < utils.roleRank("admin") && setRedirect("/home")}
-      {redirect && <Redirect to={redirect} />}
-      {accounts.map((account) => {
-        return (
-          <Card
-            title={`${account.role} - ${account.id}`}
-            description={account.email}
-            url={"/account/" + account.id}
-            fields={account.games ?? []}
-          />
-        );
-      })}
+      <Menu links={[{ path: "/home", name: "Home" }]} />
+      <div className="accounts">
+        {utils.roleRank(role) < utils.roleRank("admin") && setRedirect("/home")}
+        {redirect && <Redirect to={redirect} />}
+        {accounts.map((account) => {
+          return (
+            <Card
+              title={`${account.role} - ${account.id}`}
+              description={account.email}
+              url={"/account/" + account.id}
+              fields={account.games ?? []}
+            />
+          );
+        })}
+      </div>
     </>
   );
 };

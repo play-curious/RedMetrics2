@@ -1,4 +1,5 @@
 import React from "react";
+import Menu from "../../nodes/Menu";
 
 export default class Search extends React.Component {
   state: {
@@ -10,6 +11,11 @@ export default class Search extends React.Component {
   };
 
   render() {
-    return <div className="search-page"></div>;
+    return (
+      <>
+        <Menu links={[{ path: "/home", name: "Home" }]} />
+        <div className="search-page"></div>
+      </>
+    );
   }
 }

@@ -7,6 +7,7 @@ import * as types from "../../types";
 import * as utils from "../../utils";
 import * as constants from "../../constants";
 import { INotification, NotificationStack } from "../../nodes/Notifications";
+import Menu from "../../nodes/Menu";
 
 const AddVersion: FunctionComponent<{ role: types.Role }> = ({ role }) => {
   const { id } = useParams<{ id: string }>();
@@ -34,27 +35,30 @@ const AddVersion: FunctionComponent<{ role: types.Role }> = ({ role }) => {
 
   return (
     <>
-      {utils.roleRank(role) < utils.roleRank("dev") && setRedirect("/home")}
-      {redirect && <Redirect to={redirect} />}
-      <h1> Add your game version </h1>
-      <form onSubmit={handleSubmit(submit)}>
-        <input type="hidden" name="game_id" ref={register} value={id} />
-        <input
-          type="text"
-          name="name"
-          ref={register({ required: true, minLength: 3, maxLength: 256 })}
-        />
-        <textarea name="description" ref={register}>
-          No description.
-        </textarea>
-        <code>
-          <textarea name="custom_data" ref={register}>
+      <Menu links={[{ path: "/home", name: "Home" }]} />
+      <div className="add-version">
+        {utils.roleRank(role) < utils.roleRank("dev") && setRedirect("/home")}
+        {redirect && <Redirect to={redirect} />}
+        <h1> Add your game version </h1>
+        <form onSubmit={handleSubmit(submit)}>
+          <input type="hidden" name="game_id" ref={register} value={id} />
+          <input
+            type="text"
+            name="name"
+            ref={register({ required: true, minLength: 3, maxLength: 256 })}
+          />
+          <textarea name="description" ref={register}>
             No description.
           </textarea>
-        </code>
-        <input className="button" type="submit" value="Add" />
-      </form>
-      <NotificationStack notifications={notifications} />
+          <code>
+            <textarea name="custom_data" ref={register}>
+              No description.
+            </textarea>
+          </code>
+          <input className="button" type="submit" value="Add" />
+        </form>
+        <NotificationStack notifications={notifications} />
+      </div>
     </>
   );
 };
