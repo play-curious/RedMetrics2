@@ -3,6 +3,9 @@ import React, { FunctionComponent, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Redirect } from "react-router";
 import { Link } from "react-router-dom";
+
+import { NotificationStack, INotification } from "../../nodes/Notifications";
+
 import * as constants from "../../constants";
 
 interface RegisterForm {
@@ -15,7 +18,7 @@ const Register: FunctionComponent<{
   onApiKeyChange: (apiKey: string) => void;
 }> = ({ onApiKeyChange }) => {
   const [redirect, setRedirect] = useState<null | string>(null);
-
+  const [notifications, setNotifications] = useState<INotification[]>([]);
   const { register, handleSubmit, setValue } = useForm<RegisterForm>();
 
   const submit = (data: RegisterForm) => {
@@ -29,7 +32,12 @@ const Register: FunctionComponent<{
         setRedirect("/home");
       })
       .catch((error) => {
-        setRedirect("/error");
+        setNotifications([
+          {
+            text: error.message,
+            type: "error",
+          },
+        ]);
       })
       .finally(() => setValue("password", ""));
   };
@@ -74,6 +82,7 @@ const Register: FunctionComponent<{
       <Link className="button" to={{ pathname: "/login" }}>
         Register
       </Link>
+      <NotificationStack notifications={notifications} />
     </>
   );
 };

@@ -3,13 +3,15 @@ import { Redirect } from "react-router";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
+import { INotification, NotificationStack } from "../../nodes/Notifications";
+
 import * as types from "../../types";
 import * as utils from "../../utils";
 import * as constants from "../../constants";
 
 const AddGame: FunctionComponent<{ role: types.Role }> = ({ role }) => {
   const [redirect, setRedirect] = useState<null | string>(null);
-
+  const [notifications, setNotifications] = useState<INotification[]>([]);
   const { register, handleSubmit } = useForm<types.Game>();
 
   const submit = (game: types.Game) => {
@@ -21,7 +23,12 @@ const AddGame: FunctionComponent<{ role: types.Role }> = ({ role }) => {
         setRedirect("/game/" + response.data.game_id);
       })
       .catch((error) => {
-        setRedirect("/error");
+        setNotifications([
+          {
+            text: error.message,
+            type: "error",
+          },
+        ]);
       });
   };
 
@@ -51,6 +58,7 @@ const AddGame: FunctionComponent<{ role: types.Role }> = ({ role }) => {
         </code>
         <input className="button" type="submit" value="Add" />
       </form>
+      <NotificationStack notifications={notifications} />
     </>
   );
 };

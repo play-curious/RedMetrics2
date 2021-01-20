@@ -6,11 +6,13 @@ import axios from "axios";
 import * as types from "../../types";
 import * as utils from "../../utils";
 import * as constants from "../../constants";
+import { INotification, NotificationStack } from "../../nodes/Notifications";
 
 const AddVersion: FunctionComponent<{ role: types.Role }> = ({ role }) => {
   const { id } = useParams<{ id: string }>();
   const [redirect, setRedirect] = useState<null | string>(null);
   const { register, handleSubmit } = useForm<types.GameVersion>();
+  const [notifications, setNotifications] = useState<INotification[]>([]);
 
   const submit = (version: types.GameVersion) => {
     axios
@@ -21,7 +23,12 @@ const AddVersion: FunctionComponent<{ role: types.Role }> = ({ role }) => {
         setRedirect("/game/" + response.data.game_id);
       })
       .catch((error) => {
-        setRedirect("/error");
+        setNotifications([
+          {
+            text: error.message,
+            type: "error",
+          },
+        ]);
       });
   };
 
@@ -29,17 +36,13 @@ const AddVersion: FunctionComponent<{ role: types.Role }> = ({ role }) => {
     <>
       {utils.roleRank(role) < utils.roleRank("dev") && setRedirect("/home")}
       {redirect && <Redirect to={redirect} />}
-      <h1> Add your game </h1>
+      <h1> Add your game version </h1>
       <form onSubmit={handleSubmit(submit)}>
+        <input type="hidden" name="game_id" ref={register} value={id} />
         <input
           type="text"
           name="name"
           ref={register({ required: true, minLength: 3, maxLength: 256 })}
-        />
-        <input
-          type="text"
-          name="author"
-          ref={register({ minLength: 3, maxLength: 256 })}
         />
         <textarea name="description" ref={register}>
           No description.
@@ -51,6 +54,7 @@ const AddVersion: FunctionComponent<{ role: types.Role }> = ({ role }) => {
         </code>
         <input className="button" type="submit" value="Add" />
       </form>
+      <NotificationStack notifications={notifications} />
     </>
   );
 };
