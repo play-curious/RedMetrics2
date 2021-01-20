@@ -18,7 +18,7 @@ const Register: FunctionComponent<{
 
   const { register, handleSubmit, setValue } = useForm<RegisterForm>();
 
-  const afterSubmit = (data: RegisterForm) => {
+  const submit = (data: RegisterForm) => {
     axios
       .post("register", data, {
         baseURL: constants.apiBaseURL,
@@ -39,7 +39,7 @@ const Register: FunctionComponent<{
       {redirect && <Redirect to={redirect} />}
       <div className="center">
         <h1> Login </h1>
-        <form onSubmit={handleSubmit(afterSubmit)}>
+        <form onSubmit={handleSubmit(submit)}>
           <input
             type="email"
             name="email"

@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useState } from "react";
-import { Redirect } from "react-router";
+import { Redirect, useParams } from "react-router";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
@@ -7,14 +7,14 @@ import * as types from "../../types";
 import * as utils from "../../utils";
 import * as constants from "../../constants";
 
-const AddGame: FunctionComponent<{ role: types.Role }> = ({ role }) => {
+const AddVersion: FunctionComponent<{ role: types.Role }> = ({ role }) => {
+  const { id } = useParams<{ id: string }>();
   const [redirect, setRedirect] = useState<null | string>(null);
+  const { register, handleSubmit } = useForm<types.GameVersion>();
 
-  const { register, handleSubmit } = useForm<types.Game>();
-
-  const submit = (game: types.Game) => {
+  const submit = (version: types.GameVersion) => {
     axios
-      .post("/game", game, {
+      .post(`/game/${id}/version`, version, {
         baseURL: constants.apiBaseURL,
       })
       .then((response) => {
@@ -55,4 +55,4 @@ const AddGame: FunctionComponent<{ role: types.Role }> = ({ role }) => {
   );
 };
 
-export default AddGame;
+export default AddVersion;

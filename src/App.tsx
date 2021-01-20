@@ -12,6 +12,7 @@ import Search from "./views/user/Search";
 import Profile from "./views/user/Profile";
 import GamePage from "./views/user/GamePage";
 import AddGame from "./views/dev/AddGame";
+import AddVersion from "./views/dev/AddVersion";
 
 import * as types from "./types";
 import * as constants from "./constants";
@@ -70,8 +71,13 @@ export default function App() {
           <Route exact path="/tutorial" children={<Tutorial />} />
           <Route exact path="/search" children={<Search />} />
           <Route exact path="/profile" children={<Profile />} />
-          <Route exact path="/game/:id" children={<GamePage />} />
-          <Route exact path="/add-game" children={<AddGame role={role} />} />
+          <Route exact path="/game/show/:id" children={<GamePage />} />
+          <Route exact path="/game/add" children={<AddGame role={role} />} />
+          <Route
+            exact
+            path="/game/:id/version/add"
+            children={<AddVersion role={role} />}
+          />
         </Switch>
       </Router>
     </>

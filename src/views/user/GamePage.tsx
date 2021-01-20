@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useParams } from "react-router";
 import axios from "axios";
-import VersionCard from "../../nodes/VersionCard";
+
+import Card from "../../nodes/Card";
 
 import * as constants from "../../constants";
 import * as types from "../../types";
@@ -34,7 +35,7 @@ export default function GamePage() {
       <div>
         {versions.map((version) => {
           return (
-            <VersionCard
+            <Card
               title={version.name}
               description={version.description ?? "No description."}
               fields={[]}

@@ -17,7 +17,7 @@ const Login: FunctionComponent<{
 
   const { register, handleSubmit, setValue } = useForm<LoginForm>();
 
-  const afterSubmit = (data: LoginForm) => {
+  const submit = (data: LoginForm) => {
     axios
       .post("login", data, {
         baseURL: constants.apiBaseURL,
@@ -38,7 +38,7 @@ const Login: FunctionComponent<{
       {redirect && <Redirect to={redirect} />}
       <div className="center">
         <h1> Login </h1>
-        <form onSubmit={handleSubmit(afterSubmit)}>
+        <form onSubmit={handleSubmit(submit)}>
           <input
             type="email"
             name="email"
