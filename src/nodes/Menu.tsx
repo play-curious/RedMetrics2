@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from "react";
 import { Link } from "react-router-dom";
+import * as uuid from "uuid";
 
 const Menu: FunctionComponent<{ links: { path: string; name: string }[] }> = ({
   links,
@@ -7,12 +8,10 @@ const Menu: FunctionComponent<{ links: { path: string; name: string }[] }> = ({
   return (
     <>
       <div className="menu">
-        {links.map((link, i) => {
+        {links.map((link) => {
           return (
             <div className="menu-item">
-              <Link key={i} to={link.path}>
-                {link.name}
-              </Link>
+              <Link to={link.path}>{link.name}</Link>
             </div>
           );
         })}

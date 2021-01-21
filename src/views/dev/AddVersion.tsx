@@ -3,17 +3,19 @@ import { Redirect, useParams } from "react-router";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
+import NotificationSystem from "react-notification-system";
+
 import * as types from "../../types";
 import * as utils from "../../utils";
 import * as constants from "../../constants";
-import { INotification, NotificationStack } from "../../nodes/Notifications";
+
 import Menu from "../../nodes/Menu";
 
 const AddVersion: FunctionComponent<{ role: types.Role }> = ({ role }) => {
   const { id } = useParams<{ id: string }>();
   const [redirect, setRedirect] = useState<null | string>(null);
   const { register, handleSubmit } = useForm<types.GameVersion>();
-  const [notifications, setNotifications] = useState<INotification[]>([]);
+  const notificationSystem = React.createRef<NotificationSystem.System>();
 
   const submit = (version: types.GameVersion) => {
     axios
@@ -24,12 +26,11 @@ const AddVersion: FunctionComponent<{ role: types.Role }> = ({ role }) => {
         setRedirect("/game/" + response.data.game_id);
       })
       .catch((error) => {
-        setNotifications([
-          {
-            text: error.message,
-            type: "error",
-          },
-        ]);
+        const notification = notificationSystem.current;
+        notification?.addNotification({
+          message: error.message,
+          level: "error",
+        });
       });
   };
 
@@ -57,7 +58,7 @@ const AddVersion: FunctionComponent<{ role: types.Role }> = ({ role }) => {
           </code>
           <input className="button" type="submit" value="Add" />
         </form>
-        <NotificationStack notifications={notifications} />
+        <NotificationSystem ref={notificationSystem} />
       </div>
     </>
   );

@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Redirect } from "react-router";
 import { Link } from "react-router-dom";
 
-import { NotificationStack, INotification } from "../../nodes/Notifications";
+import NotificationSystem from "react-notification-system";
 
 import * as constants from "../../constants";
 import Menu from "../../nodes/Menu";
@@ -19,7 +19,7 @@ const Register: FunctionComponent<{
   onApiKeyChange: (apiKey: string) => void;
 }> = ({ onApiKeyChange }) => {
   const [redirect, setRedirect] = useState<null | string>(null);
-  const [notifications, setNotifications] = useState<INotification[]>([]);
+  const notificationSystem = React.createRef<NotificationSystem.System>();
   const { register, handleSubmit, setValue } = useForm<RegisterForm>();
 
   const submit = (data: RegisterForm) => {
@@ -33,12 +33,11 @@ const Register: FunctionComponent<{
         setRedirect("/home");
       })
       .catch((error) => {
-        setNotifications([
-          {
-            text: error.message,
-            type: "error",
-          },
-        ]);
+        const notification = notificationSystem.current;
+        notification?.addNotification({
+          message: error.message,
+          level: "error",
+        });
       })
       .finally(() => setValue("password", ""));
   };
@@ -88,7 +87,7 @@ const Register: FunctionComponent<{
           </form>
         </div>
 
-        <NotificationStack notifications={notifications} />
+        <NotificationSystem ref={notificationSystem} />
       </div>
     </>
   );
