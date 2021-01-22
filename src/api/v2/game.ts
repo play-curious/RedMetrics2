@@ -10,9 +10,7 @@ app.v2
     utils.needRole("user"),
     expressAsyncHandler(async (req, res) => {
       // Lists the games using the service as GameMeta objects (see section on Paging below)
-      res.json({
-        games: await game.getGames(),
-      });
+      res.json(await game.getGames());
     })
   )
   .post(
