@@ -25,6 +25,10 @@ export interface Session {
   type: "game" | "connexion" | "analytic";
 }
 
+export interface SessionUser extends User, Session {
+  roleRank: number
+}
+
 /**
  * A game  Since RedMetrics data is open, <br>
  * is is vital that no personally identifiable information is stored about a player.

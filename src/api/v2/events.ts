@@ -14,7 +14,7 @@ app.v2.post(
     //  The Location response header will contain the URL for the new session.
     //  Only accessible to dev and admin.
 
-    if (!utils.isUserReq(req)) return;
+    if (!utils.isLogin(req)) return;
 
     const external_id = req.body.external_id,
       platform = req.body.platform,

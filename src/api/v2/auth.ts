@@ -103,7 +103,7 @@ app.v2.get(
   "/account",
   utils.needRole("user"),
   expressAsyncHandler(async (req, res) => {
-    if (utils.isUserReq(req)) res.json(req.user);
+    if (utils.isLogin(req)) res.json(req.user);
   })
 );
 

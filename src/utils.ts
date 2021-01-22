@@ -88,10 +88,12 @@ export function needRole(role: types.Role): express.RequestHandler {
 
     // @ts-ignore
     req.user = {
+      ...session,
       role: account.role,
       email: account.email,
       password: account.password,
-    } as types.User;
+      roleRank: roleRank(account.role),
+    } as types.SessionUser;
 
     next();
   });
@@ -105,9 +107,9 @@ export function sendError(res: express.Response, error: types.RMError) {
   return res.status(error.code).json(error);
 }
 
-export function isUserReq(
+export function isLogin(
   req: express.Request
-): req is express.Request & { user: types.User } {
+): req is express.Request & { user: types.SessionUser } {
   return req.hasOwnProperty("user");
 }
 
