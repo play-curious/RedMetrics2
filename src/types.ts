@@ -50,6 +50,7 @@ export interface GameSession {
  */
 export interface Game {
   id?: Id;
+  publisher_id: Id;
   name: string;
   author?: string;
   description?: string;

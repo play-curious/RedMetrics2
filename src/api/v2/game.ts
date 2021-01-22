@@ -23,6 +23,8 @@ app.v2
       //  A default version of the game will be created.
       //  The Location response header will contain the URL for the new game.
 
+      if(!utils.isLogin(req)) return
+
       if (!req.body.name)
         return utils.sendError(res, {
           code: 301,
@@ -30,6 +32,7 @@ app.v2
         });
 
       const currentGame: types.Game = {
+        publisher_id: req.user.account_id,
         author: req.body.author,
         custom_data: req.body.custom_data,
         description: req.body.description,
