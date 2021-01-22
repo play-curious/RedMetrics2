@@ -1,30 +1,26 @@
-import React, { useState } from "react";
+import React, { FunctionComponent, useState } from "react";
 import { useParams } from "react-router";
 import axios from "axios";
 
-import Card from "../../nodes/Card";
-
 import * as constants from "../../constants";
 import * as types from "../../types";
+
 import Menu from "../../nodes/Menu";
+import Card from "../../nodes/Card";
 
-export default function GamePage() {
+const GamePage: FunctionComponent<{ user: types.SessionUser }> = ({ user }) => {
   const { id } = useParams<{ id: string }>();
-
-  const [game, setGame] = useState<types.Game>({
-    name: "...",
-  });
-
+  const [game, setGame] = useState<types.Game>({ name: "" });
   const [versions, setVersions] = useState<types.GameVersion[]>([]);
 
   axios
-    .get("game/" + id, {
+    .get<types.Game>("game/" + id, {
       baseURL: constants.apiBaseURL,
     })
     .then((response) => setGame(response.data));
 
   axios
-    .get(`game/${id}/version/`, {
+    .get<types.GameVersion[]>(`game/${id}/version/`, {
       baseURL: constants.apiBaseURL,
     })
     .then((response) => setVersions(response.data));
@@ -35,6 +31,12 @@ export default function GamePage() {
       <div className="game-page">
         <h1> {game.name} </h1>
         <p> {game.description ?? "No description"} </p>
+        {user.roleRank > 0 && user.account_id === game.publisher_id && (
+          <div className="flex">
+            <button> Remove </button>
+            <button> Edit </button>
+          </div>
+        )}
         <div>
           {versions.map((version) => {
             return (
@@ -50,4 +52,6 @@ export default function GamePage() {
       </div>
     </>
   );
-}
+};
+
+export default GamePage;

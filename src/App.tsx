@@ -19,41 +19,37 @@ import * as constants from "./constants";
 import NotFound from "./views/system/NotFound";
 
 import "./App.scss";
+import { Redirect } from "react-router";
 
 export default function App() {
   const [apiKey, setApiKey] = useState<string | null>(
     sessionStorage.getItem("apiKey")
   );
 
-  const [role, setRole] = useState<types.Role>("user");
+  const [user, setUser] = useState<types.SessionUser>();
 
   useEffect(() => {
     if (apiKey !== null)
       axios
-        .get("/account?apikey=" + apiKey, { baseURL: constants.apiBaseURL })
+        .get<types.SessionUser>("/account?apikey=" + apiKey, {
+          baseURL: constants.apiBaseURL,
+        })
         .then((response) => {
-          setRole(response.data.role);
-          sessionStorage.setItem("role", role);
+          setUser(response.data);
         })
         .catch(() => {
           setApiKey(null);
         });
   }, [apiKey]);
 
+  if (!user) return <Redirect to="/login" />;
+
   return (
     <>
       <Router>
         <Switch>
-          <Route
-            exact
-            path="/"
-            children={<Home apiKey={apiKey} role={role} />}
-          />
-          <Route
-            exact
-            path="/home"
-            children={<Home apiKey={apiKey} role={role} />}
-          />
+          <Route exact path="/" children={<Home user={user} />} />
+          <Route exact path="/home" children={<Home user={user} />} />
           <Route
             exact
             path="/register"
@@ -64,21 +60,21 @@ export default function App() {
             path="/login"
             children={<Login onApiKeyChange={setApiKey} />}
           />
-          <Route
-            exact
-            path="/accounts"
-            children={<Accounts role={role} apiKey={apiKey} />}
-          />
+          <Route exact path="/accounts" children={<Accounts user={user} />} />
           <Route exact path="/docs" children={<Documentation />} />
           <Route exact path="/tutorial" children={<Tutorial />} />
           <Route exact path="/search" children={<Search />} />
           <Route exact path="/profile" children={<Profile />} />
-          <Route exact path="/game/show/:id" children={<GamePage />} />
-          <Route exact path="/game/add" children={<AddGame role={role} />} />
+          <Route
+            exact
+            path="/game/show/:id"
+            children={<GamePage user={user} />}
+          />
+          <Route exact path="/game/add" children={<AddGame user={user} />} />
           <Route
             exact
             path="/game/:id/version/add"
-            children={<AddVersion role={role} />}
+            children={<AddVersion user={user} />}
           />
           <Route component={NotFound} />
         </Switch>

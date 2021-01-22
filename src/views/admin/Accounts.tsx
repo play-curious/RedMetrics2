@@ -10,16 +10,13 @@ import * as constants from "../../constants";
 import Menu from "../../nodes/Menu";
 
 const Accounts: FunctionComponent<{
-  role: types.Role;
-  apiKey: string | null;
-}> = ({ role, apiKey }) => {
-  const [redirect, setRedirect] = useState<null | string>(
-    apiKey ? null : "/error"
-  );
+  user: types.SessionUser;
+}> = ({ user }) => {
+  const [redirect, setRedirect] = useState<null | string>(null);
   const [accounts, setAccounts] = useState<types.Account[]>([]);
 
   axios
-    .get("/accounts?limit=100&page=1&apikey=" + apiKey, {
+    .get("/accounts?limit=100&page=1&apikey=" + user.api_key, {
       baseURL: constants.apiBaseURL,
     })
     .then((response) => setAccounts(response.data));
@@ -28,7 +25,7 @@ const Accounts: FunctionComponent<{
     <>
       <Menu links={[{ path: "/home", name: "Home" }]} />
       <div className="accounts">
-        {utils.roleRank(role) < utils.roleRank("admin") && setRedirect("/home")}
+        {user.roleRank < utils.roleRank("admin") && setRedirect("/home")}
         {redirect && <Redirect to={redirect} />}
         {accounts.map((account) => {
           return (

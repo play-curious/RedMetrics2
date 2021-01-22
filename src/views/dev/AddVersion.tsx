@@ -11,7 +11,9 @@ import * as constants from "../../constants";
 
 import Menu from "../../nodes/Menu";
 
-const AddVersion: FunctionComponent<{ role: types.Role }> = ({ role }) => {
+const AddVersion: FunctionComponent<{ user: types.SessionUser }> = ({
+  user,
+}) => {
   const { id } = useParams<{ id: string }>();
   const [redirect, setRedirect] = useState<null | string>(null);
   const { register, handleSubmit } = useForm<types.GameVersion>();
@@ -38,7 +40,7 @@ const AddVersion: FunctionComponent<{ role: types.Role }> = ({ role }) => {
     <>
       <Menu links={[{ path: "/home", name: "Home" }]} />
       <div className="add-version">
-        {utils.roleRank(role) < utils.roleRank("dev") && setRedirect("/home")}
+        {user.roleRank < utils.roleRank("dev") && setRedirect("/home")}
         {redirect && <Redirect to={redirect} />}
         <h1> Add your game version </h1>
         <form onSubmit={handleSubmit(submit)}>

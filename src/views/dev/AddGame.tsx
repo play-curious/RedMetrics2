@@ -10,7 +10,7 @@ import * as utils from "../../utils";
 import * as constants from "../../constants";
 import Menu from "../../nodes/Menu";
 
-const AddGame: FunctionComponent<{ role: types.Role }> = ({ role }) => {
+const AddGame: FunctionComponent<{ user: types.SessionUser }> = ({ user }) => {
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
   const [redirect, setRedirect] = useState<null | string>(null);
@@ -37,7 +37,7 @@ const AddGame: FunctionComponent<{ role: types.Role }> = ({ role }) => {
     <>
       <Menu links={[{ path: "/home", name: "Home" }]} />
       <div className="add-game">
-        {utils.roleRank(role) < utils.roleRank("dev") && setRedirect("/home")}
+        {user.roleRank < utils.roleRank("dev") && setRedirect("/home")}
         {redirect && <Redirect to={redirect} />}
         <h1> Add your game </h1>
         <form onSubmit={handleSubmit(submit)}>

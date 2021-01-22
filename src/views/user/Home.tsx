@@ -5,13 +5,11 @@ import * as types from "../../types";
 import Menu from "../../nodes/Menu";
 
 const Home: FunctionComponent<{
-  apiKey: string | null;
-  role: types.Role;
-}> = ({ apiKey }) => (
+  user: types.SessionUser;
+}> = ({ user }) => (
   <>
     <Menu links={[]} />
     <div className="home">
-      {!apiKey && <Redirect to="/register" />}
       <div className="center">
         <h1> Home </h1>
         <h2> What is RedMetrics? </h2>
