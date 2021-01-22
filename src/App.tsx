@@ -16,8 +16,9 @@ import AddVersion from "./views/dev/AddVersion";
 import * as types from "./types";
 import * as constants from "./constants";
 
-import "./App.scss";
 import NotFound from "./views/system/NotFound";
+
+import "./App.scss";
 
 export default function App() {
   const [apiKey, setApiKey] = useState<string | null>(
@@ -29,9 +30,10 @@ export default function App() {
   useEffect(() => {
     if (apiKey !== null)
       axios
-        .get("account?apikey=" + apiKey, { baseURL: constants.apiBaseURL })
+        .get("/account?apikey=" + apiKey, { baseURL: constants.apiBaseURL })
         .then((response) => {
           setRole(response.data.role);
+          sessionStorage.setItem("role", role);
         })
         .catch(() => {
           setApiKey(null);
