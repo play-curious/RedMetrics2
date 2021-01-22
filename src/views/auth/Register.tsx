@@ -1,12 +1,13 @@
 import axios from "axios";
-import React, { FunctionComponent, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Redirect } from "react-router";
-import { Link } from "react-router-dom";
+import React from "react";
+import Form from "react-hook-form";
+import Router from "react-router";
+import Dom from "react-router-dom";
 
 import NotificationSystem from "react-notification-system";
 
 import * as constants from "../../constants";
+
 import Menu from "../../nodes/Menu";
 
 interface RegisterForm {
@@ -15,12 +16,12 @@ interface RegisterForm {
   role: "dev" | "user";
 }
 
-const Register: FunctionComponent<{
+const Register: React.FunctionComponent<{
   onApiKeyChange: (apiKey: string) => void;
 }> = ({ onApiKeyChange }) => {
-  const [redirect, setRedirect] = useState<null | string>(null);
+  const [redirect, setRedirect] = React.useState<null | string>(null);
   const notificationSystem = React.createRef<NotificationSystem.System>();
-  const { register, handleSubmit, setValue } = useForm<RegisterForm>();
+  const { register, handleSubmit, setValue } = Form.useForm<RegisterForm>();
 
   const submit = (data: RegisterForm) => {
     axios
@@ -45,10 +46,10 @@ const Register: FunctionComponent<{
   return (
     <>
       <Menu>
-        <Link to="/home"> Home </Link>
+        <Dom.Link to="/home"> Home </Dom.Link>
       </Menu>
       <div className="register">
-        {redirect && <Redirect to={redirect} />}
+        {redirect && <Router.Redirect to={redirect} />}
         <div className="center">
           <h1> Register </h1>
           <form onSubmit={handleSubmit(submit)}>
@@ -82,13 +83,12 @@ const Register: FunctionComponent<{
             </div>
             <div className="flex">
               <input className="button" type="submit" value="Go" />
-              <Link className="button" to={{ pathname: "/login" }}>
+              <Dom.Link className="button" to={{ pathname: "/login" }}>
                 Login
-              </Link>
+              </Dom.Link>
             </div>
           </form>
         </div>
-
         <NotificationSystem ref={notificationSystem} />
       </div>
     </>

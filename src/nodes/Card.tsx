@@ -1,15 +1,16 @@
-import React, { FunctionComponent } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
+import Dom from "react-router-dom";
+
 import "./Card.scss";
 
-const Card: FunctionComponent<{
+const Card: React.FunctionComponent<{
   title: string;
   description: string;
   fields: string[];
   url: string;
 }> = ({ title, description, fields, url }) => (
   <>
-    <Link className="card" to={url}>
+    <Dom.Link className="card" to={url}>
       <h3> {title} </h3>
       <p> {description} </p>
       <div>
@@ -17,7 +18,7 @@ const Card: FunctionComponent<{
           return <p> {field} </p>;
         })}
       </div>
-    </Link>
+    </Dom.Link>
   </>
 );
 

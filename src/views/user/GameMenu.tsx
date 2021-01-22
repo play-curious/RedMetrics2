@@ -1,5 +1,5 @@
 import React from "react";
-import Router from "react-router-dom";
+import Dom from "react-router-dom";
 import axios from "axios";
 
 import * as utils from "../../utils";
@@ -23,9 +23,9 @@ const GameMenu: React.FunctionComponent<{ user: types.SessionUser }> = ({
   return (
     <>
       <Menu>
-        <Router.Link to="/profile"> Profile </Router.Link>
+        <Dom.Link to="/profile"> Profile </Dom.Link>
         {user.roleRank >= utils.roleRank("dev") && (
-          <Router.Link to="/game/add"> New Game </Router.Link>
+          <Dom.Link to="/game/add"> New Game </Dom.Link>
         )}
       </Menu>
       <div className="game-menu">

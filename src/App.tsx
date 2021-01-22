@@ -1,6 +1,13 @@
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import React from "react";
+import Dom from "react-router-dom";
+import Router from "react-router";
+
 import axios from "axios";
+
+import * as types from "./types";
+import * as constants from "./constants";
+
+import NotFound from "./views/system/NotFound";
 import Register from "./views/auth/Register";
 import Login from "./views/auth/Login";
 import Home from "./views/user/Home";
@@ -14,22 +21,16 @@ import AddGame from "./views/dev/AddGame";
 import GameMenu from "./views/user/GameMenu";
 import AddVersion from "./views/dev/AddVersion";
 
-import * as types from "./types";
-import * as constants from "./constants";
-
-import NotFound from "./views/system/NotFound";
-
 import "./App.scss";
-import { Redirect } from "react-router";
 
 export default function App() {
-  const [apiKey, setApiKey] = useState<string | null>(
+  const [apiKey, setApiKey] = React.useState<string | null>(
     sessionStorage.getItem("apiKey")
   );
 
-  const [user, setUser] = useState<types.SessionUser>();
+  const [user, setUser] = React.useState<types.SessionUser>();
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (apiKey !== null)
       axios
         .get<types.SessionUser>("/account?apikey=" + apiKey, {
@@ -43,44 +44,56 @@ export default function App() {
         });
   }, [apiKey]);
 
-  if (!user) return <Redirect to="/login" />;
+  if (!user) return <Router.Redirect to="/login" />;
 
   return (
     <>
-      <Router>
-        <Switch>
-          <Route exact path="/" children={<Home user={user} />} />
-          <Route exact path="/home" children={<Home user={user} />} />
-          <Route
+      <Dom.BrowserRouter>
+        <Dom.Switch>
+          <Dom.Route exact path="/" children={<Home user={user} />} />
+          <Dom.Route exact path="/home" children={<Home user={user} />} />
+          <Dom.Route
             exact
             path="/register"
             children={<Register onApiKeyChange={setApiKey} />}
           />
-          <Route
+          <Dom.Route
             exact
             path="/login"
             children={<Login onApiKeyChange={setApiKey} />}
           />
-          <Route exact path="/accounts" children={<Accounts user={user} />} />
-          <Route exact path="/docs" children={<Documentation />} />
-          <Route exact path="/tutorial" children={<Tutorial />} />
-          <Route exact path="/search" children={<Search />} />
-          <Route exact path="/profile" children={<Profile />} />
-          <Route
+          <Dom.Route
+            exact
+            path="/accounts"
+            children={<Accounts user={user} />}
+          />
+          <Dom.Route exact path="/docs" children={<Documentation />} />
+          <Dom.Route exact path="/tutorial" children={<Tutorial />} />
+          <Dom.Route exact path="/search" children={<Search />} />
+          <Dom.Route exact path="/profile" children={<Profile />} />
+          <Dom.Route
             exact
             path="/game/show/:id"
             children={<GamePage user={user} />}
           />
-          <Route exact path="/game/add" children={<AddGame user={user} />} />
-          <Route exact path="/game/menu" children={<GameMenu user={user} />} />
-          <Route
+          <Dom.Route
+            exact
+            path="/game/add"
+            children={<AddGame user={user} />}
+          />
+          <Dom.Route
+            exact
+            path="/game/menu"
+            children={<GameMenu user={user} />}
+          />
+          <Dom.Route
             exact
             path="/game/:id/version/add"
             children={<AddVersion user={user} />}
           />
-          <Route component={NotFound} />
-        </Switch>
-      </Router>
+          <Dom.Route component={NotFound} />
+        </Dom.Switch>
+      </Dom.BrowserRouter>
     </>
   );
 }

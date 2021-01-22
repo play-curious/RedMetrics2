@@ -1,20 +1,20 @@
-import React, { FunctionComponent, useState } from "react";
-import { Redirect } from "react-router";
-import { Link } from "react-router-dom";
+import React from "react";
+import Dom from "react-router-dom";
+import Router from "react-router";
 import axios from "axios";
-
-import Card from "../../nodes/Card";
 
 import * as types from "../../types";
 import * as utils from "../../utils";
 import * as constants from "../../constants";
-import Menu from "../../nodes/Menu";
 
-const Accounts: FunctionComponent<{
+import Menu from "../../nodes/Menu";
+import Card from "../../nodes/Card";
+
+const Accounts: React.FunctionComponent<{
   user: types.SessionUser;
 }> = ({ user }) => {
-  const [redirect, setRedirect] = useState<null | string>(null);
-  const [accounts, setAccounts] = useState<types.Account[]>([]);
+  const [redirect, setRedirect] = React.useState<null | string>(null);
+  const [accounts, setAccounts] = React.useState<types.Account[]>([]);
 
   axios
     .get("/accounts?limit=100&page=1&apikey=" + user.api_key, {
@@ -25,11 +25,11 @@ const Accounts: FunctionComponent<{
   return (
     <>
       <Menu>
-        <Link to="/home"> Home </Link>
+        <Dom.Link to="/home"> Home </Dom.Link>
       </Menu>
       <div className="accounts">
         {user.roleRank < utils.roleRank("admin") && setRedirect("/home")}
-        {redirect && <Redirect to={redirect} />}
+        {redirect && <Router.Redirect to={redirect} />}
         {accounts.map((account) => {
           return (
             <Card

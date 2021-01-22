@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from "react";
+import React from "react";
 
 interface GraphData {}
 
-const Graph: FunctionComponent<GraphData> = (data) => {
+const Graph: React.FunctionComponent<GraphData> = (data) => {
   return (
     <>
       <h1> WIP </h1>

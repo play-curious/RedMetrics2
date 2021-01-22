@@ -1,20 +1,20 @@
-import React, { FunctionComponent } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
+import Dom from "react-router-dom";
 
 import * as types from "../../types";
 import * as utils from "../../utils";
 
 import Menu from "../../nodes/Menu";
 
-const Home: FunctionComponent<{
+const Home: React.FunctionComponent<{
   user: types.SessionUser;
 }> = ({ user }) => (
   <>
     <Menu>
-      <Link to="/profile"> Profile </Link>
-      <Link to="/game/menu"> Games </Link>
+      <Dom.Link to="/profile"> Profile </Dom.Link>
+      <Dom.Link to="/game/menu"> Games </Dom.Link>
       {user.roleRank >= utils.roleRank("admin") && (
-        <Link to="/accounts"> Accounts </Link>
+        <Dom.Link to="/accounts"> Accounts </Dom.Link>
       )}
     </Menu>
     <div className="home">
@@ -28,12 +28,12 @@ const Home: FunctionComponent<{
           recusandae sint.
         </p>
         <h2> I want to use it! </h2>
-        <Link className="button" to={{ pathname: "/tutorial" }}>
+        <Dom.Link className="button" to={{ pathname: "/tutorial" }}>
           Getting started
-        </Link>
-        <Link className="button" to={{ pathname: "/docs" }}>
+        </Dom.Link>
+        <Dom.Link className="button" to={{ pathname: "/docs" }}>
           Documentation
-        </Link>
+        </Dom.Link>
       </div>
     </div>
   </>

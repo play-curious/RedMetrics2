@@ -1,6 +1,6 @@
-import React, { FunctionComponent, useState } from "react";
-import { useParams } from "react-router";
-import { Link } from "react-router-dom";
+import React from "react";
+import Router from "react-router";
+import Dom from "react-router-dom";
 import axios from "axios";
 
 import * as constants from "../../constants";
@@ -9,10 +9,12 @@ import * as types from "../../types";
 import Menu from "../../nodes/Menu";
 import Card from "../../nodes/Card";
 
-const GamePage: FunctionComponent<{ user: types.SessionUser }> = ({ user }) => {
-  const { id } = useParams<{ id: string }>();
-  const [game, setGame] = useState<types.Game>({ name: "" });
-  const [versions, setVersions] = useState<types.GameVersion[]>([]);
+const GamePage: React.FunctionComponent<{ user: types.SessionUser }> = ({
+  user,
+}) => {
+  const { id } = Router.useParams<{ id: string }>();
+  const [game, setGame] = React.useState<types.Game>({ name: "" });
+  const [versions, setVersions] = React.useState<types.GameVersion[]>([]);
 
   axios
     .get<types.Game>("game/" + id, {
@@ -29,7 +31,7 @@ const GamePage: FunctionComponent<{ user: types.SessionUser }> = ({ user }) => {
   return (
     <>
       <Menu>
-        <Link to="/home"> Home </Link>
+        <Dom.Link to="/home"> Home </Dom.Link>
       </Menu>
       <div className="game-page">
         <h1> {game.name} </h1>

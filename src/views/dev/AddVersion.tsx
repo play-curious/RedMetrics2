@@ -1,9 +1,9 @@
-import React, { FunctionComponent, useState } from "react";
-import { Redirect, useParams } from "react-router";
-import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-import axios from "axios";
+import React from "react";
+import Router from "react-router";
+import Form from "react-hook-form";
+import Dom from "react-router-dom";
 
+import axios from "axios";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "../../types";
@@ -12,12 +12,12 @@ import * as constants from "../../constants";
 
 import Menu from "../../nodes/Menu";
 
-const AddVersion: FunctionComponent<{ user: types.SessionUser }> = ({
+const AddVersion: React.FunctionComponent<{ user: types.SessionUser }> = ({
   user,
 }) => {
-  const { id } = useParams<{ id: string }>();
-  const [redirect, setRedirect] = useState<null | string>(null);
-  const { register, handleSubmit } = useForm<types.GameVersion>();
+  const { id } = Router.useParams<{ id: string }>();
+  const [redirect, setRedirect] = React.useState<null | string>(null);
+  const { register, handleSubmit } = Form.useForm<types.GameVersion>();
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
   const submit = (version: types.GameVersion) => {
@@ -40,11 +40,11 @@ const AddVersion: FunctionComponent<{ user: types.SessionUser }> = ({
   return (
     <>
       <Menu>
-        <Link to="/home"> Home </Link>
+        <Dom.Link to="/home"> Home </Dom.Link>
       </Menu>
       <div className="add-version">
         {user.roleRank < utils.roleRank("dev") && setRedirect("/home")}
-        {redirect && <Redirect to={redirect} />}
+        {redirect && <Router.Redirect to={redirect} />}
         <h1> Add your game version </h1>
         <form onSubmit={handleSubmit(submit)}>
           <input type="hidden" name="game_id" ref={register} value={id} />

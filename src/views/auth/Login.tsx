@@ -1,8 +1,8 @@
 import axios from "axios";
-import React, { FunctionComponent, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Redirect } from "react-router";
-import { Link } from "react-router-dom";
+import React from "react";
+import Form from "react-hook-form";
+import Router from "react-router";
+import Dom from "react-router-dom";
 
 import NotificationSystem from "react-notification-system";
 
@@ -14,12 +14,12 @@ interface LoginForm {
   password: string;
 }
 
-const Login: FunctionComponent<{
+const Login: React.FunctionComponent<{
   onApiKeyChange: (apiKey: string) => void;
 }> = ({ onApiKeyChange }) => {
-  const [redirect, setRedirect] = useState<null | string>(null);
+  const [redirect, setRedirect] = React.useState<null | string>(null);
   const notificationSystem = React.createRef<NotificationSystem.System>();
-  const { register, handleSubmit, setValue } = useForm<LoginForm>();
+  const { register, handleSubmit, setValue } = Form.useForm<LoginForm>();
 
   const submit = (data: LoginForm) => {
     axios
@@ -44,10 +44,10 @@ const Login: FunctionComponent<{
   return (
     <>
       <Menu>
-        <Link to="/home"> Home </Link>
+        <Dom.Link to="/home"> Home </Dom.Link>
       </Menu>
       <div className="login">
-        {redirect && <Redirect to={redirect} />}
+        {redirect && <Router.Redirect to={redirect} />}
         <div className="center">
           <h1> Login </h1>
           <form onSubmit={handleSubmit(submit)}>
@@ -65,9 +65,9 @@ const Login: FunctionComponent<{
             />
             <div className="flex">
               <input className="button" type="submit" value="Go" />
-              <Link className="button" to={{ pathname: "/register" }}>
+              <Dom.Link className="button" to={{ pathname: "/register" }}>
                 Register
-              </Link>
+              </Dom.Link>
             </div>
           </form>
         </div>

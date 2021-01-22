@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from "react";
+import React from "react";
 
 // todo: add search bar
 
-const Menu: FunctionComponent = ({ children }) => {
+const Menu: React.FunctionComponent = ({ children }) => {
   return (
     <>
       <div className="menu">{children}</div>

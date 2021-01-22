@@ -1,9 +1,9 @@
-import React, { FunctionComponent, useState } from "react";
-import { Link } from "react-router-dom";
-import { Redirect } from "react-router";
-import { useForm } from "react-hook-form";
-import axios from "axios";
+import React from "react";
+import Dom from "react-router-dom";
+import Router from "react-router";
+import Form from "react-hook-form";
 
+import axios from "axios";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "../../types";
@@ -12,11 +12,13 @@ import * as constants from "../../constants";
 
 import Menu from "../../nodes/Menu";
 
-const AddGame: FunctionComponent<{ user: types.SessionUser }> = ({ user }) => {
+const AddGame: React.FunctionComponent<{ user: types.SessionUser }> = ({
+  user,
+}) => {
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
-  const [redirect, setRedirect] = useState<null | string>(null);
-  const { register, handleSubmit } = useForm<types.Game>();
+  const [redirect, setRedirect] = React.useState<null | string>(null);
+  const { register, handleSubmit } = Form.useForm<types.Game>();
 
   const submit = (game: types.Game) => {
     axios
@@ -38,11 +40,11 @@ const AddGame: FunctionComponent<{ user: types.SessionUser }> = ({ user }) => {
   return (
     <>
       <Menu>
-        <Link to="/home"> Home </Link>
+        <Dom.Link to="/home"> Home </Dom.Link>
       </Menu>
       <div className="add-game">
         {user.roleRank < utils.roleRank("dev") && setRedirect("/home")}
-        {redirect && <Redirect to={redirect} />}
+        {redirect && <Router.Redirect to={redirect} />}
         <h1> Add your game </h1>
         <form onSubmit={handleSubmit(submit)}>
           <input
