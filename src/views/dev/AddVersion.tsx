@@ -1,6 +1,7 @@
 import React, { FunctionComponent, useState } from "react";
 import { Redirect, useParams } from "react-router";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 import NotificationSystem from "react-notification-system";
@@ -38,7 +39,9 @@ const AddVersion: FunctionComponent<{ user: types.SessionUser }> = ({
 
   return (
     <>
-      <Menu links={[{ path: "/home", name: "Home" }]} />
+      <Menu>
+        <Link to="/home"> Home </Link>
+      </Menu>
       <div className="add-version">
         {user.roleRank < utils.roleRank("dev") && setRedirect("/home")}
         {redirect && <Redirect to={redirect} />}

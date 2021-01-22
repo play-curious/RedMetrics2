@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useState } from "react";
 import { Redirect } from "react-router";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 import Card from "../../nodes/Card";
@@ -23,7 +24,9 @@ const Accounts: FunctionComponent<{
 
   return (
     <>
-      <Menu links={[{ path: "/home", name: "Home" }]} />
+      <Menu>
+        <Link to="/home"> Home </Link>
+      </Menu>
       <div className="accounts">
         {user.roleRank < utils.roleRank("admin") && setRedirect("/home")}
         {redirect && <Redirect to={redirect} />}

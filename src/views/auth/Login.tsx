@@ -43,7 +43,9 @@ const Login: FunctionComponent<{
 
   return (
     <>
-      <Menu links={[{ path: "/home", name: "Home" }]} />
+      <Menu>
+        <Link to="/home"> Home </Link>
+      </Menu>
       <div className="login">
         {redirect && <Redirect to={redirect} />}
         <div className="center">

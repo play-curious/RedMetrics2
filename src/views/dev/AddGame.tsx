@@ -1,4 +1,5 @@
 import React, { FunctionComponent, useState } from "react";
+import { Link } from "react-router-dom";
 import { Redirect } from "react-router";
 import { useForm } from "react-hook-form";
 import axios from "axios";
@@ -8,6 +9,7 @@ import NotificationSystem from "react-notification-system";
 import * as types from "../../types";
 import * as utils from "../../utils";
 import * as constants from "../../constants";
+
 import Menu from "../../nodes/Menu";
 
 const AddGame: FunctionComponent<{ user: types.SessionUser }> = ({ user }) => {
@@ -35,7 +37,9 @@ const AddGame: FunctionComponent<{ user: types.SessionUser }> = ({ user }) => {
 
   return (
     <>
-      <Menu links={[{ path: "/home", name: "Home" }]} />
+      <Menu>
+        <Link to="/home"> Home </Link>
+      </Menu>
       <div className="add-game">
         {user.roleRank < utils.roleRank("dev") && setRedirect("/home")}
         {redirect && <Redirect to={redirect} />}

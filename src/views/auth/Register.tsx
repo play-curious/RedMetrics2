@@ -44,7 +44,9 @@ const Register: FunctionComponent<{
 
   return (
     <>
-      <Menu links={[{ path: "/home", name: "Home" }]} />
+      <Menu>
+        <Link to="/home"> Home </Link>
+      </Menu>
       <div className="register">
         {redirect && <Redirect to={redirect} />}
         <div className="center">

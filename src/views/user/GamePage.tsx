@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useState } from "react";
 import { useParams } from "react-router";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 import * as constants from "../../constants";
@@ -27,7 +28,9 @@ const GamePage: FunctionComponent<{ user: types.SessionUser }> = ({ user }) => {
 
   return (
     <>
-      <Menu links={[{ path: "/home", name: "Home" }]} />
+      <Menu>
+        <Link to="/home"> Home </Link>
+      </Menu>
       <div className="game-page">
         <h1> {game.name} </h1>
         <p> {game.description ?? "No description"} </p>

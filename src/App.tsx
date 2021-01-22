@@ -11,6 +11,7 @@ import Search from "./views/user/Search";
 import Profile from "./views/user/Profile";
 import GamePage from "./views/user/GamePage";
 import AddGame from "./views/dev/AddGame";
+import GameMenu from "./views/user/GameMenu";
 import AddVersion from "./views/dev/AddVersion";
 
 import * as types from "./types";
@@ -71,6 +72,7 @@ export default function App() {
             children={<GamePage user={user} />}
           />
           <Route exact path="/game/add" children={<AddGame user={user} />} />
+          <Route exact path="/game/menu" children={<GameMenu user={user} />} />
           <Route
             exact
             path="/game/:id/version/add"

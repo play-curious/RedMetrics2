@@ -1,14 +1,22 @@
 import React, { FunctionComponent } from "react";
-import { Redirect } from "react-router";
 import { Link } from "react-router-dom";
+
 import * as types from "../../types";
+import * as utils from "../../utils";
+
 import Menu from "../../nodes/Menu";
 
 const Home: FunctionComponent<{
   user: types.SessionUser;
 }> = ({ user }) => (
   <>
-    <Menu links={[]} />
+    <Menu>
+      <Link to="/profile"> Profile </Link>
+      <Link to="/game/menu"> Games </Link>
+      {user.roleRank >= utils.roleRank("admin") && (
+        <Link to="/accounts"> Accounts </Link>
+      )}
+    </Menu>
     <div className="home">
       <div className="center">
         <h1> Home </h1>

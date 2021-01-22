@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Menu from "../../nodes/Menu";
 
 export default class Search extends React.Component {
@@ -13,7 +14,9 @@ export default class Search extends React.Component {
   render() {
     return (
       <>
-        <Menu links={[{ path: "/home", name: "Home" }]} />
+        <Menu>
+          <Link to="/home"> Home </Link>
+        </Menu>
         <div className="search-page"></div>
       </>
     );
