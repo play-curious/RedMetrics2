@@ -21,7 +21,7 @@ app.v2
       //  A default version of the game will be created.
       //  The Location response header will contain the URL for the new game.
 
-      if(!utils.isLogin(req)) return
+      if (!utils.isLogin(req)) return;
 
       if (!req.body.name)
         return utils.sendError(res, {

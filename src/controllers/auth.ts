@@ -1,6 +1,7 @@
 import * as uuid from "uuid";
 import * as app from "../app";
 import * as types from "../types";
+import * as constants from "../constants";
 
 export const accounts = () => app.database<types.Account>("account");
 export const sessions = () => app.database<types.Session>("session");
@@ -37,6 +38,13 @@ export async function getSession(
 
 export async function postSession(session: types.Session): Promise<void> {
   await sessions().insert(session);
+}
+
+export async function purgeSessions(): Promise<void> {
+  await sessions()
+    .where("start_at", "<", new Date(Date.now() - constants.SESSION_DURATION))
+    .and.where("type", "connexion")
+    .delete();
 }
 
 export function updateAccount(

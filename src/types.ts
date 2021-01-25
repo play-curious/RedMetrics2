@@ -26,7 +26,7 @@ export interface Session {
 }
 
 export interface SessionUser extends User, Session {
-  roleRank: number
+  roleRank: number;
 }
 
 /**
