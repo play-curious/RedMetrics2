@@ -70,7 +70,7 @@ export default function App() {
           <Dom.Route exact path="/docs" children={<Documentation />} />
           <Dom.Route exact path="/tutorial" children={<Tutorial />} />
           <Dom.Route exact path="/search" children={<Search />} />
-          <Dom.Route exact path="/profile" children={<Profile />} />
+          <Dom.Route exact path="/profile" children={<Profile user={user} />} />
           <Dom.Route
             exact
             path="/game/show/:id"

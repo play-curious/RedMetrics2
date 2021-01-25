@@ -40,11 +40,11 @@ const Login: React.FunctionComponent<{
 
   return (
     <>
+      {redirect && <Router.Redirect to={redirect} />}
       <Menu>
         <Dom.Link to="/home"> Home </Dom.Link>
       </Menu>
       <div className="login">
-        {redirect && <Router.Redirect to={redirect} />}
         <div className="center">
           <h1> Login </h1>
           <form onSubmit={handleSubmit(submit)}>

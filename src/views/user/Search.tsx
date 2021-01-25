@@ -2,6 +2,8 @@ import React from "react";
 import Dom from "react-router-dom";
 import Menu from "../../nodes/Menu";
 
+// todo: useParams (q: string)
+
 export default class Search extends React.Component {
   state: {
     search: string;
