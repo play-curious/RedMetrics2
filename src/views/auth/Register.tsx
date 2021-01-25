@@ -89,8 +89,8 @@ const Register: React.FunctionComponent<{
             </div>
           </form>
         </div>
-        <NotificationSystem ref={notificationSystem} />
       </div>
+      <NotificationSystem ref={notificationSystem} />
     </>
   );
 };

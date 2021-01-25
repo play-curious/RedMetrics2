@@ -7,21 +7,18 @@ import Dom from "react-router-dom";
 import NotificationSystem from "react-notification-system";
 
 import * as constants from "../../constants";
-import Menu from "../../nodes/Menu";
+import * as types from "../../types";
 
-interface LoginForm {
-  email: string;
-  password: string;
-}
+import Menu from "../../nodes/Menu";
 
 const Login: React.FunctionComponent<{
   onApiKeyChange: (apiKey: string) => void;
 }> = ({ onApiKeyChange }) => {
   const [redirect, setRedirect] = React.useState<null | string>(null);
   const notificationSystem = React.createRef<NotificationSystem.System>();
-  const { register, handleSubmit, setValue } = Form.useForm<LoginForm>();
+  const { register, handleSubmit, setValue } = Form.useForm<types.Login>();
 
-  const submit = (data: LoginForm) => {
+  const submit = (data: types.Login) => {
     axios
       .post("login", data, {
         baseURL: constants.apiBaseURL,
@@ -71,8 +68,8 @@ const Login: React.FunctionComponent<{
             </div>
           </form>
         </div>
-        <NotificationSystem ref={notificationSystem} />
       </div>
+      <NotificationSystem ref={notificationSystem} />
     </>
   );
 };
