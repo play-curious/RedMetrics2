@@ -9,20 +9,30 @@ const Menu: React.FunctionComponent = ({ children }) => {
       <nav className="menu bg-gray-800">
         <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
           <div className="relative flex items-center justify-between h-16">
-            <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-              <Dom.Link to="/" children="Red" className="text-red-600" />
-            </div>
             <div className="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
               <div className="flex-shrink-0 flex items-center">
-                <Dom.Link to="/" children="Metrics" className="text-red-50" />
+                <Dom.Link
+                  to="/"
+                  children="Red"
+                  className="text-red-600 text-7x1"
+                />
+                <Dom.Link
+                  to="/"
+                  children="Metrics"
+                  className="text-red-50 text-7x1"
+                />
               </div>
               <div className="hidden sm:block sm:ml-6">
                 <div className="flex space-x-4">{children}</div>
               </div>
             </div>
-            <SearchBar />
+            <div className="hidden md:block">
+              <SearchBar />
+            </div>
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-              <div>notif</div>
+              <div className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                <i className="fas fa-bell" />
+              </div>
               <div className="ml-3 relative">
                 <div>
                   <button
