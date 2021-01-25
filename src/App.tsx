@@ -20,6 +20,7 @@ import GamePage from "./views/user/GamePage";
 import AddGame from "./views/dev/AddGame";
 import GameMenu from "./views/user/GameMenu";
 import AddVersion from "./views/dev/AddVersion";
+import Settings from "./views/system/Settings";
 
 export default function App() {
   const [apiKey, setApiKey] = React.useState<string | null>(
@@ -68,6 +69,11 @@ export default function App() {
                 exact
                 path="/accounts"
                 children={<Accounts user={user} />}
+              />
+              <Dom.Route
+                exact
+                path="/settings"
+                children={<Settings user={user} />}
               />
               <Dom.Route exact path="/" children={<Home user={user} />} />
               <Dom.Route exact path="/home" children={<Home user={user} />} />

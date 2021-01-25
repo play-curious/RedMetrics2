@@ -24,7 +24,7 @@ const Accounts: React.FunctionComponent<{
 
   return (
     <>
-      <Menu>
+      <Menu user={user}>
         <MenuItem to="/home"> Home </MenuItem>
       </Menu>
       <div className="accounts">
