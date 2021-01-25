@@ -1,5 +1,5 @@
 import React from "react";
-import Dom from "react-router-dom";
+import * as Dom from "react-router-dom";
 
 export default function NotFound() {
   return (

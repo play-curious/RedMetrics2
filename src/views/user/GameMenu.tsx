@@ -1,5 +1,4 @@
 import React from "react";
-import Dom from "react-router-dom";
 import axios from "axios";
 
 import * as utils from "../../utils";
@@ -8,6 +7,7 @@ import * as constants from "../../constants";
 
 import Menu from "../../nodes/Menu";
 import Card from "../../nodes/Card";
+import MenuItem from "../../nodes/MenuItem";
 
 const GameMenu: React.FunctionComponent<{ user: types.SessionUser }> = ({
   user,
@@ -23,9 +23,9 @@ const GameMenu: React.FunctionComponent<{ user: types.SessionUser }> = ({
   return (
     <>
       <Menu>
-        <Dom.Link to="/profile"> Profile </Dom.Link>
+        <MenuItem to="/profile"> Profile </MenuItem>
         {user.roleRank >= utils.roleRank("dev") && (
-          <Dom.Link to="/game/add"> New Game </Dom.Link>
+          <MenuItem to="/game/add"> New Game </MenuItem>
         )}
       </Menu>
       <div className="game-menu">

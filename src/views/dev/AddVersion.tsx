@@ -1,7 +1,7 @@
 import React from "react";
-import Router from "react-router";
-import Form from "react-hook-form";
-import Dom from "react-router-dom";
+import * as Router from "react-router";
+import * as Form from "react-hook-form";
+import * as Dom from "react-router-dom";
 
 import axios from "axios";
 import NotificationSystem from "react-notification-system";
@@ -11,6 +11,7 @@ import * as utils from "../../utils";
 import * as constants from "../../constants";
 
 import Menu from "../../nodes/Menu";
+import MenuItem from "../../nodes/MenuItem";
 
 const AddVersion: React.FunctionComponent<{ user: types.SessionUser }> = ({
   user,
@@ -40,7 +41,7 @@ const AddVersion: React.FunctionComponent<{ user: types.SessionUser }> = ({
   return (
     <>
       <Menu>
-        <Dom.Link to="/home"> Home </Dom.Link>
+        <MenuItem to="/home"> Home </MenuItem>
       </Menu>
       <div className="add-version">
         {user.roleRank < utils.roleRank("dev") && setRedirect("/home")}

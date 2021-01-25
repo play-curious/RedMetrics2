@@ -1,8 +1,8 @@
 import axios from "axios";
 import React from "react";
-import Form from "react-hook-form";
-import Router from "react-router";
-import Dom from "react-router-dom";
+import * as Form from "react-hook-form";
+import * as Router from "react-router";
+import * as Dom from "react-router-dom";
 
 import NotificationSystem from "react-notification-system";
 
@@ -10,6 +10,7 @@ import * as constants from "../../constants";
 import * as types from "../../types";
 
 import Menu from "../../nodes/Menu";
+import MenuItem from "../../nodes/MenuItem";
 
 const Login: React.FunctionComponent<{
   onApiKeyChange: (apiKey: string) => void;
@@ -42,7 +43,7 @@ const Login: React.FunctionComponent<{
     <>
       {redirect && <Router.Redirect to={redirect} />}
       <Menu>
-        <Dom.Link to="/home"> Home </Dom.Link>
+        <MenuItem to="/home" children={"Home"} />
       </Menu>
       <div className="login">
         <div className="center">

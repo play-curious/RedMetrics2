@@ -1,7 +1,5 @@
 import React from "react";
-import Dom from "react-router-dom";
-
-import "./Card.scss";
+import * as Dom from "react-router-dom";
 
 const Card: React.FunctionComponent<{
   title: string;

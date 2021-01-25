@@ -1,26 +1,36 @@
 import React from "react";
-import Dom from "react-router-dom";
+import * as Router from "react-router";
+
+import * as types from "../../types";
+import * as utils from "../../utils";
+
 import Menu from "../../nodes/Menu";
+import MenuItem from "../../nodes/MenuItem";
 
 // todo: useParams (q: string)
 
-export default class Search extends React.Component {
-  state: {
-    search: string;
-    what: "game";
-  } = {
-    search: "",
-    what: "game",
-  };
+const Search: React.FunctionComponent<{ user: types.SessionUser }> = ({
+  user,
+}) => {
+  const { q } = Router.useParams<{ q: string }>();
 
-  render() {
-    return (
-      <>
-        <Menu>
-          <Dom.Link to="/home"> Home </Dom.Link>
-        </Menu>
-        <div className="search-page"></div>
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <Menu>
+        <MenuItem to="/home"> Home </MenuItem>
+      </Menu>
+      {user.roleRank > utils.roleRank("user") && (
+        <div>
+          <h2> Your games </h2>
+        </div>
+      )}
+      {user.roleRank > utils.roleRank("dev") && (
+        <div>
+          <h2> Accounts </h2>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default Search;

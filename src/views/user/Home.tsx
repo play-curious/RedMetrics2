@@ -1,20 +1,21 @@
 import React from "react";
-import Dom from "react-router-dom";
+import * as Dom from "react-router-dom";
 
 import * as types from "../../types";
 import * as utils from "../../utils";
 
 import Menu from "../../nodes/Menu";
+import MenuItem from "../../nodes/MenuItem";
 
 const Home: React.FunctionComponent<{
   user: types.SessionUser;
 }> = ({ user }) => (
   <>
     <Menu>
-      <Dom.Link to="/profile"> Profile </Dom.Link>
-      <Dom.Link to="/game/menu"> Games </Dom.Link>
+      <MenuItem to="/profile"> Profile </MenuItem>
+      <MenuItem to="/game/menu"> Games </MenuItem>
       {user.roleRank >= utils.roleRank("admin") && (
-        <Dom.Link to="/accounts"> Accounts </Dom.Link>
+        <MenuItem to="/accounts"> Accounts </MenuItem>
       )}
     </Menu>
     <div className="home">

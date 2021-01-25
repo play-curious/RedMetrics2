@@ -1,7 +1,7 @@
 import axios from "axios";
 import React from "react";
-import Form from "react-hook-form";
-import Dom from "react-router-dom";
+import * as Form from "react-hook-form";
+import * as Dom from "react-router-dom";
 
 import NotificationSystem from "react-notification-system";
 
@@ -9,8 +9,9 @@ import * as types from "../../types";
 import * as constants from "../../constants";
 
 import Menu from "../../nodes/Menu";
+import MenuItem from "../../nodes/MenuItem";
 
-const Profile: React.FunctionComponent<{ user: types.Account }> = ({
+const Profile: React.FunctionComponent<{ user: types.SessionUser }> = ({
   user,
 }) => {
   const { register, handleSubmit, setValue } = Form.useForm<types.User>();
@@ -38,7 +39,7 @@ const Profile: React.FunctionComponent<{ user: types.Account }> = ({
   return (
     <>
       <Menu>
-        <Dom.Link to="/home"> Home </Dom.Link>
+        <MenuItem to="/home"> Home </MenuItem>
       </Menu>
       <div className="profile">
         <form onSubmit={handleSubmit(submit)}>

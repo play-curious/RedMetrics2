@@ -1,6 +1,6 @@
 import React from "react";
-import Router from "react-router";
-import Dom from "react-router-dom";
+import * as Router from "react-router";
+import * as Dom from "react-router-dom";
 import axios from "axios";
 
 import * as constants from "../../constants";
@@ -8,6 +8,7 @@ import * as types from "../../types";
 
 import Menu from "../../nodes/Menu";
 import Card from "../../nodes/Card";
+import MenuItem from "../../nodes/MenuItem";
 
 const GamePage: React.FunctionComponent<{ user: types.SessionUser }> = ({
   user,
@@ -31,7 +32,7 @@ const GamePage: React.FunctionComponent<{ user: types.SessionUser }> = ({
   return (
     <>
       <Menu>
-        <Dom.Link to="/home"> Home </Dom.Link>
+        <MenuItem to="/home"> Home </MenuItem>
       </Menu>
       <div className="game-page">
         <h1> {game.name} </h1>

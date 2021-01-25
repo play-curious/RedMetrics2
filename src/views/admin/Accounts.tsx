@@ -1,6 +1,5 @@
 import React from "react";
-import Dom from "react-router-dom";
-import Router from "react-router";
+import * as Router from "react-router";
 import axios from "axios";
 
 import * as types from "../../types";
@@ -9,6 +8,7 @@ import * as constants from "../../constants";
 
 import Menu from "../../nodes/Menu";
 import Card from "../../nodes/Card";
+import MenuItem from "../../nodes/MenuItem";
 
 const Accounts: React.FunctionComponent<{
   user: types.SessionUser;
@@ -25,7 +25,7 @@ const Accounts: React.FunctionComponent<{
   return (
     <>
       <Menu>
-        <Dom.Link to="/home"> Home </Dom.Link>
+        <MenuItem to="/home"> Home </MenuItem>
       </Menu>
       <div className="accounts">
         {user.roleRank < utils.roleRank("admin") && setRedirect("/home")}

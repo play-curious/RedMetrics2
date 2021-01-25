@@ -1,29 +1,25 @@
 import axios from "axios";
 import React from "react";
-import Form from "react-hook-form";
-import Router from "react-router";
-import Dom from "react-router-dom";
+import * as Form from "react-hook-form";
+import * as Router from "react-router";
+import * as Dom from "react-router-dom";
 
 import NotificationSystem from "react-notification-system";
 
 import * as constants from "../../constants";
+import * as types from "../../types";
 
 import Menu from "../../nodes/Menu";
-
-interface RegisterForm {
-  email: string;
-  password: string;
-  role: "dev" | "user";
-}
+import MenuItem from "../../nodes/MenuItem";
 
 const Register: React.FunctionComponent<{
   onApiKeyChange: (apiKey: string) => void;
 }> = ({ onApiKeyChange }) => {
   const [redirect, setRedirect] = React.useState<null | string>(null);
   const notificationSystem = React.createRef<NotificationSystem.System>();
-  const { register, handleSubmit, setValue } = Form.useForm<RegisterForm>();
+  const { register, handleSubmit, setValue } = Form.useForm<types.User>();
 
-  const submit = (data: RegisterForm) => {
+  const submit = (data: types.User) => {
     axios
       .post("register", data, {
         baseURL: constants.apiBaseURL,
@@ -47,7 +43,7 @@ const Register: React.FunctionComponent<{
     <>
       {redirect && <Router.Redirect to={redirect} />}
       <Menu>
-        <Dom.Link to="/home"> Home </Dom.Link>
+        <MenuItem to="/home"> Home </MenuItem>
       </Menu>
       <div className="register">
         <div className="center">
