@@ -1,5 +1,8 @@
 import React from "react";
 import * as Dom from "react-router-dom";
+import Dropdown from "react-dropdown";
+
+import "react-dropdown/style.css";
 
 import * as types from "../types";
 
@@ -44,45 +47,45 @@ export default function Menu({
               <div className="ml-3 relative">
                 <button
                   className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none "
-                  id="user-menu"
                   type="button"
-                  aria-haspopup="true"
-                  aria-expanded="true"
+                  // id="user-menu"
+                  // aria-haspopup="true"
+                  // aria-expanded="true"
                 >
                   <i className="fas fa-bars" />
-                </button>
-                <div
-                  className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5"
-                  role="menu"
-                  aria-orientation="vertical"
-                  aria-labelledby="user-menu"
-                >
-                  <Dom.Link
-                    to="/settings"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    role="menuitem"
+                  <div
+                    className="hidden group-hover:block origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5"
+                    // role="menu"
+                    // aria-orientation="vertical"
+                    // aria-labelledby="user-menu"
                   >
-                    Settings
-                  </Dom.Link>
-                  {user && (
-                    <>
-                      <Dom.Link
-                        to={"/profile/" + user.id}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                      >
-                        Your Profile
-                      </Dom.Link>
-                      <Dom.Link
-                        to="#"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                      >
-                        Sign out
-                      </Dom.Link>
-                    </>
-                  )}
-                </div>
+                    <Dom.Link
+                      to="/settings"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      role="menuitem"
+                    >
+                      Settings
+                    </Dom.Link>
+                    {user && (
+                      <>
+                        <Dom.Link
+                          to={"/profile/" + user.id}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                        >
+                          Your Profile
+                        </Dom.Link>
+                        <Dom.Link
+                          to="#"
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          role="menuitem"
+                        >
+                          Sign out
+                        </Dom.Link>
+                      </>
+                    )}
+                  </div>
+                </button>
               </div>
             </div>
           </div>
