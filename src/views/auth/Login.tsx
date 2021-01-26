@@ -12,9 +12,11 @@ import * as types from "../../types";
 import Menu from "../../nodes/Menu";
 import MenuItem from "../../nodes/MenuItem";
 
-const Login: React.FunctionComponent<{
+export default function Login({
+  onApiKeyChange,
+}: {
   onApiKeyChange: (apiKey: string) => void;
-}> = ({ onApiKeyChange }) => {
+}) {
   const [redirect, setRedirect] = React.useState<null | string>(null);
   const notificationSystem = React.createRef<NotificationSystem.System>();
   const { register, handleSubmit, setValue } = Form.useForm<types.Login>();
@@ -73,6 +75,4 @@ const Login: React.FunctionComponent<{
       <NotificationSystem ref={notificationSystem} />
     </>
   );
-};
-
-export default Login;
+}

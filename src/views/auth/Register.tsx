@@ -12,9 +12,11 @@ import * as types from "../../types";
 import Menu from "../../nodes/Menu";
 import MenuItem from "../../nodes/MenuItem";
 
-const Register: React.FunctionComponent<{
+export default function Register({
+  onApiKeyChange,
+}: {
   onApiKeyChange: (apiKey: string) => void;
-}> = ({ onApiKeyChange }) => {
+}) {
   const [redirect, setRedirect] = React.useState<null | string>(null);
   const notificationSystem = React.createRef<NotificationSystem.System>();
   const { register, handleSubmit, setValue } = Form.useForm<types.User>();
@@ -89,6 +91,4 @@ const Register: React.FunctionComponent<{
       <NotificationSystem ref={notificationSystem} />
     </>
   );
-};
-
-export default Register;
+}

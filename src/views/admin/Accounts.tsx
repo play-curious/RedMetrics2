@@ -10,9 +10,7 @@ import Menu from "../../nodes/Menu";
 import Card from "../../nodes/Card";
 import MenuItem from "../../nodes/MenuItem";
 
-const Accounts: React.FunctionComponent<{
-  user: types.SessionUser;
-}> = ({ user }) => {
+export default function Accounts({ user }: { user: types.SessionUser }) {
   const [redirect, setRedirect] = React.useState<null | string>(null);
   const [accounts, setAccounts] = React.useState<types.Account[]>([]);
 
@@ -43,6 +41,4 @@ const Accounts: React.FunctionComponent<{
       </div>
     </>
   );
-};
-
-export default Accounts;
+}

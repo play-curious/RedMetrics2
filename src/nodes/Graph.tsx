@@ -1,13 +1,9 @@
 import React from "react";
 
-interface GraphData {}
-
-const Graph: React.FunctionComponent<GraphData> = (data) => {
+export default function Graph({}: {}) {
   return (
     <>
       <h1> WIP </h1>
     </>
   );
-};
-
-export default Graph;
+}

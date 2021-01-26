@@ -13,9 +13,7 @@ import * as constants from "../../constants";
 import Menu from "../../nodes/Menu";
 import MenuItem from "../../nodes/MenuItem";
 
-const AddVersion: React.FunctionComponent<{ user: types.SessionUser }> = ({
-  user,
-}) => {
+export default function AddVersion({ user }: { user: types.SessionUser }) {
   const { id } = Router.useParams<{ id: string }>();
   const [redirect, setRedirect] = React.useState<null | string>(null);
   const { register, handleSubmit } = Form.useForm<types.GameVersion>();
@@ -68,6 +66,4 @@ const AddVersion: React.FunctionComponent<{ user: types.SessionUser }> = ({
       </div>
     </>
   );
-};
-
-export default AddVersion;
+}

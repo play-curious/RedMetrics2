@@ -7,11 +7,7 @@ import * as utils from "../../utils";
 import Menu from "../../nodes/Menu";
 import MenuItem from "../../nodes/MenuItem";
 
-// todo: useParams (q: string)
-
-const Search: React.FunctionComponent<{ user: types.SessionUser }> = ({
-  user,
-}) => {
+export default function Search({ user }: { user: types.SessionUser }) {
   const { q } = Router.useParams<{ q: string }>();
 
   return (
@@ -31,6 +27,4 @@ const Search: React.FunctionComponent<{ user: types.SessionUser }> = ({
       )}
     </>
   );
-};
-
-export default Search;
+}

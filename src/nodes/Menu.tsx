@@ -5,10 +5,13 @@ import * as types from "../types";
 
 import SearchBar from "./SearchBar";
 
-const Menu: React.FunctionComponent<{ user?: types.SessionUser }> = ({
+export default function Menu({
   children,
   user,
-}) => {
+}: {
+  user?: types.SessionUser;
+  children: any;
+}) {
   return (
     <>
       <nav className="menu bg-gray-800">
@@ -90,6 +93,4 @@ const Menu: React.FunctionComponent<{ user?: types.SessionUser }> = ({
       </nav>
     </>
   );
-};
-
-export default Menu;
+}

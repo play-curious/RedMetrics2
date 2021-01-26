@@ -9,9 +9,7 @@ import Menu from "../../nodes/Menu";
 import Card from "../../nodes/Card";
 import MenuItem from "../../nodes/MenuItem";
 
-const GameMenu: React.FunctionComponent<{ user: types.SessionUser }> = ({
-  user,
-}) => {
+export default function GameMenu({ user }: { user: types.SessionUser }) {
   const [games, setGames] = React.useState<types.Game[]>([]);
 
   axios
@@ -42,6 +40,4 @@ const GameMenu: React.FunctionComponent<{ user: types.SessionUser }> = ({
       </div>
     </>
   );
-};
-
-export default GameMenu;
+}

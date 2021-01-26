@@ -11,9 +11,7 @@ import * as constants from "../../constants";
 import Menu from "../../nodes/Menu";
 import MenuItem from "../../nodes/MenuItem";
 
-const Profile: React.FunctionComponent<{ user: types.SessionUser }> = ({
-  user,
-}) => {
+export default function Profile({ user }: { user: types.SessionUser }) {
   const { register, handleSubmit, setValue } = Form.useForm<types.User>();
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
@@ -77,6 +75,4 @@ const Profile: React.FunctionComponent<{ user: types.SessionUser }> = ({
       <NotificationSystem ref={notificationSystem} />
     </>
   );
-};
-
-export default Profile;
+}

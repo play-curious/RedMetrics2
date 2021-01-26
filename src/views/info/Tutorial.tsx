@@ -1,5 +1,9 @@
 import React from "react";
 
-export default function Tutorial() {
-  return <h1> WIP </h1>;
+export default function Tutorial({}: {}) {
+  return (
+    <>
+      <h1> WIP </h1>
+    </>
+  );
 }
