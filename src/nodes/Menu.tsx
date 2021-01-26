@@ -42,15 +42,15 @@ export default function Menu({
                 <i className="fas fa-bell" />
               </div>
               <div className="ml-3 relative">
-                <div>
-                  <button
-                    className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none "
-                    id="user-menu"
-                    aria-haspopup="true"
-                  >
-                    <i className="fas fa-bars" />
-                  </button>
-                </div>
+                <button
+                  className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none "
+                  id="user-menu"
+                  type="button"
+                  aria-haspopup="true"
+                  aria-expanded="true"
+                >
+                  <i className="fas fa-bars" />
+                </button>
                 <div
                   className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5"
                   role="menu"

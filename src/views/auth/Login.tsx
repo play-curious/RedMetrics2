@@ -48,9 +48,9 @@ export default function Login({
         <MenuItem to="/home" children={"Home"} />
       </Menu>
       <div className="login">
-        <div className="center">
+        <div className="flex flex-col items-center justify-center min-h-screen">
           <h1> Login </h1>
-          <form onSubmit={handleSubmit(submit)}>
+          <form onSubmit={handleSubmit(submit)} className="flex flex-col">
             <input
               type="email"
               name="email"
@@ -63,7 +63,7 @@ export default function Login({
               placeholder="Password"
               ref={register({})}
             />
-            <div className="flex">
+            <div className="flex justify-around">
               <input className="button" type="submit" value="Go" />
               <Dom.Link className="button" to={{ pathname: "/register" }}>
                 Register
