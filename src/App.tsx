@@ -21,6 +21,7 @@ import AddGame from "./views/dev/AddGame";
 import GameMenu from "./views/user/GameMenu";
 import AddVersion from "./views/dev/AddVersion";
 import Settings from "./views/system/Settings";
+import Test from "./views/admin/Test";
 
 export default function App() {
   const [apiKey, setApiKey] = React.useState<string | null>(
@@ -50,6 +51,7 @@ export default function App() {
     <>
       <Dom.BrowserRouter>
         <Dom.Switch>
+          <Dom.Route exact path="/test" children={<Test />} />
           <Dom.Route
             exact
             path="/register"

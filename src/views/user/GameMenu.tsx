@@ -29,12 +29,9 @@ export default function GameMenu({ user }: { user: types.SessionUser }) {
       <div className="game-menu">
         {games.map((game) => {
           return (
-            <Card
-              url={"/game/show/" + game.id}
-              title={game.name}
-              description={game.description ?? "No description"}
-              fields={[]}
-            />
+            <Card url={"/game/show/" + game.id} title={game.name}>
+              {game.description ?? "No description"}
+            </Card>
           );
         })}
       </div>

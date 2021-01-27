@@ -11,6 +11,7 @@ import * as types from "../../types";
 
 import Menu from "../../nodes/Menu";
 import MenuItem from "../../nodes/MenuItem";
+import Center from "../../nodes/Center";
 
 export default function Login({
   onApiKeyChange,
@@ -48,7 +49,7 @@ export default function Login({
         <MenuItem to="/home" children={"Home"} />
       </Menu>
       <div className="login">
-        <div className="flex flex-col items-center justify-center min-h-screen">
+        <Center>
           <h1> Login </h1>
           <form onSubmit={handleSubmit(submit)} className="flex flex-col">
             <input
@@ -70,7 +71,7 @@ export default function Login({
               </Dom.Link>
             </div>
           </form>
-        </div>
+        </Center>
       </div>
       <NotificationSystem ref={notificationSystem} />
     </>

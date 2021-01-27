@@ -32,10 +32,10 @@ export default function Accounts({ user }: { user: types.SessionUser }) {
           return (
             <Card
               title={`${account.role} - ${account.id}`}
-              description={account.email}
               url={"/account/" + account.id}
-              fields={account.games ?? []}
-            />
+            >
+              {account.email}
+            </Card>
           );
         })}
       </div>

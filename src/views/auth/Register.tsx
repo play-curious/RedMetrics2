@@ -11,6 +11,7 @@ import * as types from "../../types";
 
 import Menu from "../../nodes/Menu";
 import MenuItem from "../../nodes/MenuItem";
+import Center from "../../nodes/Center";
 
 export default function Register({
   onApiKeyChange,
@@ -47,7 +48,7 @@ export default function Register({
         <MenuItem to="/home"> Home </MenuItem>
       </Menu>
       <div className="register">
-        <div className="flex flex-col items-center justify-center min-h-screen">
+        <Center>
           <h1> Register </h1>
           <form onSubmit={handleSubmit(submit)} className="flex flex-col">
             <input
@@ -86,7 +87,7 @@ export default function Register({
               </Dom.Link>
             </div>
           </form>
-        </div>
+        </Center>
       </div>
       <NotificationSystem ref={notificationSystem} />
     </>

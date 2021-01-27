@@ -46,12 +46,9 @@ const GamePage: React.FunctionComponent<{ user: types.SessionUser }> = ({
         <div>
           {versions.map((version) => {
             return (
-              <Card
-                title={version.name}
-                description={version.description ?? "No description."}
-                fields={[]}
-                url={"/version/" + version.id}
-              />
+              <Card title={version.name} url={"/version/" + version.id}>
+                {version.description ?? "No description."}
+              </Card>
             );
           })}
         </div>

@@ -14,15 +14,18 @@ export default function SearchBar() {
   return (
     <>
       {redirect && <Router.Redirect to={redirect} />}
-      <div className="pt-2 relative mx-auto text-gray-600 flex justify-end">
+      <div className="relative mx-auto text-gray-600 flex justify-end">
         <input
           className="border-2 border-gray-300 bg-white h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none"
           type="text"
           ref={input}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") submit();
+          }}
         />
         <button
           type="button"
-          className="absolute right-0 top-0 mt-5 mr-4"
+          className="absolute right-0 top-0 mt-2 mr-4 hover:text-red-500"
           onClick={submit}
         >
           <i className="fa fa-search" />
