@@ -1,4 +1,3 @@
-import * as uuid from "uuid";
 import * as app from "../app";
 import * as types from "../types";
 import * as constants from "../constants";
@@ -56,6 +55,10 @@ export function updateAccount(
 
 export function countAccounts(): Promise<number> {
   return accounts().count();
+}
+
+export function getAccounts(): Promise<types.Account[]> {
+  return accounts().select("*");
 }
 
 export async function getAccountGames(id: types.Id): Promise<string[]> {

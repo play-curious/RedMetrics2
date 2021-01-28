@@ -107,6 +107,14 @@ app.v2.get(
   })
 );
 
+app.v2.get(
+  "/accounts",
+  utils.needRole("admin"),
+  expressAsyncHandler(async (req, res) => {
+    res.json(await auth.getAccounts());
+  })
+);
+
 /** “me” can be used instead of id to reference own account */
 app.v2
   .route("/account/:id")
