@@ -35,6 +35,16 @@ export async function getSession(
   return sessions().where("api_key", apikey).first();
 }
 
+export async function getUserSession(
+  account_id: types.Id
+): Promise<types.Session | undefined> {
+  return sessions().where("account_id", account_id).first();
+}
+
+export async function refreshSession(apikey: types.Id): Promise<void> {
+  await sessions().where("api_key", apikey).update("start_at", new Date());
+}
+
 export async function postSession(session: types.Session): Promise<void> {
   await sessions().insert(session);
 }

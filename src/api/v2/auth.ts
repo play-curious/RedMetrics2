@@ -37,6 +37,13 @@ app.v2.post(
       });
     }
 
+    const existingSession = await auth.getUserSession(account.id as string);
+
+    if (existingSession) {
+      await auth.refreshSession(existingSession.api_key);
+      return res.json({ apiKey: existingSession.api_key });
+    }
+
     const apiKey = uuid.v4();
 
     await auth.postSession({
