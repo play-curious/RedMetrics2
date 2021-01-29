@@ -115,6 +115,16 @@ app.v2.get(
   })
 );
 
+app.v2.get(
+  "/logout",
+  utils.needRole("user"),
+  expressAsyncHandler(async (req, res) => {
+    if (utils.isLogin(req))
+      await auth.removeSession(req.user.account_id, "connexion");
+    res.sendStatus(200);
+  })
+);
+
 /** “me” can be used instead of id to reference own account */
 app.v2
   .route("/account/:id")

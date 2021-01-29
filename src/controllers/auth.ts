@@ -46,6 +46,16 @@ export async function purgeSessions(): Promise<void> {
     .delete();
 }
 
+export async function removeSession(
+  user_id: string,
+  type: types.SessionUser["type"]
+): Promise<void> {
+  await sessions()
+    .where("account_id", user_id)
+    .and.where("type", type)
+    .delete();
+}
+
 export function updateAccount(
   id: string,
   account: Partial<types.Account>
