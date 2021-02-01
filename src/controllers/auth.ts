@@ -36,9 +36,19 @@ export async function getSession(
 }
 
 export async function getUserSession(
-  account_id: types.Id
+  account_id: types.Id,
+  type: types.Session["type"] = "connexion"
 ): Promise<types.Session | undefined> {
-  return sessions().where("account_id", account_id).first();
+  return sessions()
+    .where("account_id", account_id)
+    .and.where("type", type)
+    .first();
+}
+
+export async function getUserSessions(
+  account_id: types.Id
+): Promise<types.Session[]> {
+  return sessions().where("account_id", account_id).select("*");
 }
 
 export async function refreshSession(apikey: types.Id): Promise<void> {
@@ -56,14 +66,8 @@ export async function purgeSessions(): Promise<void> {
     .delete();
 }
 
-export async function removeSession(
-  user_id: string,
-  type: types.SessionUser["type"]
-): Promise<void> {
-  await sessions()
-    .where("account_id", user_id)
-    .and.where("type", type)
-    .delete();
+export async function removeSession(apiKey: types.Id): Promise<void> {
+  await sessions().where("api_key", apiKey).delete();
 }
 
 export function updateAccount(

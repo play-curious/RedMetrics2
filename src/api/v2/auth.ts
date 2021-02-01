@@ -47,6 +47,7 @@ app.v2.post(
     const apiKey = uuid.v4();
 
     await auth.postSession({
+      name: "unique connexion apikey",
       api_key: apiKey,
       account_id: account.id as string,
       start_at: new Date().toISOString(),
@@ -96,6 +97,7 @@ app.v2.post(
     const apiKey = uuid.v4();
 
     await auth.postSession({
+      name: "unique connexion apikey",
       api_key: apiKey,
       account_id: id,
       start_at: new Date().toISOString(),
@@ -122,12 +124,54 @@ app.v2.get(
   })
 );
 
+app.v2
+  .route("/session")
+  .all(utils.needRole("user"))
+  .get(
+    expressAsyncHandler(async (req, res) => {
+      if (!utils.isLogin(req)) return;
+      res.json(await auth.getUserSessions(req.user.account_id));
+    })
+  )
+  .post(
+    expressAsyncHandler(async (req, res) => {
+      if (!utils.isLogin(req)) return;
+
+      if (!req.body.type || !req.body.name)
+        return utils.sendError(res, {
+          code: 400,
+          description: "Missing 'type' and 'name' properties in body",
+        });
+
+      const currentSession: types.Session = {
+        type: req.body.type === "game" ? "game" : "analytic",
+        start_at: new Date().toISOString(),
+        account_id: req.user.account_id,
+        name: req.body.name,
+        api_key: uuid.v4(),
+      };
+
+      await auth.postSession(currentSession);
+
+      res.json({ apiKey: currentSession.api_key });
+    })
+  );
+
+app.v2.delete(
+  "/session/:apikey",
+  expressAsyncHandler(async (req, res) => {
+    if (!utils.isLogin(req)) return;
+    const apikey = req.params.apikey;
+    await auth.removeSession(apikey);
+    res.sendStatus(200);
+  })
+);
+
 app.v2.get(
   "/logout",
   utils.needRole("user"),
   expressAsyncHandler(async (req, res) => {
-    if (utils.isLogin(req))
-      await auth.removeSession(req.user.account_id, "connexion");
+    if (utils.isLogin(req)) await auth.removeSession(req.user.api_key);
     res.sendStatus(200);
   })
 );

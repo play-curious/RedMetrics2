@@ -6,7 +6,7 @@ import * as events from "../../controllers/events";
 import * as game from "../../controllers/game";
 
 app.v2.post(
-  "/session",
+  "/game-session",
   utils.needRole("dev"),
   expressAsyncHandler(async (req, res) => {
     //  Creates a new session.
@@ -47,7 +47,7 @@ app.v2.post(
 );
 
 app.v2
-  .route("/session/:id")
+  .route("/game-session/:id")
   .get(
     utils.needRole("user"),
     expressAsyncHandler(async (req, res) => {

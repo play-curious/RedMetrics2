@@ -19,6 +19,7 @@ export interface Account extends User {
 }
 
 export interface Session {
+  name: string;
   start_at: RMDate;
   api_key: Id;
   account_id: Id;
