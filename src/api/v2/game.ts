@@ -47,7 +47,6 @@ app.v2
       res.json({
         game_id,
         game_version_id,
-        success: "Success",
       });
     })
   );
@@ -102,6 +101,33 @@ app.v2
         custom_data: req.body.custom_data,
         author: req.body.author,
       });
+
+      res.sendStatus(200);
+    })
+  )
+  .delete(
+    utils.needRole("dev"),
+    expressAsyncHandler(async (req, res) => {
+      if (!utils.isLogin(req)) return;
+
+      const targetGame = await game.getGame(req.params.uuid);
+
+      if (!targetGame)
+        return utils.sendError(res, {
+          code: 404,
+          description: "Game not found",
+        });
+
+      if (
+        req.user.roleRank < utils.roleRank("admin") &&
+        targetGame.publisher_id !== req.user.account_id
+      )
+        return utils.sendError(res, {
+          code: 401,
+          description: "This game does not belong to you ",
+        });
+
+      await game.removeGame(targetGame.id as string);
 
       res.sendStatus(200);
     })

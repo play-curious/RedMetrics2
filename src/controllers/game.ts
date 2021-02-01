@@ -21,6 +21,10 @@ export function postGame(game: types.Game): Promise<string> {
     .then((results) => results[0] as string);
 }
 
+export async function removeGame(id: types.Id): Promise<void> {
+  await games().where("id", id).delete();
+}
+
 export function updateGame(
   id: string,
   values: Partial<types.Game>
