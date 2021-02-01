@@ -77,14 +77,24 @@ app.v2
     expressAsyncHandler(async (req, res) => {
       // Updates game information with the provided GameMeta.
 
+      if (!utils.isLogin(req)) return;
+
       const targetGame = await game.getGame(req.params.uuid);
 
-      if (!targetGame) {
+      if (!targetGame)
         return utils.sendError(res, {
           code: 404,
           description: "Game not found",
         });
-      }
+
+      if (
+        req.user.roleRank < utils.roleRank("admin") &&
+        targetGame.publisher_id !== req.user.account_id
+      )
+        return utils.sendError(res, {
+          code: 401,
+          description: "This game does not belong to you ",
+        });
 
       await game.updateGame(req.params.uuid, {
         name: req.body.name,
@@ -93,9 +103,7 @@ app.v2
         author: req.body.author,
       });
 
-      res.json({
-        success: "Success",
-      });
+      res.sendStatus(200);
     })
   );
 
@@ -127,6 +135,8 @@ app.v2
       //  A GameVersionMeta object should be sent in the body.
       //  The Location response header will contain the URL for the new game.
 
+      if (!utils.isLogin(req)) return;
+
       if (!req.body.name)
         return utils.sendError(res, {
           code: 400,
@@ -141,6 +151,15 @@ app.v2
           description: "Game not found",
         });
 
+      if (
+        req.user.roleRank < utils.roleRank("admin") &&
+        targetGame.publisher_id !== req.user.account_id
+      )
+        return utils.sendError(res, {
+          code: 401,
+          description: "This game does not belong to you ",
+        });
+
       const id = await game.postGameVersion({
         name: req.body.name,
         game_id: targetGame.id as string,
@@ -148,10 +167,7 @@ app.v2
         description: req.body.description,
       });
 
-      res.json({
-        id,
-        success: "Success",
-      });
+      res.json({ id });
     })
   );
 
@@ -178,6 +194,8 @@ app.v2
     expressAsyncHandler(async (req, res) => {
       // Updates game information with the provided GameVersionMeta.
 
+      if (!utils.isLogin(req)) return;
+
       const version = await game.getGameVersion(req.params.uuid);
 
       if (!version)
@@ -186,17 +204,31 @@ app.v2
           description: "Version not found",
         });
 
+      const targetGame = await game.getGame(version.game_id);
+
+      if (!targetGame)
+        return utils.sendError(res, {
+          code: 404,
+          description: "Game not found",
+        });
+
+      if (
+        req.user.roleRank < utils.roleRank("admin") &&
+        targetGame.publisher_id !== req.user.account_id
+      )
+        return utils.sendError(res, {
+          code: 401,
+          description: "This game does not belong to you ",
+        });
+
       const values: Partial<types.GameVersion> = {
         name: req.body.name,
         description: req.body.description,
         custom_data: req.body.custom_data,
       };
 
-      const id = await game.updateGameVersion(req.params.uuid, values);
+      await game.updateGameVersion(req.params.uuid, values);
 
-      res.json({
-        id,
-        success: "Success",
-      });
+      res.sendStatus(200);
     })
   );
