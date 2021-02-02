@@ -134,22 +134,22 @@ app.v2
       //  - beforeUserTime - Date
 
       let query = events.events();
-      if (req.body.game_id) {
+      if (req.params.game_id) {
         query = query
           .leftJoin("game_version", "game_version.id", "event.game_version_id")
           .leftJoin("game", "game.id", "game_version.game_id")
-          .where("game.id", req.body.game_id);
+          .where("game.id", req.params.game_id);
       }
-      if (req.body.version)
-        query = query.andWhere("game_version.name", req.body.version);
-      if (req.body.session_id)
-        query = query.andWhere("session_id", req.body.session_id);
-      if (req.body.type) query = query.andWhere("type", req.body.type);
-      if (req.body.section) query = query.andWhere("section", req.body.section);
-      if (req.body.after)
-        query = query.andWhere("server_time", ">", req.body.after);
-      if (req.body.before)
-        query = query.andWhere("server_time", "<", req.body.before);
+      if (req.params.version)
+        query = query.andWhere("game_version.name", req.params.version);
+      if (req.params.session_id)
+        query = query.andWhere("session_id", req.params.session_id);
+      if (req.params.type) query = query.andWhere("type", req.params.type);
+      if (req.params.section) query = query.andWhere("section", req.params.section);
+      if (req.params.after)
+        query = query.andWhere("server_time", ">", req.params.after);
+      if (req.params.before)
+        query = query.andWhere("server_time", "<", req.params.before);
 
       res.json(await query);
     })
