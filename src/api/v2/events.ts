@@ -102,6 +102,12 @@ app.v2.get(
   expressAsyncHandler(async (req, res) => {
     const game_id = req.params.game_id;
 
+    if (!game_id)
+      return utils.sendError(res, {
+        description: "Missing 'game_id' param",
+        code: 400,
+      });
+
     const targetGame = await game.getGame(game_id);
 
     if (!targetGame)
