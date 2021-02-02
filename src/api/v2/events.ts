@@ -151,6 +151,8 @@ app.v2
         query = query.andWhere("server_time", ">", req.params.after);
       if (req.params.before)
         query = query.andWhere("server_time", "<", req.params.before);
+      if (req.params.offset) query = query.offset(+req.params.offset);
+      if (req.params.count) query = query.limit(+req.params.count);
 
       res.json(await query);
     })
