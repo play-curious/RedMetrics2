@@ -30,6 +30,10 @@ export function getEvent(id: number): Promise<types.RMEvent | undefined> {
   return events().where("id", id).first();
 }
 
+export function getEventCount(id: string): Promise<number> {
+  return events().where("game_id", id).count();
+}
+
 export function postEvent(event: types.RMEvent): Promise<string> {
   return events().insert(event).returning("id");
 }

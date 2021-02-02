@@ -96,6 +96,24 @@ app.v2
     })
   );
 
+app.v2.get(
+  "/event/count",
+  utils.needRole("user"),
+  expressAsyncHandler(async (req, res) => {
+    const game_id = req.params.game_id;
+
+    const targetGame = await game.getGame(game_id);
+
+    if (!targetGame)
+      return utils.sendError(res, {
+        code: 404,
+        description: "Game not found",
+      });
+
+    res.json(await events.getEventCount(game_id));
+  })
+);
+
 app.v2
   .route("/event")
   .get(
