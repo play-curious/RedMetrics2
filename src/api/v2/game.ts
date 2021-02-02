@@ -1,7 +1,9 @@
 import expressAsyncHandler from "express-async-handler";
+
 import * as app from "../../app";
 import * as utils from "../../utils";
 import * as types from "../../types";
+
 import * as game from "../../controllers/game";
 import * as auth from "../../controllers/auth";
 
@@ -11,7 +13,11 @@ app.v2
     utils.needRole("user"),
     expressAsyncHandler(async (req, res) => {
       // Lists the games using the service as GameMeta objects (see section on Paging below)
-      const publisher_id = req.params.publisher_id;
+      const publisher_id = req.params.publisher_id,
+        offset = req.params.offset,
+        count = req.params.count;
+
+      let query: any;
 
       if (publisher_id) {
         const publisher = await auth.getAccount(publisher_id);
@@ -22,10 +28,15 @@ app.v2
             code: 404,
           });
 
-        res.json(await game.getPublisherGames(publisher_id));
+        query = game.getPublisherGames(publisher_id);
+      } else {
+        query = game.getGames();
       }
 
-      res.json(await game.getGames());
+      if (offset) query.offset(+offset);
+      if (count) query.limit(+count);
+
+      res.json(await query);
     })
   )
   .post(
