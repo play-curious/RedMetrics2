@@ -8,7 +8,13 @@ export function getGames(): Promise<types.Game[]> {
   return games().select();
 }
 
-export function getGame(id: string): Promise<types.Game | undefined> {
+export function getPublisherGames(
+  publisher_id: types.Id
+): Promise<types.Game[]> {
+  return games().where("publisher_id", publisher_id).select();
+}
+
+export function getGame(id: types.Id): Promise<types.Game | undefined> {
   return games()
     .where("id", id)
     .then((games) => games[0]);
@@ -49,7 +55,7 @@ export function postGameVersion(
     .then((results) => results[0] as string);
 }
 
-export function getGameVersions(id: string): Promise<types.GameVersion[]> {
+export function getGameVersions(id: types.Id): Promise<types.GameVersion[]> {
   return versions().where("game_id", id);
 }
 

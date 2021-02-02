@@ -23,6 +23,7 @@ export interface Session {
   start_at: RMDate;
   api_key: Id;
   account_id: Id;
+  game_id?: Id;
   type: "game" | "connexion" | "analytic";
 }
 

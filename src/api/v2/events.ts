@@ -145,7 +145,8 @@ app.v2
       if (req.params.session_id)
         query = query.andWhere("session_id", req.params.session_id);
       if (req.params.type) query = query.andWhere("type", req.params.type);
-      if (req.params.section) query = query.andWhere("section", req.params.section);
+      if (req.params.section)
+        query = query.andWhere("section", req.params.section);
       if (req.params.after)
         query = query.andWhere("server_time", ">", req.params.after);
       if (req.params.before)

@@ -3,6 +3,7 @@ import * as app from "../../app";
 import * as utils from "../../utils";
 import * as types from "../../types";
 import * as game from "../../controllers/game";
+import * as auth from "../../controllers/auth";
 
 app.v2
   .route("/game")
@@ -10,6 +11,20 @@ app.v2
     utils.needRole("user"),
     expressAsyncHandler(async (req, res) => {
       // Lists the games using the service as GameMeta objects (see section on Paging below)
+      const publisher_id = req.params.publisher_id;
+
+      if (publisher_id) {
+        const publisher = await auth.getAccount(publisher_id);
+
+        if (!publisher)
+          return utils.sendError(res, {
+            description: "Publisher not found",
+            code: 404,
+          });
+
+        res.json(await game.getPublisherGames(publisher_id));
+      }
+
       res.json(await game.getGames());
     })
   )

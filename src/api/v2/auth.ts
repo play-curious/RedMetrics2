@@ -5,6 +5,7 @@ import * as app from "../../app";
 import * as types from "../../types";
 import * as utils from "../../utils";
 import * as auth from "../../controllers/auth";
+import * as game from "../../controllers/game";
 
 app.v2.post(
   "/login",
@@ -150,6 +151,26 @@ app.v2
         name: req.body.name,
         api_key: uuid.v4(),
       };
+
+      if (currentSession.type === "game") {
+        const game_id = req.body.game_id;
+
+        if (!game_id)
+          return utils.sendError(res, {
+            description: 'Missing property "game_id"',
+            code: 400,
+          });
+
+        const currentGame = await game.getGame(game_id);
+
+        if (!currentGame)
+          return utils.sendError(res, {
+            code: 404,
+            description: "Game not found",
+          });
+
+        currentSession.game_id = game_id;
+      }
 
       await auth.postSession(currentSession);
 
