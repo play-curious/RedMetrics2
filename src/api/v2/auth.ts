@@ -125,13 +125,22 @@ app.v2.get(
   })
 );
 
+app.v2.get(
+  "/sessions",
+  utils.needRole("user"),
+  expressAsyncHandler(async (req, res) => {
+    if (!utils.isLogin(req)) return;
+    res.json(await auth.getUserSessions(req.user.account_id));
+  })
+);
+
 app.v2
   .route("/session")
   .all(utils.needRole("user"))
   .get(
     expressAsyncHandler(async (req, res) => {
       if (!utils.isLogin(req)) return;
-      res.json(await auth.getUserSessions(req.user.account_id));
+      res.json(await auth.getSession(req.user.api_key));
     })
   )
   .post(
