@@ -171,21 +171,14 @@ app.v2
       //  If no session is given, a new session will be created and returned.
       //  Since the progress object cannot be addressed by itself, no Location header will be returned.
 
-      if (!req.body.game_version_id)
+      if (!req.body.game_session_id)
         return utils.sendError(res, {
           code: 300,
-          description: "Missing game version id",
+          description: "Missing game session id",
         });
-
-      let session_id = req.body.session_id;
-      if (!req.body.session_id || !(await events.getGameSession(session_id))) {
-        session_id = await events.postGameSession({
-          game_version_id: req.body.game_version_id,
-        });
-      }
 
       const event: types.RMEvent = {
-        session_id,
+        game_session_id: req.body.game_session_id,
         coordinates: req.body.coordinates,
         custom_data: req.body.custom_data,
         section: req.body.section,

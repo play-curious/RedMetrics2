@@ -108,7 +108,7 @@ export type CustomData = object;
  */
 export interface RMEvent {
   id?: number;
-  session_id: Id;
+  game_session_id: Id;
   type: EventType;
   server_time: RMDate;
   user_time?: RMDate;
