@@ -88,7 +88,7 @@ export type StandardEventType =
 /**
  * Array of 2 or 3 integers describing where the event occurred in "game space".
  */
-export type Coordinate = [number, number] | [number, number, number];
+export type Coordinate = string;
 
 /**
  * what "level" the player was in when the event occured. <br>

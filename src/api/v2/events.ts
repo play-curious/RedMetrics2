@@ -20,7 +20,7 @@ app.v2.post(
       platform = req.body.platform,
       screen_size = req.body.screen_size,
       software = req.body.software,
-      custom_data = req.body.custom_data,
+      custom_data = JSON.stringify(req.body.custom_data ?? {}),
       game_version_id = req.body.game_version_id;
 
     if (!game_version_id || !(await game.getGameVersion(game_version_id))) {
@@ -70,7 +70,7 @@ app.v2
       // Updates the SessionMeta. Only accessible to dev and admin.
 
       const values: Partial<types.GameSession> = {
-        custom_data: req.body.custom_data,
+        custom_data: JSON.stringify(req.body.custom_data ?? {}),
         software: req.body.software,
         screen_size: req.body.screen_size,
         platform: req.body.platform,
@@ -179,8 +179,8 @@ app.v2
 
       const event: types.RMEvent = {
         game_session_id: req.body.game_session_id,
-        coordinates: req.body.coordinates,
-        custom_data: req.body.custom_data,
+        coordinates: JSON.stringify(req.body.coordinates ?? {}),
+        custom_data: JSON.stringify(req.body.custom_data ?? {}),
         section: req.body.section,
         server_time: new Date().toTimeString(),
         type: req.body.type,

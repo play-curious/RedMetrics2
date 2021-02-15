@@ -58,7 +58,7 @@ app.v2
       const currentGame: types.Game = {
         publisher_id: req.user.account_id,
         author: req.body.author,
-        custom_data: req.body.custom_data,
+        custom_data: JSON.stringify(req.body.custom_data ?? {}),
         description: req.body.description,
         name: req.body.name,
       };
@@ -124,7 +124,7 @@ app.v2
       await game.updateGame(req.params.uuid, {
         name: req.body.name,
         description: req.body.description,
-        custom_data: req.body.custom_data,
+        custom_data: JSON.stringify(req.body.custom_data ?? {}),
         author: req.body.author,
       });
 
@@ -215,7 +215,7 @@ app.v2
       const id = await game.postGameVersion({
         name: req.body.name,
         game_id: targetGame.id as string,
-        custom_data: req.body.custom_data,
+        custom_data: JSON.stringify(req.body.custom_data ?? {}),
         description: req.body.description,
       });
 
@@ -276,7 +276,7 @@ app.v2
       const values: Partial<types.GameVersion> = {
         name: req.body.name,
         description: req.body.description,
-        custom_data: req.body.custom_data,
+        custom_data: JSON.stringify(req.body.custom_data ?? {}),
       };
 
       await game.updateGameVersion(req.params.uuid, values);
