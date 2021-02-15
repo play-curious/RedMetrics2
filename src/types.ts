@@ -101,7 +101,7 @@ export type Section = string;
  * JSON data associated with the session. <br>
  * This must not contain personally identifiable markers such as name or exact address.
  */
-export type CustomData = object;
+export type CustomData = string;
 
 /**
  * @property custom_data - JSON For "gain" and “lose” events, specifies the number of things are gained or lost.
