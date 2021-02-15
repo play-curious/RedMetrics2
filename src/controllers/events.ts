@@ -12,14 +12,23 @@ export function getGameSession(
 }
 
 export function postGameSession(session: types.GameSession): Promise<string> {
-  return gameSessions().insert(session).returning("id");
+  // @ts-ignore
+  return gameSessions()
+    .insert(session)
+    .returning("id")
+    .then((ids) => ids[0]);
 }
 
 export function updateGameSession(
   id: string,
   values: Partial<types.GameSession>
 ): Promise<string> {
-  return gameSessions().where("id", id).update(values).returning("id");
+  // @ts-ignore
+  return gameSessions()
+    .where("id", id)
+    .update(values)
+    .returning("id")
+    .then((ids) => ids[0]);
 }
 
 export function getEvents(id: string): Promise<types.RMEvent[]> {
@@ -35,5 +44,9 @@ export function getEventCount(id: string): Promise<number> {
 }
 
 export function postEvent(event: types.RMEvent): Promise<string> {
-  return events().insert(event).returning("id");
+  // @ts-ignore
+  return events()
+    .insert(event)
+    .returning("id")
+    .then((ids) => ids[0]);
 }
