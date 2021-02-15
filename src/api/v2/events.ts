@@ -187,6 +187,8 @@ app.v2
         user_time: req.body.user_time,
       };
 
+      await events.postEvent(event);
+
       res.json(event);
     })
   );
