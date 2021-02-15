@@ -182,7 +182,7 @@ app.v2
         coordinates: JSON.stringify(req.body.coordinates ?? {}),
         custom_data: JSON.stringify(req.body.custom_data ?? {}),
         section: req.body.section,
-        server_time: new Date().toTimeString(),
+        server_time: new Date().toISOString(),
         type: req.body.type,
         user_time: req.body.user_time,
       };
