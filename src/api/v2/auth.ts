@@ -117,6 +117,15 @@ app.v2.get(
   })
 );
 
+app.v2.delete(
+  "/account/:id",
+  utils.needRole("admin"),
+  expressAsyncHandler(async (req, res) => {
+    await auth.deleteAccount(req.params.id);
+    res.sendStatus(200);
+  })
+);
+
 app.v2.get(
   "/accounts",
   utils.needRole("admin"),

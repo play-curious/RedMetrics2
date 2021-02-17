@@ -9,6 +9,10 @@ export function getAccount(id: string): Promise<types.Account | undefined> {
   return accounts().where("id", id).first();
 }
 
+export async function deleteAccount(id: string): Promise<void> {
+  await accounts().where("id", id).delete();
+}
+
 export function getAccountByEmail(
   email: types.Email
 ): Promise<types.Account | undefined> {
