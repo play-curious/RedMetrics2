@@ -7,7 +7,10 @@ import * as game from "../../controllers/game";
 
 app.v2.post(
   "/game-session",
-  utils.needRole("dev"),
+  utils.checkUser((context) => (
+    context.session.permissions.includes(types.Permission.EDIT_GAMES) ||
+    context.session.permissions.includes(types.Permission.MANAGE_GAMES)
+  )),
   expressAsyncHandler(async (req, res) => {
     //  Creates a new session.
     //  A SessionMeta object should be sent in the body.
@@ -49,7 +52,11 @@ app.v2.post(
 app.v2
   .route("/game-session/:id")
   .get(
-    utils.needRole("user"),
+    utils.checkUser(async (context) => (
+      context.session.permissions.includes(types.Permission.SHOW_GAMES) ||
+      context.session.permissions.includes(types.Permission.MANAGE_GAMES) ||
+      (await game.getGame(context.params.id))?.publisher_id === context.account.id
+    )),
     expressAsyncHandler(async (req, res) => {
       // Retrieves the SessionMeta for the identified session
 
@@ -65,7 +72,11 @@ app.v2
     })
   )
   .put(
-    utils.needRole("dev"),
+    utils.checkUser(async (context) => (
+      context.session.permissions.includes(types.Permission.EDIT_GAMES) ||
+      context.session.permissions.includes(types.Permission.MANAGE_GAMES) ||
+      (await game.getGame(context.params.id))?.publisher_id === context.account.id
+    )),
     expressAsyncHandler(async (req, res) => {
       // Updates the SessionMeta. Only accessible to dev and admin.
 
@@ -97,18 +108,22 @@ app.v2
   );
 
 app.v2.get(
-  "/event/count",
-  utils.needRole("user"),
+  "/event/count/:id",
+  utils.checkUser(async (context) => (
+    context.session.permissions.includes(types.Permission.SHOW_GAMES) ||
+    context.session.permissions.includes(types.Permission.MANAGE_GAMES) ||
+    (await game.getGame(context.params.id))?.publisher_id === context.account.id
+  )),
   expressAsyncHandler(async (req, res) => {
-    const game_id = req.params.game_id;
+    const id = req.params.id;
 
-    if (!game_id)
+    if (!id)
       return utils.sendError(res, {
-        description: "Missing 'game_id' param",
+        description: "Missing 'id' param",
         code: 400,
       });
 
-    const targetGame = await game.getGame(game_id);
+    const targetGame = await game.getGame(id);
 
     if (!targetGame)
       return utils.sendError(res, {
@@ -116,14 +131,17 @@ app.v2.get(
         description: "Game not found",
       });
 
-    res.json(await events.getEventCount(game_id));
+    res.json(await events.getEventCount(id));
   })
 );
 
 app.v2
   .route("/event")
   .get(
-    utils.needRole("user"),
+    utils.checkUser(async (context) => (
+      context.session.permissions.includes(types.Permission.SHOW_GAMES) ||
+      context.session.permissions.includes(types.Permission.MANAGE_GAMES)
+    )),
     expressAsyncHandler(async (req, res) => {
       //  Lists Event objects (see section on Paging below).
       //  Admin and dev accounts can see the game events they have access to.
@@ -164,7 +182,10 @@ app.v2
     })
   )
   .post(
-    utils.needRole("dev"),
+    utils.checkUser(async (context) => (
+      context.session.permissions.includes(types.Permission.EDIT_GAMES) ||
+      context.session.permissions.includes(types.Permission.MANAGE_GAMES)
+    )),
     expressAsyncHandler(async (req, res) => {
       //  Adds more event information sent with the Event object, or array or Event objects.
       //  The gameVersionId query parameters is required.

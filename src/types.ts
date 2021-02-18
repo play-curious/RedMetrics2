@@ -1,3 +1,36 @@
+export enum Permission {
+  /**
+   * Includes SHOW_ACCOUNTS, CREATE_ACCOUNTS, DELETE_ACCOUNTS and EDIT_ACCOUNTS. <br/>
+   * By default, everyone can edit or delete he own account.
+   */
+  MANAGE_ACCOUNTS = "manageAccounts",
+  SHOW_ACCOUNTS = "showAccounts",
+  CREATE_ACCOUNTS = "createAccounts",
+  DELETE_ACCOUNTS = "deleteAccounts",
+  EDIT_ACCOUNTS = "editAccounts",
+
+  /**
+   * Includes SHOW_GAMES, CREATE_GAMES, DELETE_GAMES and EDIT_GAMES.
+   */
+  MANAGE_GAMES = "manageGames",
+  SHOW_GAMES = "showGames",
+  CREATE_GAMES = "createGames",
+  DELETE_GAMES = "deleteGames",
+  EDIT_GAMES = "editGames",
+}
+
+export const permissions: {[role: string]: Permission[]} = {
+  user: [],
+  dev: [
+    Permission.CREATE_GAMES,
+    Permission.SHOW_GAMES
+  ],
+  admin: [
+    Permission.MANAGE_ACCOUNTS,
+    Permission.MANAGE_GAMES
+  ]
+}
+
 /**
  * Containing date and time, following the ISO 8601 Extended format. <br>
  * It looks like 2015-01-27T09:44:32.418Z. <br>
@@ -24,12 +57,11 @@ export interface Session {
   api_key: Id;
   account_id: Id;
   game_id?: Id;
-  type: "game" | "connexion" | "analytic";
+  permissions: Permission[];
+  logger: boolean;
 }
 
-export interface SessionUser extends User, Session {
-  roleRank: number;
-}
+export type SessionUser = User & Session
 
 /**
  * A game  Since RedMetrics data is open, <br>

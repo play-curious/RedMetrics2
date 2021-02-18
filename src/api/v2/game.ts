@@ -10,7 +10,10 @@ import * as auth from "../../controllers/auth";
 app.v2
   .route("/game")
   .get(
-    utils.needRole("user"),
+    utils.checkUser(async (context) => (
+      context.session.permissions.includes(types.Permission.SHOW_GAMES) ||
+      context.session.permissions.includes(types.Permission.MANAGE_GAMES)
+    )),
     expressAsyncHandler(async (req, res) => {
       // Lists the games using the service as GameMeta objects (see section on Paging below)
       const publisher_id = req.params.publisher_id,
@@ -40,7 +43,10 @@ app.v2
     })
   )
   .post(
-    utils.needRole("dev"),
+    utils.checkUser(async (context) => (
+      context.session.permissions.includes(types.Permission.CREATE_GAMES) ||
+      context.session.permissions.includes(types.Permission.MANAGE_GAMES)
+    )),
     expressAsyncHandler(async (req, res) => {
       //  Creates a new game.
       //  A GameMeta object should be sent in the body.
@@ -78,15 +84,19 @@ app.v2
   );
 
 app.v2
-  .route("/game/:uuid")
+  .route("/game/:id")
   .get(
-    utils.needRole("user"),
+    utils.checkUser(async (context) => (
+      context.session.permissions.includes(types.Permission.SHOW_GAMES) ||
+      context.session.permissions.includes(types.Permission.MANAGE_GAMES) ||
+      (await game.getGame(context.params.id))?.publisher_id === context.account.id
+    )),
     expressAsyncHandler(async (req, res) => {
       // Retrieves information about the game with that Id as a GameMeta object
 
       // todo: add a v2.param("uuid") to check his validity automatically
 
-      const targetGame = await game.getGame(req.params.uuid);
+      const targetGame = await game.getGame(req.params.id);
 
       if (!targetGame)
         return utils.sendError(res, {
@@ -98,13 +108,17 @@ app.v2
     })
   )
   .put(
-    utils.needRole("dev"),
+    utils.checkUser(async (context) => (
+      context.session.permissions.includes(types.Permission.EDIT_GAMES) ||
+      context.session.permissions.includes(types.Permission.MANAGE_GAMES) ||
+      (await game.getGame(context.params.id))?.publisher_id === context.account.id
+    )),
     expressAsyncHandler(async (req, res) => {
       // Updates game information with the provided GameMeta.
 
       if (!utils.isLogin(req)) return;
 
-      const targetGame = await game.getGame(req.params.uuid);
+      const targetGame = await game.getGame(req.params.id);
 
       if (!targetGame)
         return utils.sendError(res, {
@@ -112,16 +126,7 @@ app.v2
           description: "Game not found",
         });
 
-      if (
-        req.user.roleRank < utils.roleRank("admin") &&
-        targetGame.publisher_id !== req.user.account_id
-      )
-        return utils.sendError(res, {
-          code: 401,
-          description: "This game does not belong to you ",
-        });
-
-      await game.updateGame(req.params.uuid, {
+      await game.updateGame(req.params.id, {
         name: req.body.name,
         description: req.body.description,
         custom_data: JSON.stringify(req.body.custom_data ?? {}),
@@ -132,25 +137,20 @@ app.v2
     })
   )
   .delete(
-    utils.needRole("dev"),
+    utils.checkUser(async (context) => (
+      context.session.permissions.includes(types.Permission.DELETE_GAMES) ||
+      context.session.permissions.includes(types.Permission.MANAGE_GAMES) ||
+      (await game.getGame(context.params.id))?.publisher_id === context.account.id
+    )),
     expressAsyncHandler(async (req, res) => {
       if (!utils.isLogin(req)) return;
 
-      const targetGame = await game.getGame(req.params.uuid);
+      const targetGame = await game.getGame(req.params.id);
 
       if (!targetGame)
         return utils.sendError(res, {
           code: 404,
           description: "Game not found",
-        });
-
-      if (
-        req.user.roleRank < utils.roleRank("admin") &&
-        targetGame.publisher_id !== req.user.account_id
-      )
-        return utils.sendError(res, {
-          code: 401,
-          description: "This game does not belong to you ",
         });
 
       await game.removeGame(targetGame.id as string);
@@ -160,28 +160,35 @@ app.v2
   );
 
 app.v2
-  .route("/game/:uuid/version")
+  .route("/game/:id/version")
   .get(
-    utils.needRole("user"),
+    utils.checkUser(async (context) => (
+      context.session.permissions.includes(types.Permission.SHOW_GAMES) ||
+      context.session.permissions.includes(types.Permission.MANAGE_GAMES) ||
+      (await game.getGame(context.params.id))?.publisher_id === context.account.id
+    )),
     expressAsyncHandler(async (req, res) => {
       // Lists versions of the the game with that Id as GameVersionMeta objects (see section on Paging below)
 
-      const targetGame = await game.getGame(req.params.uuid);
+      const targetGame = await game.getGame(req.params.id);
 
-      if (!targetGame) {
+      if (!targetGame)
         return utils.sendError(res, {
           code: 404,
           description: "Game not found",
         });
-      }
 
-      const targetGameVersions = await game.getGameVersions(req.params.uuid);
+      const targetGameVersions = await game.getGameVersions(req.params.id);
 
       res.json(targetGameVersions);
     })
   )
   .post(
-    utils.needRole("dev"),
+    utils.checkUser(async (context) => (
+      context.session.permissions.includes(types.Permission.EDIT_GAMES) ||
+      context.session.permissions.includes(types.Permission.MANAGE_GAMES) ||
+      (await game.getGame(context.params.id))?.publisher_id === context.account.id
+    )),
     expressAsyncHandler(async (req, res) => {
       //  Creates a new version of the game.
       //  A GameVersionMeta object should be sent in the body.
@@ -195,21 +202,12 @@ app.v2
           description: "Missing version name",
         });
 
-      const targetGame = await game.getGame(req.params.uuid);
+      const targetGame = await game.getGame(req.params.id);
 
       if (!targetGame)
         return utils.sendError(res, {
           code: 404,
           description: "Game not found",
-        });
-
-      if (
-        req.user.roleRank < utils.roleRank("admin") &&
-        targetGame.publisher_id !== req.user.account_id
-      )
-        return utils.sendError(res, {
-          code: 401,
-          description: "This game does not belong to you ",
         });
 
       const id = await game.postGameVersion({
@@ -224,13 +222,16 @@ app.v2
   );
 
 app.v2
-  .route("/version/:uuid")
+  .route("/version/:id")
   .get(
-    utils.needRole("user"),
+    utils.checkUser(async (context) => (
+      context.session.permissions.includes(types.Permission.SHOW_GAMES) ||
+      context.session.permissions.includes(types.Permission.MANAGE_GAMES)
+    )),
     expressAsyncHandler(async (req, res) => {
       // Retrieves information about the game version as a GameVersionMeta object
 
-      const version = await game.getGameVersion(req.params.uuid);
+      const version = await game.getGameVersion(req.params.id);
 
       if (!version)
         return utils.sendError(res, {
@@ -242,13 +243,16 @@ app.v2
     })
   )
   .put(
-    utils.needRole("dev"),
+    utils.checkUser(async (context) => (
+      context.session.permissions.includes(types.Permission.EDIT_GAMES) ||
+      context.session.permissions.includes(types.Permission.MANAGE_GAMES)
+    )),
     expressAsyncHandler(async (req, res) => {
       // Updates game information with the provided GameVersionMeta.
 
       if (!utils.isLogin(req)) return;
 
-      const version = await game.getGameVersion(req.params.uuid);
+      const version = await game.getGameVersion(req.params.id);
 
       if (!version)
         return utils.sendError(res, {
@@ -264,22 +268,13 @@ app.v2
           description: "Game not found",
         });
 
-      if (
-        req.user.roleRank < utils.roleRank("admin") &&
-        targetGame.publisher_id !== req.user.account_id
-      )
-        return utils.sendError(res, {
-          code: 401,
-          description: "This game does not belong to you ",
-        });
-
       const values: Partial<types.GameVersion> = {
         name: req.body.name,
         description: req.body.description,
         custom_data: JSON.stringify(req.body.custom_data ?? {}),
       };
 
-      await game.updateGameVersion(req.params.uuid, values);
+      await game.updateGameVersion(req.params.id, values);
 
       res.sendStatus(200);
     })

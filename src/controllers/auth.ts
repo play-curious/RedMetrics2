@@ -40,12 +40,11 @@ export async function getSession(
 }
 
 export async function getUserSession(
-  account_id: types.Id,
-  type: types.Session["type"] = "connexion"
+  account_id: types.Id
 ): Promise<types.Session | undefined> {
   return sessions()
     .where("account_id", account_id)
-    .and.where("type", type)
+    .and.where("logger", true)
     .first();
 }
 

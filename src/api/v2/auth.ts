@@ -52,7 +52,8 @@ app.v2.post(
       api_key: apiKey,
       account_id: account.id as string,
       start_at: new Date().toISOString(),
-      type: "connexion",
+      permissions: types.permissions[account.role].slice(),
+      logger: true
     });
 
     res.json({ apiKey });
@@ -102,7 +103,8 @@ app.v2.post(
       api_key: apiKey,
       account_id: id,
       start_at: new Date().toISOString(),
-      type: "connexion",
+      permissions: types.permissions[role].slice(),
+      logger: true
     });
 
     res.json({ id, apiKey });
@@ -111,7 +113,7 @@ app.v2.post(
 
 app.v2.get(
   "/account",
-  utils.needRole("user"),
+  utils.checkUser(),
   expressAsyncHandler(async (req, res) => {
     if (utils.isLogin(req)) res.json(req.user);
   })
@@ -119,7 +121,11 @@ app.v2.get(
 
 app.v2.delete(
   "/account/:id",
-  utils.needRole("admin"),
+  utils.checkUser((context) => (
+    context.session.permissions.includes(types.Permission.DELETE_ACCOUNTS) ||
+    context.session.permissions.includes(types.Permission.MANAGE_ACCOUNTS) ||
+    context.params.id === context.account.id
+  )),
   expressAsyncHandler(async (req, res) => {
     await auth.deleteAccount(req.params.id);
     res.sendStatus(200);
@@ -128,7 +134,10 @@ app.v2.delete(
 
 app.v2.get(
   "/accounts",
-  utils.needRole("admin"),
+  utils.checkUser((context) => (
+    context.session.permissions.includes(types.Permission.MANAGE_ACCOUNTS) ||
+    context.session.permissions.includes(types.Permission.SHOW_ACCOUNTS)
+  )),
   expressAsyncHandler(async (req, res) => {
     res.json(await auth.getAccounts());
   })
@@ -136,7 +145,7 @@ app.v2.get(
 
 app.v2.get(
   "/sessions",
-  utils.needRole("user"),
+  utils.checkUser(),
   expressAsyncHandler(async (req, res) => {
     if (!utils.isLogin(req)) return;
     res.json(await auth.getUserSessions(req.user.account_id));
@@ -145,7 +154,7 @@ app.v2.get(
 
 app.v2
   .route("/session")
-  .all(utils.needRole("user"))
+  .all(utils.checkUser())
   .get(
     expressAsyncHandler(async (req, res) => {
       if (!utils.isLogin(req)) return;
@@ -162,22 +171,30 @@ app.v2
           description: "Missing 'type' and 'name' properties in body",
         });
 
+      if(!req.body.permissions || !Array.isArray(req.body.permissions))
+        return utils.sendError(res, {
+          code: 400,
+          description: "Missing 'permissions' property in body",
+        });
+
+      for(const permission of req.body.permissions)
+        if(!req.user.permissions.includes(permission))
+          return utils.sendError(res, {
+            code: 400,
+            description: `Bad permission is pushed to new session: ${permission}`,
+          });
+
       const currentSession: types.Session = {
-        type: req.body.type === "game" ? "game" : "analytic",
         start_at: new Date().toISOString(),
         account_id: req.user.account_id,
         name: req.body.name,
         api_key: uuid.v4(),
+        logger: false,
+        permissions: req.body.permissions
       };
 
-      if (currentSession.type === "game") {
+      if (req.body.game_id === "game") {
         const game_id = req.body.game_id;
-
-        if (!game_id)
-          return utils.sendError(res, {
-            description: 'Missing property "game_id"',
-            code: 400,
-          });
 
         const currentGame = await game.getGame(game_id);
 
@@ -198,6 +215,10 @@ app.v2
 
 app.v2.delete(
   "/session/:apikey",
+  utils.checkUser((context) => (
+    context.session.permissions.includes(types.Permission.MANAGE_ACCOUNTS) ||
+    context.session.api_key === context.params.apikey
+  )),
   expressAsyncHandler(async (req, res) => {
     if (!utils.isLogin(req)) return;
     const apikey = req.params.apikey;
@@ -208,7 +229,7 @@ app.v2.delete(
 
 app.v2.get(
   "/logout",
-  utils.needRole("user"),
+  utils.checkUser(),
   expressAsyncHandler(async (req, res) => {
     if (utils.isLogin(req)) await auth.removeSession(req.user.api_key);
     res.sendStatus(200);
@@ -219,7 +240,11 @@ app.v2.get(
 app.v2
   .route("/account/:id")
   .get(
-    utils.needRole("admin"),
+    utils.checkUser((context) => (
+      context.session.permissions.includes(types.Permission.SHOW_ACCOUNTS) ||
+      context.session.permissions.includes(types.Permission.MANAGE_ACCOUNTS) ||
+      context.params.id === context.account.id
+    )),
     expressAsyncHandler(async (req, res) => {
       //  Retrieves the AccountMeta for the given account.
       //  Only admins can access accounts other than their own
@@ -243,7 +268,11 @@ app.v2
     })
   )
   .put(
-    utils.needRole("admin"),
+    utils.checkUser((context) => (
+      context.session.permissions.includes(types.Permission.EDIT_ACCOUNTS) ||
+      context.session.permissions.includes(types.Permission.MANAGE_ACCOUNTS) ||
+      context.params.id === context.account.id
+    )),
     expressAsyncHandler(async (req, res) => {
       //  Update the given account.
       //  An AccountMeta object should be sent in the body.

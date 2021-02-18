@@ -49,7 +49,12 @@ export async function forFiles(
   }
 }
 
-export function needRole(role: types.Role): express.RequestHandler {
+export function checkUser(checkCallback: (context: {
+  session: types.Session
+  account: types.Account
+  params: any
+  body: any
+}) => (boolean | Promise<boolean>) = () => true): express.RequestHandler {
   return expressAsyncHandler(async (req, res, next) => {
     const apiKey = req.query.apikey;
 
@@ -81,7 +86,12 @@ export function needRole(role: types.Role): express.RequestHandler {
         description: "Account not found",
       });
 
-    if (roleRank(account.role) < roleRank(role))
+    if(!(await checkCallback({
+      session,
+      account,
+      params: req.params,
+      body: req.body
+    })))
       return sendError(res, {
         code: 401,
         description: "Access denied",
@@ -93,15 +103,10 @@ export function needRole(role: types.Role): express.RequestHandler {
       role: account.role,
       email: account.email,
       password: account.password,
-      roleRank: roleRank(account.role),
     } as types.SessionUser;
 
     next();
   });
-}
-
-export function roleRank(role: types.Role): 0 | 1 | 2 {
-  return ["user", "dev", "admin"].indexOf(role) as 0 | 1 | 2;
 }
 
 export function sendError(res: express.Response, error: types.RMError) {
