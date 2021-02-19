@@ -164,10 +164,10 @@ app.v2
     expressAsyncHandler(async (req, res) => {
       if (!utils.isLogin(req)) return;
 
-      if (!req.body.type || !req.body.name)
+      if (!req.body.name)
         return utils.sendError(res, {
           code: 400,
-          description: "Missing 'type' and 'name' properties in body",
+          description: "Missing 'name' property in body",
         });
 
       if (!req.body.permissions || !Array.isArray(req.body.permissions))
@@ -176,12 +176,39 @@ app.v2
           description: "Missing 'permissions' property in body",
         });
 
-      for (const permission of req.body.permissions)
-        if (!req.user.permissions.includes(permission))
+      for (const permission of req.body.permissions) {
+        let error = false;
+
+        if (!req.user.permissions.includes(permission)) {
+          if (
+            permission === "showAccounts" ||
+            permission === "createAccounts" ||
+            permission === "deleteAccounts" ||
+            permission === "editAccounts"
+          ) {
+            if (
+              !req.user.permissions.includes(types.Permission.MANAGE_ACCOUNTS)
+            ) {
+              error = true;
+            }
+          } else if (
+            permission === "showGames" ||
+            permission === "createGames" ||
+            permission === "deleteGames" ||
+            permission === "editGames"
+          ) {
+            if (!req.user.permissions.includes(types.Permission.MANAGE_GAMES)) {
+              error = true;
+            }
+          }
+        }
+
+        if (error)
           return utils.sendError(res, {
             code: 400,
             description: `Bad permission is pushed to new session: ${permission}`,
           });
+      }
 
       const currentSession: types.Session = {
         start_at: new Date().toISOString(),
@@ -189,7 +216,7 @@ app.v2
         name: req.body.name,
         api_key: uuid.v4(),
         logger: false,
-        permissions: req.body.permissions,
+        permissions: JSON.stringify(req.body.permissions),
       };
 
       if (req.body.game_id === "game") {
