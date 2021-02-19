@@ -219,7 +219,7 @@ app.v2
         permissions: JSON.stringify(req.body.permissions),
       };
 
-      if (req.body.game_id === "game") {
+      if (req.body.game_id) {
         const game_id = req.body.game_id;
 
         const currentGame = await game.getGame(game_id);
