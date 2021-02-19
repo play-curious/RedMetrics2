@@ -49,12 +49,15 @@ export async function forFiles(
   }
 }
 
-export function checkUser(checkCallback: (context: {
-  session: types.Session
-  account: types.Account
-  params: any
-  body: any
-}) => (boolean | Promise<boolean>) = () => true): express.RequestHandler {
+export function checkUser(
+  permissions?: types.Permission[],
+  condition: (context: {
+    session: types.Session;
+    account: types.Account;
+    params: any;
+    body: any;
+  }) => boolean | Promise<boolean> = () => false
+): express.RequestHandler {
   return expressAsyncHandler(async (req, res, next) => {
     const apiKey = req.query.apikey;
 
@@ -86,16 +89,28 @@ export function checkUser(checkCallback: (context: {
         description: "Account not found",
       });
 
-    if(!(await checkCallback({
-      session,
-      account,
-      params: req.params,
-      body: req.body
-    })))
-      return sendError(res, {
-        code: 401,
-        description: "Access denied",
-      });
+    if (
+      !(await condition({
+        session,
+        account,
+        params: req.params,
+        body: req.body,
+      }))
+    ) {
+      if (
+        permissions &&
+        !permissions.some((permission) =>
+          (Array.isArray(session.permissions)
+            ? session.permissions
+            : JSON.parse(session.permissions)
+          ).includes(permission)
+        )
+      )
+        return sendError(res, {
+          code: 401,
+          description: "Access denied",
+        });
+    }
 
     // @ts-ignore
     req.user = {

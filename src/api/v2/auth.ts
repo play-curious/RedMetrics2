@@ -52,8 +52,8 @@ app.v2.post(
       api_key: apiKey,
       account_id: account.id as string,
       start_at: new Date().toISOString(),
-      permissions: types.permissions[account.role].slice(),
-      logger: true
+      permissions: JSON.stringify(types.permissions[account.role].slice()),
+      logger: true,
     });
 
     res.json({ apiKey });
@@ -103,8 +103,8 @@ app.v2.post(
       api_key: apiKey,
       account_id: id,
       start_at: new Date().toISOString(),
-      permissions: types.permissions[role].slice(),
-      logger: true
+      permissions: JSON.stringify(types.permissions[role].slice()),
+      logger: true,
     });
 
     res.json({ id, apiKey });
@@ -121,11 +121,10 @@ app.v2.get(
 
 app.v2.delete(
   "/account/:id",
-  utils.checkUser((context) => (
-    context.session.permissions.includes(types.Permission.DELETE_ACCOUNTS) ||
-    context.session.permissions.includes(types.Permission.MANAGE_ACCOUNTS) ||
-    context.params.id === context.account.id
-  )),
+  utils.checkUser(
+    [types.Permission.DELETE_ACCOUNTS, types.Permission.MANAGE_ACCOUNTS],
+    (context) => context.params.id === context.account.id
+  ),
   expressAsyncHandler(async (req, res) => {
     await auth.deleteAccount(req.params.id);
     res.sendStatus(200);
@@ -134,10 +133,10 @@ app.v2.delete(
 
 app.v2.get(
   "/accounts",
-  utils.checkUser((context) => (
-    context.session.permissions.includes(types.Permission.MANAGE_ACCOUNTS) ||
-    context.session.permissions.includes(types.Permission.SHOW_ACCOUNTS)
-  )),
+  utils.checkUser([
+    types.Permission.MANAGE_ACCOUNTS,
+    types.Permission.SHOW_ACCOUNTS,
+  ]),
   expressAsyncHandler(async (req, res) => {
     res.json(await auth.getAccounts());
   })
@@ -171,14 +170,14 @@ app.v2
           description: "Missing 'type' and 'name' properties in body",
         });
 
-      if(!req.body.permissions || !Array.isArray(req.body.permissions))
+      if (!req.body.permissions || !Array.isArray(req.body.permissions))
         return utils.sendError(res, {
           code: 400,
           description: "Missing 'permissions' property in body",
         });
 
-      for(const permission of req.body.permissions)
-        if(!req.user.permissions.includes(permission))
+      for (const permission of req.body.permissions)
+        if (!req.user.permissions.includes(permission))
           return utils.sendError(res, {
             code: 400,
             description: `Bad permission is pushed to new session: ${permission}`,
@@ -190,7 +189,7 @@ app.v2
         name: req.body.name,
         api_key: uuid.v4(),
         logger: false,
-        permissions: req.body.permissions
+        permissions: req.body.permissions,
       };
 
       if (req.body.game_id === "game") {
@@ -215,10 +214,10 @@ app.v2
 
 app.v2.delete(
   "/session/:apikey",
-  utils.checkUser((context) => (
-    context.session.permissions.includes(types.Permission.MANAGE_ACCOUNTS) ||
-    context.session.api_key === context.params.apikey
-  )),
+  utils.checkUser(
+    [types.Permission.MANAGE_ACCOUNTS],
+    (context) => context.session.api_key === context.params.apikey
+  ),
   expressAsyncHandler(async (req, res) => {
     if (!utils.isLogin(req)) return;
     const apikey = req.params.apikey;
@@ -240,11 +239,10 @@ app.v2.get(
 app.v2
   .route("/account/:id")
   .get(
-    utils.checkUser((context) => (
-      context.session.permissions.includes(types.Permission.SHOW_ACCOUNTS) ||
-      context.session.permissions.includes(types.Permission.MANAGE_ACCOUNTS) ||
-      context.params.id === context.account.id
-    )),
+    utils.checkUser(
+      [types.Permission.SHOW_ACCOUNTS, types.Permission.MANAGE_ACCOUNTS],
+      (context) => context.params.id === context.account.id
+    ),
     expressAsyncHandler(async (req, res) => {
       //  Retrieves the AccountMeta for the given account.
       //  Only admins can access accounts other than their own
@@ -268,11 +266,10 @@ app.v2
     })
   )
   .put(
-    utils.checkUser((context) => (
-      context.session.permissions.includes(types.Permission.EDIT_ACCOUNTS) ||
-      context.session.permissions.includes(types.Permission.MANAGE_ACCOUNTS) ||
-      context.params.id === context.account.id
-    )),
+    utils.checkUser(
+      [types.Permission.EDIT_ACCOUNTS, types.Permission.MANAGE_ACCOUNTS],
+      (context) => context.params.id === context.account.id
+    ),
     expressAsyncHandler(async (req, res) => {
       //  Update the given account.
       //  An AccountMeta object should be sent in the body.

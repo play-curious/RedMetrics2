@@ -19,17 +19,11 @@ export enum Permission {
   EDIT_GAMES = "editGames",
 }
 
-export const permissions: {[role: string]: Permission[]} = {
+export const permissions: { [role: string]: Permission[] } = {
   user: [],
-  dev: [
-    Permission.CREATE_GAMES,
-    Permission.SHOW_GAMES
-  ],
-  admin: [
-    Permission.MANAGE_ACCOUNTS,
-    Permission.MANAGE_GAMES
-  ]
-}
+  dev: [Permission.CREATE_GAMES, Permission.SHOW_GAMES],
+  admin: [Permission.MANAGE_ACCOUNTS, Permission.MANAGE_GAMES],
+};
 
 /**
  * Containing date and time, following the ISO 8601 Extended format. <br>
@@ -57,11 +51,11 @@ export interface Session {
   api_key: Id;
   account_id: Id;
   game_id?: Id;
-  permissions: Permission[];
+  permissions: Permission[] | string;
   logger: boolean;
 }
 
-export type SessionUser = User & Session
+export type SessionUser = User & Session;
 
 /**
  * A game  Since RedMetrics data is open, <br>

@@ -10,10 +10,10 @@ import * as auth from "../../controllers/auth";
 app.v2
   .route("/game")
   .get(
-    utils.checkUser(async (context) => (
-      context.session.permissions.includes(types.Permission.SHOW_GAMES) ||
-      context.session.permissions.includes(types.Permission.MANAGE_GAMES)
-    )),
+    utils.checkUser([
+      types.Permission.SHOW_GAMES,
+      types.Permission.MANAGE_GAMES,
+    ]),
     expressAsyncHandler(async (req, res) => {
       // Lists the games using the service as GameMeta objects (see section on Paging below)
       const publisher_id = req.params.publisher_id,
@@ -43,10 +43,10 @@ app.v2
     })
   )
   .post(
-    utils.checkUser(async (context) => (
-      context.session.permissions.includes(types.Permission.CREATE_GAMES) ||
-      context.session.permissions.includes(types.Permission.MANAGE_GAMES)
-    )),
+    utils.checkUser([
+      types.Permission.CREATE_GAMES,
+      types.Permission.MANAGE_GAMES,
+    ]),
     expressAsyncHandler(async (req, res) => {
       //  Creates a new game.
       //  A GameMeta object should be sent in the body.
@@ -86,11 +86,12 @@ app.v2
 app.v2
   .route("/game/:id")
   .get(
-    utils.checkUser(async (context) => (
-      context.session.permissions.includes(types.Permission.SHOW_GAMES) ||
-      context.session.permissions.includes(types.Permission.MANAGE_GAMES) ||
-      (await game.getGame(context.params.id))?.publisher_id === context.account.id
-    )),
+    utils.checkUser(
+      [types.Permission.SHOW_GAMES, types.Permission.MANAGE_GAMES],
+      async (context) =>
+        (await game.getGame(context.params.id))?.publisher_id ===
+        context.account.id
+    ),
     expressAsyncHandler(async (req, res) => {
       // Retrieves information about the game with that Id as a GameMeta object
 
@@ -108,11 +109,12 @@ app.v2
     })
   )
   .put(
-    utils.checkUser(async (context) => (
-      context.session.permissions.includes(types.Permission.EDIT_GAMES) ||
-      context.session.permissions.includes(types.Permission.MANAGE_GAMES) ||
-      (await game.getGame(context.params.id))?.publisher_id === context.account.id
-    )),
+    utils.checkUser(
+      [types.Permission.EDIT_GAMES, types.Permission.MANAGE_GAMES],
+      async (context) =>
+        (await game.getGame(context.params.id))?.publisher_id ===
+        context.account.id
+    ),
     expressAsyncHandler(async (req, res) => {
       // Updates game information with the provided GameMeta.
 
@@ -137,11 +139,12 @@ app.v2
     })
   )
   .delete(
-    utils.checkUser(async (context) => (
-      context.session.permissions.includes(types.Permission.DELETE_GAMES) ||
-      context.session.permissions.includes(types.Permission.MANAGE_GAMES) ||
-      (await game.getGame(context.params.id))?.publisher_id === context.account.id
-    )),
+    utils.checkUser(
+      [types.Permission.DELETE_GAMES, types.Permission.MANAGE_GAMES],
+      async (context) =>
+        (await game.getGame(context.params.id))?.publisher_id ===
+        context.account.id
+    ),
     expressAsyncHandler(async (req, res) => {
       if (!utils.isLogin(req)) return;
 
@@ -162,11 +165,12 @@ app.v2
 app.v2
   .route("/game/:id/version")
   .get(
-    utils.checkUser(async (context) => (
-      context.session.permissions.includes(types.Permission.SHOW_GAMES) ||
-      context.session.permissions.includes(types.Permission.MANAGE_GAMES) ||
-      (await game.getGame(context.params.id))?.publisher_id === context.account.id
-    )),
+    utils.checkUser(
+      [types.Permission.SHOW_GAMES, types.Permission.MANAGE_GAMES],
+      async (context) =>
+        (await game.getGame(context.params.id))?.publisher_id ===
+        context.account.id
+    ),
     expressAsyncHandler(async (req, res) => {
       // Lists versions of the the game with that Id as GameVersionMeta objects (see section on Paging below)
 
@@ -184,11 +188,12 @@ app.v2
     })
   )
   .post(
-    utils.checkUser(async (context) => (
-      context.session.permissions.includes(types.Permission.EDIT_GAMES) ||
-      context.session.permissions.includes(types.Permission.MANAGE_GAMES) ||
-      (await game.getGame(context.params.id))?.publisher_id === context.account.id
-    )),
+    utils.checkUser(
+      [types.Permission.EDIT_GAMES, types.Permission.MANAGE_GAMES],
+      async (context) =>
+        (await game.getGame(context.params.id))?.publisher_id ===
+        context.account.id
+    ),
     expressAsyncHandler(async (req, res) => {
       //  Creates a new version of the game.
       //  A GameVersionMeta object should be sent in the body.
@@ -224,10 +229,10 @@ app.v2
 app.v2
   .route("/version/:id")
   .get(
-    utils.checkUser(async (context) => (
-      context.session.permissions.includes(types.Permission.SHOW_GAMES) ||
-      context.session.permissions.includes(types.Permission.MANAGE_GAMES)
-    )),
+    utils.checkUser([
+      types.Permission.SHOW_GAMES,
+      types.Permission.MANAGE_GAMES,
+    ]),
     expressAsyncHandler(async (req, res) => {
       // Retrieves information about the game version as a GameVersionMeta object
 
@@ -243,10 +248,10 @@ app.v2
     })
   )
   .put(
-    utils.checkUser(async (context) => (
-      context.session.permissions.includes(types.Permission.EDIT_GAMES) ||
-      context.session.permissions.includes(types.Permission.MANAGE_GAMES)
-    )),
+    utils.checkUser([
+      types.Permission.EDIT_GAMES,
+      types.Permission.MANAGE_GAMES,
+    ]),
     expressAsyncHandler(async (req, res) => {
       // Updates game information with the provided GameVersionMeta.
 
