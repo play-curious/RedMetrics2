@@ -39,10 +39,7 @@ app.v2.post(
       game_version_id,
     });
 
-    res.json({
-      id,
-      success: "Success",
-    });
+    res.json({ id });
   })
 );
 
