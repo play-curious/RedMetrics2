@@ -49,8 +49,15 @@ app.v2
     utils.checkUser(
       [types.Permission.SHOW_GAMES, types.Permission.MANAGE_GAMES],
       async (context) =>
-        (await game.getGame(context.params.id))?.publisher_id ===
-        context.account.id
+        (
+          await game.getGame(
+            ((await game.getGameVersion(
+              ((await events.getGameSession(
+                context.params.id
+              )) as types.GameSession).game_version_id as string
+            )) as types.GameVersion).game_id
+          )
+        )?.publisher_id === context.account.id
     ),
     expressAsyncHandler(async (req, res) => {
       // Retrieves the SessionMeta for the identified session
@@ -70,8 +77,15 @@ app.v2
     utils.checkUser(
       [types.Permission.EDIT_GAMES, types.Permission.MANAGE_GAMES],
       async (context) =>
-        (await game.getGame(context.params.id))?.publisher_id ===
-        context.account.id
+        (
+          await game.getGame(
+            ((await game.getGameVersion(
+              ((await events.getGameSession(
+                context.params.id
+              )) as types.GameSession).game_version_id as string
+            )) as types.GameVersion).game_id
+          )
+        )?.publisher_id === context.account.id
     ),
     expressAsyncHandler(async (req, res) => {
       // Updates the SessionMeta. Only accessible to dev and admin.
@@ -104,31 +118,39 @@ app.v2
   );
 
 app.v2.get(
-  "/event/count/:id",
+  "/version-session/:id",
   utils.checkUser(
     [types.Permission.SHOW_GAMES, types.Permission.MANAGE_GAMES],
     async (context) =>
-      (await game.getGame(context.params.id))?.publisher_id ===
-      context.account.id
+      (
+        await game.getGame(
+          ((await game.getGameVersion(context.params.id)) as types.GameVersion)
+            .game_id
+        )
+      )?.publisher_id === context.account.id
   ),
   expressAsyncHandler(async (req, res) => {
-    const id = req.params.id;
+    res.json(await events.getGameSessions(req.params.id));
+  })
+);
 
-    if (!id)
-      return utils.sendError(res, {
-        description: "Missing 'id' param",
-        code: 400,
-      });
-
-    const targetGame = await game.getGame(id);
-
-    if (!targetGame)
-      return utils.sendError(res, {
-        code: 404,
-        description: "Game not found",
-      });
-
-    res.json(await events.getEventCount(id));
+app.v2.get(
+  "/session/:id/events",
+  utils.checkUser(
+    [types.Permission.SHOW_GAMES, types.Permission.MANAGE_GAMES],
+    async (context) =>
+      (
+        await game.getGame(
+          ((await game.getGameVersion(
+            ((await events.getGameSession(
+              context.params.id
+            )) as types.GameSession).game_version_id as string
+          )) as types.GameVersion).game_id
+        )
+      )?.publisher_id === context.account.id
+  ),
+  expressAsyncHandler(async (req, res) => {
+    res.json(await events.getEvents(req.params.id));
   })
 );
 
@@ -155,25 +177,24 @@ app.v2
       //  - beforeUserTime - Date
 
       let query = events.events();
-      if (req.params.game_id) {
+      if (req.body.game_id) {
         query = query
           .leftJoin("game_version", "game_version.id", "event.game_version_id")
           .leftJoin("game", "game.id", "game_version.game_id")
-          .where("game.id", req.params.game_id);
+          .where("game.id", req.body.game_id);
       }
-      if (req.params.version)
-        query = query.andWhere("game_version.name", req.params.version);
-      if (req.params.session_id)
-        query = query.andWhere("session_id", req.params.session_id);
-      if (req.params.type) query = query.andWhere("type", req.params.type);
-      if (req.params.section)
-        query = query.andWhere("section", req.params.section);
-      if (req.params.after)
-        query = query.andWhere("server_time", ">", req.params.after);
-      if (req.params.before)
-        query = query.andWhere("server_time", "<", req.params.before);
-      if (req.params.offset) query = query.offset(+req.params.offset);
-      if (req.params.count) query = query.limit(+req.params.count);
+      if (req.body.version)
+        query = query.andWhere("game_version.name", req.body.version);
+      if (req.body.session_id)
+        query = query.andWhere("session_id", req.body.session_id);
+      if (req.body.type) query = query.andWhere("type", req.body.type);
+      if (req.body.section) query = query.andWhere("section", req.body.section);
+      if (req.body.after)
+        query = query.andWhere("server_time", ">", req.body.after);
+      if (req.body.before)
+        query = query.andWhere("server_time", "<", req.body.before);
+      if (req.body.offset) query = query.offset(+req.body.offset);
+      if (req.body.count) query = query.limit(+req.body.count);
 
       res.json(await query);
     })

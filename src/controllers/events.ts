@@ -11,6 +11,10 @@ export function getGameSession(
   return gameSessions().where("id", id).first();
 }
 
+export function getGameSessions(id: string): Promise<types.GameSession[]> {
+  return gameSessions().where("game_version_id", id);
+}
+
 export function postGameSession(session: types.GameSession): Promise<string> {
   // @ts-ignore
   return gameSessions()
@@ -37,10 +41,6 @@ export function getEvents(id: string): Promise<types.RMEvent[]> {
 
 export function getEvent(id: number): Promise<types.RMEvent | undefined> {
   return events().where("id", id).first();
-}
-
-export function getEventCount(id: string): Promise<number> {
-  return events().where("game_id", id).count();
 }
 
 export function postEvent(event: types.RMEvent): Promise<string> {
