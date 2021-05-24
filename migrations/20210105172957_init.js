@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.down = exports.up = void 0;
 async function up(knex) {
     return knex.schema.createTable("game", (table) => {
-        table.uuid("id").primary().defaultTo("uuid_generate_v4()");
+        table.uuid("id").primary().defaultTo(knex.raw("uuid_generate_v4()"));
         table.string("name").notNullable();
         table.string("author");
         table.text("description");
