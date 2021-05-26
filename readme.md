@@ -5,16 +5,20 @@ Open game analytics
 ## Building with Docker
 
 1. Create your .env file from the template
-    ```cp .env.template .env```
+   `cp .env.template .env`
 
-2. To recreate container (after changing docker file)
-    ```yarn docker```
+2. To start containers, or to recreate after changing docker file
+   `yarn docker`
 
 3. To test docker container by logging into CLI
-    1) start container
-        ```docker run -td test-docker-compose_web```
-    2) enter container
-        ```docker exec -it redmetrics2 /bin/bash```
+   1. Start container
+      `docker run -td test-docker-compose_web`
+   2. Enter container
+      `yarn connect-to-docker`
+   3. Stop containers
+      `yarn docker-stop`
+   4. Remove containers
+      `yarn docker-remove`
 
 ## Developing the database
 

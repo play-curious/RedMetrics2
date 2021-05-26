@@ -14,6 +14,9 @@
     "prettier": "prettier --write src tests",
     "test": "tsc && jest",
     "docker": "docker-compose up --build",
+    "docker-connect": "docker exec -it redmetrics2_web_1 /bin/bash",
+    "docker-stop": "docker-compose stop web db adminer",
+    "docker-remove": "yarn docker-stop && docker-compose rm -f web db adminer",
     "clean": "rm -rf dist"
   },
   "repository": {

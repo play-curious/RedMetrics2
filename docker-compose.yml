@@ -4,13 +4,14 @@ services:
     build: .
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
-    environment: 
+    environment:
       PGHOST: db
       PGUSER: "${PGUSER}"
       PGDATABASE: "${PGDATABASE}"
       PGPASSWORD: "${PGPASSWORD}"
     volumes:
       - ./src:/usr/src/app/src:ro
+      - ./migrations_src:/usr/src/app/migrations_src:ro
 
   db:
     image: postgres
