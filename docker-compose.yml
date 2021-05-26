@@ -11,6 +11,7 @@ services:
       PGPASSWORD: "${PGPASSWORD}"
     volumes:
       - ./src:/usr/src/app/src:ro
+      - ./tests:/usr/src/app/tests:ro
       - ./migrations_src:/usr/src/app/migrations_src:ro
 
   db:

@@ -51,7 +51,7 @@ export async function up(knex: Knex): Promise<void> {
     table.timestamp("start_at").notNullable();
     table.string("name").notNullable();
 
-    table.uuid("game_id").notNullable();
+    table.uuid("game_id");
     table.foreign("game_id").references("game.id");
 
     table.uuid("account_id").notNullable();
@@ -116,11 +116,12 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.schema.dropTable("account");
-  await knex.schema.dropTable("game");
-  await knex.schema.dropTable("game_account");
-  await knex.schema.dropTable("session");
-  await knex.schema.dropTable("game_version");
+  await knex.schema.dropTable("event");
   await knex.schema.dropTable("game_session");
-  await knex.schema.dropTable("game_event");
+  await knex.schema.dropTable("game_version");
+  await knex.schema.dropTable("session");
+  await knex.schema.dropTable("game_account");
+  await knex.schema.dropTable("game");
+  await knex.schema.dropTable("account");
+  await knex.schema.raw("drop type role");
 }

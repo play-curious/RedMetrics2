@@ -54,7 +54,7 @@ describe("⚙ Config", () => {
         .database("account")
         .insert({
           email: users.admin.email,
-          password: bcrypt.hashSync("test", process.env.SALT),
+          password: bcrypt.hashSync("test", parseInt(process.env.SALT_ROUNDS)),
           role: "admin",
         })
         .then(() => done())

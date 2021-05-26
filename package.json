@@ -8,6 +8,7 @@
     "serve": "yarn build && node .",
     "build-migrations": "tsc -p tsconfig.migrations.json",
     "migrate": "yarn build-migrations && yarn knex migrate:latest",
+    "migrate-down": "yarn build-migrations && yarn knex migrate:down",
     "start": "yarn migrate && yarn serve",
     "format": "yarn prettier",
     "watch": "tsc-watch --onSuccess \"node .\"",
