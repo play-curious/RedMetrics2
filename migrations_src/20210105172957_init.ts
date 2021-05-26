@@ -1,4 +1,8 @@
 import * as Knex from "knex";
+import bcrypt from "bcrypt";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
@@ -113,6 +117,19 @@ export async function up(knex: Knex): Promise<void> {
       .references("game_session.id")
       .onDelete("CASCADE");
   });
+
+  // Create admin account
+  const adminEmail = process.env.ADMIN_EMAIL || "admin@example.com";
+  const adminPassword = Math.random().toString(16).substr(2, 14);
+  await knex("account").insert({
+    email: adminEmail,
+    password: bcrypt.hashSync(
+      adminPassword,
+      parseInt((process.env.SALT_ROUNDS as string) || "10")
+    ),
+    role: "admin",
+  });
+  console.log(`Created admin account for ${adminEmail} ${adminPassword}`);
 }
 
 export async function down(knex: Knex): Promise<void> {
