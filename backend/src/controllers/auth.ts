@@ -1,9 +1,9 @@
 import * as app from "../app";
-import * as types from "../types";
+import * as types from "rm2-typings";
 import * as constants from "../constants";
 
 export const accounts = () => app.database<types.Account>("account");
-export const sessions = () => app.database<types.Session>("session");
+export const apiKeys = () => app.database<types.RawApiKey>("session");
 
 export function getAccount(id: string): Promise<types.Account | undefined> {
   return accounts().where("id", id).first();
@@ -35,14 +35,14 @@ export function postAccount(account: types.Account): Promise<string[]> {
 
 export async function getSession(
   apikey: types.Id
-): Promise<types.Session | undefined> {
-  return sessions().where("api_key", apikey).first();
+): Promise<types.RawApiKey | undefined> {
+  return apiKeys().where("api_key", apikey).first();
 }
 
 export async function getUserSession(
   account_id: types.Id
-): Promise<types.Session | undefined> {
-  return sessions()
+): Promise<types.RawApiKey | undefined> {
+  return apiKeys()
     .where("account_id", account_id)
     .and.where("logger", true)
     .first();
@@ -50,27 +50,27 @@ export async function getUserSession(
 
 export async function getUserSessions(
   account_id: types.Id
-): Promise<types.Session[]> {
-  return sessions().where("account_id", account_id).select("*");
+): Promise<types.RawApiKey[]> {
+  return apiKeys().where("account_id", account_id).select("*");
 }
 
 export async function refreshSession(apikey: types.Id): Promise<void> {
-  await sessions().where("api_key", apikey).update("start_at", new Date());
+  await apiKeys().where("api_key", apikey).update("start_at", new Date());
 }
 
-export async function postSession(session: types.Session): Promise<void> {
-  await sessions().insert(session);
+export async function postSession(session: types.RawApiKey): Promise<void> {
+  await apiKeys().insert(session);
 }
 
 export async function purgeSessions(): Promise<void> {
-  await sessions()
+  await apiKeys()
     .where("start_at", "<", new Date(Date.now() - constants.SESSION_DURATION))
     .and.where("type", "connexion")
     .delete();
 }
 
 export async function removeSession(apiKey: types.Id): Promise<void> {
-  await sessions().where("api_key", apiKey).delete();
+  await apiKeys().where("api_key", apiKey).delete();
 }
 
 export function updateAccount(

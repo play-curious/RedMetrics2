@@ -2,10 +2,10 @@ import expressAsyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
 import * as uuid from "uuid";
 import * as app from "../../app";
-import * as types from "../../types";
 import * as utils from "../../utils";
 import * as auth from "../../controllers/auth";
 import * as game from "../../controllers/game";
+import * as types from "rm2-typings";
 
 app.v2.post(
   "/login",
@@ -210,7 +210,7 @@ app.v2
           });
       }
 
-      const currentSession: types.Session = {
+      const currentSession: types.RawApiKey = {
         start_at: new Date().toISOString(),
         account_id: req.user.account_id,
         name: req.body.name,

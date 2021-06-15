@@ -4,7 +4,7 @@ import fsp from "fs/promises";
 import expressAsyncHandler from "express-async-handler";
 
 import * as uuid from "uuid";
-import * as types from "./types";
+import * as types from "rm2-typings";
 import * as auth from "./controllers/auth";
 
 interface ForFilesOptions {
@@ -52,7 +52,7 @@ export async function forFiles(
 export function checkUser(
   permissions?: types.Permission[],
   condition: (context: {
-    session: types.Session;
+    session: types.RawApiKey;
     account: types.Account;
     params: any;
     body: any;
@@ -118,7 +118,7 @@ export function checkUser(
       role: account.role,
       email: account.email,
       password: account.password,
-    } as types.SessionUser;
+    } as types.ApiKeyUser;
 
     next();
   });
@@ -130,7 +130,7 @@ export function sendError(res: express.Response, error: types.RMError) {
 
 export function isLogin(
   req: express.Request
-): req is express.Request & { user: types.SessionUser } {
+): req is express.Request & { user: types.ApiKeyUser } {
   return req.hasOwnProperty("user");
 }
 

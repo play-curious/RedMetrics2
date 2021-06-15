@@ -1,6 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
 import * as app from "../../app";
-import * as types from "../../types";
+import * as types from "rm2-typings";
 import * as utils from "../../utils";
 import * as events from "../../controllers/events";
 import * as game from "../../controllers/game";
@@ -51,11 +51,15 @@ app.v2
       async (context) =>
         (
           await game.getGame(
-            ((await game.getGameVersion(
-              ((await events.getGameSession(
-                context.params.id
-              )) as types.GameSession).game_version_id as string
-            )) as types.GameVersion).game_id
+            (
+              (await game.getGameVersion(
+                (
+                  (await events.getGameSession(
+                    context.params.id
+                  )) as types.Session
+                ).game_version_id as string
+              )) as types.GameVersion
+            ).game_id
           )
         )?.publisher_id === context.account.id
     ),
@@ -79,18 +83,22 @@ app.v2
       async (context) =>
         (
           await game.getGame(
-            ((await game.getGameVersion(
-              ((await events.getGameSession(
-                context.params.id
-              )) as types.GameSession).game_version_id as string
-            )) as types.GameVersion).game_id
+            (
+              (await game.getGameVersion(
+                (
+                  (await events.getGameSession(
+                    context.params.id
+                  )) as types.Session
+                ).game_version_id as string
+              )) as types.GameVersion
+            ).game_id
           )
         )?.publisher_id === context.account.id
     ),
     expressAsyncHandler(async (req, res) => {
       // Updates the SessionMeta. Only accessible to dev and admin.
 
-      const values: Partial<types.GameSession> = {
+      const values: Partial<types.RawSession> = {
         custom_data: JSON.stringify(req.body.custom_data ?? {}),
         software: req.body.software,
         screen_size: req.body.screen_size,
@@ -141,11 +149,15 @@ app.v2.get(
     async (context) =>
       (
         await game.getGame(
-          ((await game.getGameVersion(
-            ((await events.getGameSession(
-              context.params.id
-            )) as types.GameSession).game_version_id as string
-          )) as types.GameVersion).game_id
+          (
+            (await game.getGameVersion(
+              (
+                (await events.getGameSession(
+                  context.params.id
+                )) as types.Session
+              ).game_version_id as string
+            )) as types.GameVersion
+          ).game_id
         )
       )?.publisher_id === context.account.id
   ),
@@ -216,7 +228,7 @@ app.v2
           description: "Missing game session id",
         });
 
-      const event: types.RMEvent = {
+      const event: types.RawRMEvent = {
         game_session_id: req.body.game_session_id,
         coordinates: JSON.stringify(req.body.coordinates ?? {}),
         custom_data: JSON.stringify(req.body.custom_data ?? {}),

@@ -41,9 +41,9 @@
     "graphql": "^15.4.0",
     "knex": "^0.21.15",
     "pg": "^8.5.0",
+    "rm2-typings": "git+https://github.com/play-curious/RedMetrics2-typing.git",
     "tsc-watch": "^4.2.9",
-    "uuid": "^8.3.2",
-    "rm2-typings": "git+https://github.com/play-curious/RedMetrics2-typing.git"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",

@@ -2,7 +2,7 @@ import expressAsyncHandler from "express-async-handler";
 
 import * as app from "../../app";
 import * as utils from "../../utils";
-import * as types from "../../types";
+import * as types from "rm2-typings";
 
 import * as game from "../../controllers/game";
 import * as auth from "../../controllers/auth";
@@ -61,7 +61,7 @@ app.v2
           description: "Missing game name",
         });
 
-      const currentGame: types.Game = {
+      const currentGame: types.RawGame = {
         publisher_id: req.user.account_id,
         author: req.body.author,
         custom_data: JSON.stringify(req.body.custom_data ?? {}),
@@ -273,7 +273,7 @@ app.v2
           description: "Game not found",
         });
 
-      const values: Partial<types.GameVersion> = {
+      const values: Partial<types.RawGameVersion> = {
         name: req.body.name,
         description: req.body.description,
         custom_data: JSON.stringify(req.body.custom_data ?? {}),
