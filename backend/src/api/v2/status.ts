@@ -2,7 +2,7 @@ import * as app from "../../app";
 import * as utils from "../../utils";
 import expressAsyncHandler from "express-async-handler";
 
-const project = require("../../../package.json");
+const project = require("../../../../package.json");
 
 app.v2.get(
   "/status",

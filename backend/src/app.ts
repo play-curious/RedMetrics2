@@ -51,7 +51,7 @@ server.use("/v2", v2);
 
 // GraphQL
 
-const rootValue = require("../graphql/resolvers");
+const rootValue = require("../../graphql/resolvers");
 const schema = fs.readFileSync(
   path.join(__dirname, "../graphql/schema.graphql"),
   {
