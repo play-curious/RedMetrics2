@@ -1,11 +1,10 @@
 const { test, describe } = require("@jest/globals");
 const request = require("supertest");
-const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
 const uuid = require("uuid");
 const app = require("../dist/app");
 
-dotenv.config();
+require("dotenv/config");
 
 const users = {
   user: {

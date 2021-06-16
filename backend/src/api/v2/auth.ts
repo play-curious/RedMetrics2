@@ -53,7 +53,7 @@ app.v2.post(
       account_id: account.id as string,
       start_at: new Date().toISOString(),
       permissions: JSON.stringify(types.permissions[account.role].slice()),
-      logger: true,
+      is_connection_key: true,
     });
 
     res.json({ apiKey });
@@ -104,7 +104,7 @@ app.v2.post(
       account_id: id,
       start_at: new Date().toISOString(),
       permissions: JSON.stringify(types.permissions[role].slice()),
-      logger: true,
+      is_connection_key: true,
     });
 
     res.json({ id, apiKey });
@@ -215,7 +215,7 @@ app.v2
         account_id: req.user.account_id,
         name: req.body.name,
         api_key: uuid.v4(),
-        logger: false,
+        is_connection_key: false,
         permissions: JSON.stringify(req.body.permissions),
       };
 

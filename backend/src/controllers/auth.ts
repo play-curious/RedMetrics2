@@ -44,7 +44,7 @@ export async function getUserSession(
 ): Promise<types.RawApiKey | undefined> {
   return apiKeys()
     .where("account_id", account_id)
-    .and.where("logger", true)
+    .and.where("is_connection_key", true)
     .first();
 }
 
