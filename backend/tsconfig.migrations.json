@@ -1,9 +1,9 @@
 {
   "extends": "./tsconfig.json",
   "include": [
-    "backend/src/**/*"
+    "migrations_src/*"
   ],
   "compilerOptions": {
-    "outDir": "dist",
+    "outDir": "migrations"
   }
 }

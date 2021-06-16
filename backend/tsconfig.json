@@ -1,6 +1,6 @@
 {
   "include": [
-    "backend/src/**/*"
+    "src/**/*"
   ],
   "compilerOptions": {
     "outDir": "dist",

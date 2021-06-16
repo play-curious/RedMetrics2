@@ -8,7 +8,7 @@ COPY package*.json yarn.lock ./
 RUN yarn 
 
 # Copy the rest
-COPY . .
+COPY .. .
 
 EXPOSE 6627
 CMD ["yarn", "start"]

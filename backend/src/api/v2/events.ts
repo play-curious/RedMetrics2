@@ -51,15 +51,11 @@ app.v2
       async (context) =>
         (
           await game.getGame(
-            (
-              (await game.getGameVersion(
-                (
-                  (await events.getGameSession(
-                    context.params.id
-                  )) as types.Session
-                ).game_version_id as string
-              )) as types.GameVersion
-            ).game_id
+            ((await game.getGameVersion(
+              ((await events.getGameSession(
+                context.params.id
+              )) as types.Session).game_version_id as string
+            )) as types.GameVersion).game_id
           )
         )?.publisher_id === context.account.id
     ),
@@ -83,15 +79,11 @@ app.v2
       async (context) =>
         (
           await game.getGame(
-            (
-              (await game.getGameVersion(
-                (
-                  (await events.getGameSession(
-                    context.params.id
-                  )) as types.Session
-                ).game_version_id as string
-              )) as types.GameVersion
-            ).game_id
+            ((await game.getGameVersion(
+              ((await events.getGameSession(
+                context.params.id
+              )) as types.Session).game_version_id as string
+            )) as types.GameVersion).game_id
           )
         )?.publisher_id === context.account.id
     ),
@@ -149,15 +141,10 @@ app.v2.get(
     async (context) =>
       (
         await game.getGame(
-          (
-            (await game.getGameVersion(
-              (
-                (await events.getGameSession(
-                  context.params.id
-                )) as types.Session
-              ).game_version_id as string
-            )) as types.GameVersion
-          ).game_id
+          ((await game.getGameVersion(
+            ((await events.getGameSession(context.params.id)) as types.Session)
+              .game_version_id as string
+          )) as types.GameVersion).game_id
         )
       )?.publisher_id === context.account.id
   ),

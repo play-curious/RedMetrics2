@@ -2,7 +2,6 @@
   "name": "red-metrics",
   "version": "2.0.0",
   "description": "Open game analytics",
-  "main": "dist/index.js",
   "scripts": {
     "build": "tsc -p tsconfig.app.json",
     "serve": "yarn build && node .",
@@ -10,8 +9,8 @@
     "migrate": "yarn build-migrations && yarn knex migrate:latest",
     "start": "yarn migrate && yarn serve",
     "format": "yarn prettier",
-    "watch": "tsc-watch --onSuccess \"node .\"",
-    "prettier": "prettier --write backend/src tests",
+    "watch": "tsc-watch --onSuccess \\\"node .\\\"",
+    "prettier": "prettier --write src tests",
     "test": "tsc && jest",
     "docker": "docker-compose up --build",
     "clean": "rm -rf dist"
