@@ -577,7 +577,7 @@ describe("🎮 Games", () => {
 describe("🔔 Events", () => {
   describe("/session", () => {
     const route = (apikey) =>
-      "/v2/session" + (apikey ? "?apikey=" + apikey : "");
+      "/v2/game-session" + (apikey ? "?apikey=" + apikey : "");
 
     describe("POST", () => {
       test("missing apikey", (done) => {
@@ -585,20 +585,20 @@ describe("🔔 Events", () => {
       });
 
       // TODO: currently returns a 400 and not 401
-      // test("missing game version", (done) => {
-      //   request(app.server)
-      //     .post(route(users.user.apiKey))
-      //     .send({
-      //       external_id: "id",
-      //       platform: "Microsoft Windows",
-      //       software: "Firefox",
-      //       custom_data: {
-      //         test: true,
-      //       },
-      //     })
-      //     .expect(401)
-      //     .end(done);
-      // });
+      test("missing game version", (done) => {
+        request(app.server)
+          .post(route(users.user.apiKey))
+          .send({
+            external_id: "id",
+            platform: "Microsoft Windows",
+            software: "Firefox",
+            custom_data: {
+              test: true,
+            },
+          })
+          .expect(401)
+          .end(done);
+      });
 
       test("success", (done) => {
         request(app.server)
@@ -623,7 +623,7 @@ describe("🔔 Events", () => {
 
   describe("/session/:id", () => {
     const route = (id, apikey) =>
-      `/v2/session/${id}${apikey ? "?apikey=" + apikey : ""}`;
+      `/v2/game-session/${id}${apikey ? "?apikey=" + apikey : ""}`;
 
     describe("GET", () => {
       test("missing apikey", (done) => {
@@ -742,6 +742,7 @@ describe("🔔 Events", () => {
           .post(route(users.admin.apiKey))
           .send({
             game_version_id: games.game.versions.version.id,
+            game_session_id: games.game.sessions.session.id
           })
           .expect(200)
           .end(done);
