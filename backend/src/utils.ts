@@ -105,11 +105,13 @@ export function checkUser(
             : JSON.parse(session.permissions)
           ).includes(permission)
         )
-      )
+      ) {
+        console.error("session", session.permissions)
         return sendError(res, {
           code: 401,
           description: "Access denied",
         });
+      }
     }
 
     // @ts-ignore
@@ -125,6 +127,7 @@ export function checkUser(
 }
 
 export function sendError(res: express.Response, error: types.RMError) {
+  console.error(error)
   return res.status(error.code).json(error);
 }
 
