@@ -3,7 +3,7 @@ services:
   web:
     build: .
     ports:
-      - "${SERVER_PORT}:${SERVER_PORT}"
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
     environment:
       PGHOST: db
       PGUSER: "${PGUSER}"

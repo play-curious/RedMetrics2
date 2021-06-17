@@ -4,13 +4,13 @@ FROM node:14
 WORKDIR /usr/src/app
 
 # Install app dependencies
-COPY package*.json yarn.lock ./
+COPY package*.json ./
 RUN yarn 
 
 # Copy the rest
 COPY . ./
 
-EXPOSE 6627
+EXPOSE 3000
 CMD ["yarn", "start"]
 
 # DEBUG: Keep the container running for debugging purposes
