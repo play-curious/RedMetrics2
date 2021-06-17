@@ -4877,7 +4877,7 @@ rimraf@^3.0.0, rimraf@^3.0.2:
 
 "rm2-typings@git+https://github.com/play-curious/RedMetrics2-typing.git":
   version "1.0.0"
-  resolved "git+https://github.com/play-curious/RedMetrics2-typing.git#56270deacacdcd6a1f43e02b133f70938fe7a50e"
+  resolved "git+https://github.com/play-curious/RedMetrics2-typing.git#a665046cdfabbe342b0cd6d7b75f504d1a182c2f"
 
 rsvp@^4.8.4:
   version "4.8.5"

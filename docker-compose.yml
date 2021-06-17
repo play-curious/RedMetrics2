@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  frontend:
+    build:
+      context: frontend
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    environment:
+      API_URL: "http://localhost:${BACKEND_PORT}"
+    volumes:
+      - ./frontend/src:/usr/src/app/src:ro
+
+  backend:
+    build:
+      context: backend
+    depends_on:
+      - db
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    environment:
+      PGHOST: db
+      PGUSER: "${PGUSER}"
+      PGDATABASE: "${PGDATABASE}"
+      PGPASSWORD: "${PGPASSWORD}"
+    volumes:
+      - ./backend/src:/usr/src/app/src:ro
+      - ./backend/tests:/usr/src/app/tests:ro
+      - ./backend/migrations_src:/usr/src/app/migrations_src:ro
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: "${PGUSER}"
+      POSTGRES_DB: "${PGDATABASE}"
+      POSTGRES_PASSWORD: "${PGPASSWORD}"
+
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 9091:8080
