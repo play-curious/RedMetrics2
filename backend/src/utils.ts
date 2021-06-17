@@ -125,6 +125,7 @@ export function checkUser(
 }
 
 export function sendError(res: express.Response, error: types.RMError) {
+  console.error(error)
   return res.status(error.code).json(error);
 }
 
