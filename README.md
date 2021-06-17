@@ -20,7 +20,7 @@ This project uses a `package.json` file only to run scripts through yarn or npm.
    2. Stop containers
       `yarn stop`
    3. Remove containers
-      `yarn remove`
+      `yarn run remove`
 
 5. To run the test suite on the backend, run the container, connect to it, and run `yarn test`
 
