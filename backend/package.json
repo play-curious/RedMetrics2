@@ -4,7 +4,7 @@
   "description": "Open game analytics",
   "scripts": {
     "build": "tsc -p tsconfig.app.json",
-    "serve": "yarn build && node .",
+    "serve": "yarn build && node dist/index.js",
     "build-migrations": "tsc -p tsconfig.migrations.json",
     "migrate": "yarn build-migrations && yarn knex migrate:latest",
     "migrate-down": "yarn build-migrations && yarn knex migrate:down",
