@@ -19,7 +19,7 @@ export default function GameSessionPage({ user }: { user?: types.ApiKeyUser }) {
 
   const [game, setGame] = React.useState<types.Game>();
   const [events, setEvents] = React.useState<types.RMEvent[]>();
-  const [session, setSession] = React.useState<types.GameSession>();
+  const [session, setSession] = React.useState<types.Session>();
   const [version, setVersion] = React.useState<types.GameVersion>();
   const [redirect, setRedirect] = React.useState<string>();
 
@@ -30,7 +30,7 @@ export default function GameSessionPage({ user }: { user?: types.ApiKeyUser }) {
 
   if (session === undefined)
     axios
-      .get<types.GameSession>("/game-session/" + id, {
+      .get<types.Session>("/game-session/" + id, {
         baseURL: constants.API_BASE_URL,
         params: { apikey: user?.api_key },
       })

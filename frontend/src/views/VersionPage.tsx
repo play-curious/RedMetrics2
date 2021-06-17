@@ -15,7 +15,7 @@ export default function VersionPage({ user }: { user?: types.ApiKeyUser }) {
 
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
-  const [sessions, setSessions] = React.useState<types.GameSession[]>();
+  const [sessions, setSessions] = React.useState<types.Session[]>();
   const [version, setVersion] = React.useState<types.GameVersion>();
   const [redirect, setRedirect] = React.useState<string>();
   const [game, setGame] = React.useState<types.Game>();
@@ -27,7 +27,7 @@ export default function VersionPage({ user }: { user?: types.ApiKeyUser }) {
 
   if (sessions === undefined)
     axios
-      .get<types.GameSession[]>("/version-session/" + id, {
+      .get<types.Session[]>("/version-session/" + id, {
         baseURL: constants.API_BASE_URL,
         params: { apikey: user?.api_key },
       })
