@@ -1,8 +1,7 @@
-import * as Knex from "knex";
 import bcrypt from "bcrypt";
-import * as dotenv from "dotenv";
+import * as Knex from "knex";
 
-dotenv.config();
+import "dotenv/config";
 
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
@@ -64,7 +63,7 @@ export async function up(knex: Knex): Promise<void> {
     table.json("permissions").notNullable().defaultTo([]);
 
     // TODO: is this unnecessary?
-    table.boolean("logger").notNullable().defaultTo(false);
+    table.boolean("is_connection_key").notNullable().defaultTo(false);
   });
 
   await knex.schema.createTable("game_version", (table) => {
