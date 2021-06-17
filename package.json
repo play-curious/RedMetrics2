@@ -1,0 +1,23 @@
+{
+  "name": "RedMetrics2",
+  "version": "1.0.0",
+  "description": "Open game analytics",
+  "scripts": {
+    "start": "docker compose up --build",
+    "start-no-build": "docker compose up",
+    "connect-backend": "docker exec -it redmetrics2_backend_1 /bin/bash",
+    "connect-frontend": "docker exec -it redmetrics2_frontend_1 /bin/bash",
+    "stop": "docker-compose stop frontend backend db adminer",
+    "remove": "yarn stop; docker-compose rm -f frontend backend db adminer"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/play-curious/RedMetrics2.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/play-curious/RedMetrics2/issues"
+  },
+  "homepage": "https://github.com/play-curious/RedMetrics2#readme"
+}

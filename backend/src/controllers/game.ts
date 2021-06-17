@@ -16,6 +16,7 @@ export function getPublisherGames(
 }
 
 export function getGame(id: types.Id): Promise<types.RawGame | undefined> {
+  if(!id) return Promise.resolve(undefined);
   return games()
     .where("id", id)
     .then((games) => games[0]);
@@ -42,6 +43,7 @@ export function updateGame(
 export function getGameVersion(
   id: string
 ): Promise<types.RawGameVersion | undefined> {
+  if(!id) return Promise.resolve(undefined)
   return versions()
     .where("id", id)
     .then((results) => results[0]);

@@ -18,7 +18,7 @@ export default function AddVersion({ user }: { user?: types.ApiKeyUser }) {
   const [game, setGame] = React.useState<types.Game>();
   const [validationMessage, setValidationMessage] =
     React.useState<string>("JSON Ok");
-  const { register, handleSubmit, errors } = Form.useForm<types.GameVersion>();
+  const { register, handleSubmit } = Form.useForm<types.GameVersion>();
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
   const submit = (version: types.GameVersion) => {
@@ -80,19 +80,19 @@ export default function AddVersion({ user }: { user?: types.ApiKeyUser }) {
         />
         <h1> Add your game version </h1>
         <form onSubmit={handleSubmit(submit)} className="flex flex-col">
-          <input type="hidden" name="game_id" ref={register} value={id} />
+          <input type="hidden" name="game_id" ref={register("game_id").ref} value={id} />
           <input
             type="text"
             name="name"
             placeholder="Version name"
-            ref={register({ required: true, minLength: 3, maxLength: 256 })}
+            ref={register("name", { required: true, minLength: 3, maxLength: 256 }).ref}
           />
-          <textarea name="description" ref={register}>
+          <textarea name="description" ref={register("description").ref}>
             No description.
           </textarea>
           <code>
             <textarea
-              ref={register}
+              ref={register("custom_data").ref}
               name="custom_data"
               className="self-center"
               onChange={validate}
@@ -109,10 +109,6 @@ export default function AddVersion({ user }: { user?: types.ApiKeyUser }) {
               Add
             </span>
           )}
-          <ErrorMessage errors={errors} name="name" />
-          <ErrorMessage errors={errors} name="game_id" />
-          <ErrorMessage errors={errors} name="description" />
-          <ErrorMessage errors={errors} name="custom_data" />
         </form>
       </div>
     </>

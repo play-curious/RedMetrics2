@@ -81,13 +81,13 @@ export default function AccountPage({ user }: { user?: types.ApiKeyUser }) {
             type="email"
             name="email"
             placeholder="Email"
-            ref={register({ required: true })}
+            ref={register("email",{ required: true }).ref}
           />
           <input
             type="password"
             name="password"
             placeholder="Password"
-            ref={register}
+            ref={register("password").ref}
           />
           {account?.role !== "admin" && (
             <div className="flex justify-around">
@@ -109,7 +109,7 @@ export default function AccountPage({ user }: { user?: types.ApiKeyUser }) {
                   name="role"
                   value="dev"
                   checked={account?.role === "dev"}
-                  ref={register}
+                  ref={register("role").ref}
                 />
               </label>
             </div>

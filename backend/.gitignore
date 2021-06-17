@@ -4,4 +4,4 @@ node_modules/
 dist/
 migrations/
 package-lock.json
-.env
+yarn-error.log

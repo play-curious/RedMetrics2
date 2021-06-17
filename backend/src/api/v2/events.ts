@@ -1,4 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
+import * as uuid from "uuid"
 import * as app from "../../app";
 import * as types from "rm2-typings";
 import * as utils from "../../utils";
@@ -7,7 +8,7 @@ import * as game from "../../controllers/game";
 
 app.v2.post(
   "/game-session",
-  utils.checkUser([types.Permission.EDIT_GAMES, types.Permission.MANAGE_GAMES]),
+  utils.checkUser([types.Permission.CREATE_GAMES, types.Permission.SHOW_GAMES]),
   expressAsyncHandler(async (req, res) => {
     //  Creates a new session.
     //  A SessionMeta object should be sent in the body.
@@ -54,15 +55,15 @@ app.v2
             ((await game.getGameVersion(
               ((await events.getGameSession(
                 context.params.id
-              )) as types.Session).game_version_id as string
-            )) as types.GameVersion).game_id
+              )) as types.Session)?.game_version_id ?? uuid.v4()
+            )) as types.GameVersion)?.game_id ?? uuid.v4()
           )
         )?.publisher_id === context.account.id
     ),
     expressAsyncHandler(async (req, res) => {
       // Retrieves the SessionMeta for the identified session
 
-      const session = await events.getGameSession(req.params.id);
+      const session = await events.getGameSession(req.params.id ?? uuid.v4());
 
       if (!session)
         return utils.sendError(res, {
@@ -82,8 +83,8 @@ app.v2
             ((await game.getGameVersion(
               ((await events.getGameSession(
                 context.params.id
-              )) as types.Session).game_version_id as string
-            )) as types.GameVersion).game_id
+              )) as types.Session)?.game_version_id as string
+            )) as types.GameVersion)?.game_id
           )
         )?.publisher_id === context.account.id
     ),
@@ -211,7 +212,7 @@ app.v2
 
       if (!req.body.game_session_id)
         return utils.sendError(res, {
-          code: 300,
+          code: 401,
           description: "Missing game session id",
         });
 

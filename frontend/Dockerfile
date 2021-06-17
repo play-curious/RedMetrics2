@@ -1,0 +1,17 @@
+FROM node:14
+
+# Create app directory
+WORKDIR /usr/src/app
+
+# Install app dependencies
+COPY package*.json ./
+RUN yarn 
+
+# Copy the rest
+COPY . ./
+
+EXPOSE 3000
+CMD ["yarn", "start"]
+
+# DEBUG: Keep the container running for debugging purposes
+# CMD ["tail", "-f", "/dev/null"]

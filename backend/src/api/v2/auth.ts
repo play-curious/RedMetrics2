@@ -28,7 +28,7 @@ app.v2.post(
     const account = await auth.getAccountByEmail(email);
 
     if (!account) {
-      return utils.sendError(res, { code: 300, description: "Unknown email" });
+      return utils.sendError(res, { code: 404, description: "Unknown email" });
     }
 
     if (!(await bcrypt.compare(password, account.password))) {
@@ -88,7 +88,10 @@ app.v2.post(
       });
     }
 
-    const hash = await bcrypt.hash(password, process.env.SALT as string);
+    const hash = await bcrypt.hash(
+      password,
+      parseInt(process.env.SALT_ROUNDS as string)
+    );
 
     const [id] = await auth.postAccount({
       email,
@@ -326,7 +329,10 @@ app.v2
       let hash: string | undefined;
 
       if (password) {
-        hash = await bcrypt.hash(password, process.env.SALT as string);
+        hash = await bcrypt.hash(
+          password,
+          parseInt(process.env.SALT_ROUNDS as string)
+        );
       }
 
       await auth.updateAccount(id, {

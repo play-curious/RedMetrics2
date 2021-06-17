@@ -2,7 +2,6 @@ import axios from "axios";
 import React from "react";
 import Select from "react-select";
 import * as Form from "react-hook-form";
-import { ErrorMessage } from "@hookform/error-message";
 import NotificationSystem from "react-notification-system";
 
 import qs from "querystring";
@@ -14,6 +13,9 @@ import * as constants from "../constants";
 import Center from "../nodes/Center";
 import Button from "../nodes/Button";
 
+import { faTrashAlt, faChessKnight, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 interface ApiKeyValues {
   name: string;
   permissions: types.Permission[];
@@ -21,7 +23,7 @@ interface ApiKeyValues {
 }
 
 export default function Profile({ user }: { user?: types.ApiKeyUser }) {
-  const [sessions, setSessions] = React.useState<types.Session[]>();
+  const [sessions, setSessions] = React.useState<types.ApiKey[]>();
   const [ownGames, setOwnGames] = React.useState<types.Game[]>();
 
   const profileForm = Form.useForm<types.User>();
@@ -36,7 +38,7 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
 
   const fetchSessions = () => {
     axios
-      .get<types.Session[]>(
+      .get<types.ApiKey[]>(
         "/sessions?" + qs.stringify({ apikey: user.api_key }),
         { baseURL: constants.API_BASE_URL }
       )
@@ -162,13 +164,13 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
               type="email"
               name="email"
               placeholder="Email"
-              ref={profileForm.register({ required: true })}
+              ref={profileForm.register("email", { required: true }).ref}
             />
             <input
               type="password"
               name="password"
               placeholder="Password"
-              ref={profileForm.register({ required: true })}
+              ref={profileForm.register("password", { required: true }).ref}
             />
             <div>
               <span> as </span>
@@ -182,7 +184,7 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
                   type="radio"
                   name="role"
                   value="dev"
-                  ref={profileForm.register}
+                  ref={profileForm.register("role").ref}
                 />
               </label>
             </div>
@@ -205,7 +207,7 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {sessions.map((session, i) => {
+                  {sessions.map((session) => {
                     return (
                       <tr>
                         <td
@@ -240,7 +242,7 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
                         </td>
                         <td className="p-1">
                           <code className="whitespace-nowrap overflow-hidden">
-                            {session.logger
+                            {session.is_connection_key
                               ? tims.fromNow(
                                   new Date(session.start_at).getTime() +
                                     constants.SESSION_DURATION,
@@ -258,12 +260,12 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
                                 removeApiKey(this);
                               }.bind(session.api_key)}
                             >
-                              <i className="fas fa-trash-alt" />
+                              <FontAwesomeIcon icon={faTrashAlt} />
                             </Button>
                           )}
                           {session.game_id && (
                             <Button to={"/game/show/" + session.game_id}>
-                              <i className="fas fa-chess-knight" />
+                              <FontAwesomeIcon icon={faChessKnight} />
                             </Button>
                           )}
                         </td>
@@ -284,11 +286,11 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
                 type="text"
                 name="name"
                 placeholder="ApiKey name"
-                ref={apiKeyForm.register({
+                ref={apiKeyForm.register("name", {
                   required: true,
                   minLength: 3,
                   maxLength: 32,
-                })}
+                }).ref}
               />
               <div className="flex flex-col">
                 {Object.values(types.Permission).map((permission) => {
@@ -329,7 +331,7 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
                         type="checkbox"
                         name="permissions[]"
                         value={permission}
-                        ref={apiKeyForm.register}
+                        ref={apiKeyForm.register("permissions").ref}
                       />
                       {permission}
                     </label>
@@ -337,24 +339,16 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
                 })}
               </div>
               <div className="w-full mx-2">
-                <Form.Controller
-                  name="game_id"
-                  as={Select}
-                  options={
-                    ownGames?.map((game) => {
-                      return { value: game.id, label: game.name };
-                    }) ?? []
-                  }
-                  control={apiKeyForm.control}
-                />
+                <Select name="game_id" options={
+                  ownGames?.map((game) => {
+                    return { value: game.id, label: game.name };
+                  }) ?? []
+                } ref={apiKeyForm.control.register("game_id").ref}/>
               </div>
               <Button callback={() => setOwnGames(undefined)}>
-                <i className="fas fa-sync-alt" />
+                <FontAwesomeIcon icon={faSyncAlt} />
               </Button>
               <Button submit>Add</Button>
-              <ErrorMessage errors={apiKeyForm.errors} name="permissions" />
-              <ErrorMessage errors={apiKeyForm.errors} name="name" />
-              <ErrorMessage errors={apiKeyForm.errors} name="game_id" />
             </form>
           </div>
         </div>

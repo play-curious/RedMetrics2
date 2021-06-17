@@ -6,7 +6,7 @@ import axios from "axios";
 import qs from "querystring";
 import Clipboard from "clipboard";
 
-import * as types from "./types";
+import * as types from "rm2-typings";
 import * as constants from "./constants";
 
 import Footer from "./nodes/Footer";

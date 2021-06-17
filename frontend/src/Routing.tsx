@@ -1,7 +1,7 @@
 import React from "react";
 import * as Dom from "react-router-dom";
 
-import * as types from "./types";
+import * as types from "rm2-typings";
 
 import Register from "./views/Register";
 import Login from "./views/Login";
