@@ -28,7 +28,7 @@ app.v2.post(
     const account = await auth.getAccountByEmail(email);
 
     if (!account) {
-      return utils.sendError(res, { code: 300, description: "Unknown email" });
+      return utils.sendError(res, { code: 404, description: "Unknown email" });
     }
 
     if (!(await bcrypt.compare(password, account.password))) {
