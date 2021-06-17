@@ -1,7 +1,2 @@
-node_modules/
-.idea/
-.vscode/
-dist/
-migrations/
-package-lock.json
-.env
+.idea
+.vscode

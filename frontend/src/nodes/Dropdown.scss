@@ -1,0 +1,11 @@
+.dropdown {
+  > .dropdown-child {
+    display: none;
+  }
+  &:focus,
+  &:hover {
+    > .dropdown-child {
+      display: block;
+    }
+  }
+}
