@@ -3,6 +3,9 @@ import * as Router from "react-router";
 
 import qs from "querystring";
 
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 export default function SearchBar({ focus }: { focus?: boolean }) {
   const params = Router.useParams<{ q: string }>();
 
@@ -35,7 +38,7 @@ export default function SearchBar({ focus }: { focus?: boolean }) {
             className="absolute right-0 top-0 mt-0.5 mr-2 hover:text-red-500"
             onClick={submit}
           >
-            <i className="fa fa-search" />
+            <FontAwesomeIcon icon={faSearch}/>
           </button>
         </div>
       </>

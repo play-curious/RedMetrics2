@@ -9,6 +9,9 @@ import qs from "querystring";
 import * as types from "rm2-typings";
 import * as constants from "../constants";
 
+import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import "./Dropdown.scss";
 
 export default function Dropdown({
@@ -57,7 +60,7 @@ export default function Dropdown({
         aria-haspopup="true"
         aria-expanded="true"
       >
-        <i className="fas fa-bars" />
+        <FontAwesomeIcon icon={faBars} />
         <div
           className="dropdown-child hidden origin-top-right absolute right-0 mt-0 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5"
           role="menu"

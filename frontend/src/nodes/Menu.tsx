@@ -9,6 +9,9 @@ import Container from "./Container";
 import Dropdown from "./Dropdown";
 import Logo from "./Logo";
 
+import { faBell } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 export default function Menu({
   children,
   user,
@@ -42,13 +45,13 @@ export default function Menu({
               {/*  className="md:hidden bg-gray-800 p-1 mr-3 rounded-full text-gray-400 hover:text-white focus:outline-none "*/}
               {/*  to="/search"*/}
               {/*>*/}
-              {/*  <i className="fa fa-search" />*/}
+              {/*  <FontAwesomeIcon icon={fa-search} />*/}
               {/*</Dom.Link>*/}
               <div
                 className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none "
                 title="WIP"
               >
-                <i className="fas fa-bell" />
+                <FontAwesomeIcon icon={faBell} />
               </div>
               <div className="ml-3 relative">
                 <Dropdown
