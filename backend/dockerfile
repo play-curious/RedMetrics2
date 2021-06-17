@@ -12,3 +12,6 @@ COPY .. .
 
 EXPOSE 6627
 CMD ["yarn", "start"]
+
+# DEBUG: Keep the container running for debugging purposes
+# CMD ["tail", "-f", "/dev/null"]
