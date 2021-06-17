@@ -212,7 +212,7 @@ app.v2
 
       if (!req.body.game_session_id)
         return utils.sendError(res, {
-          code: 300,
+          code: 401,
           description: "Missing game session id",
         });
 

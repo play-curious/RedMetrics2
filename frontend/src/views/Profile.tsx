@@ -2,7 +2,6 @@ import axios from "axios";
 import React from "react";
 import Select from "react-select";
 import * as Form from "react-hook-form";
-import { ErrorMessage } from "@hookform/error-message";
 import NotificationSystem from "react-notification-system";
 
 import qs from "querystring";
@@ -13,6 +12,9 @@ import * as constants from "../constants";
 
 import Center from "../nodes/Center";
 import Button from "../nodes/Button";
+
+import { faTrashAlt, faChessKnight, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface ApiKeyValues {
   name: string;
@@ -258,12 +260,12 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
                                 removeApiKey(this);
                               }.bind(session.api_key)}
                             >
-                              <i className="fas fa-trash-alt" />
+                              <FontAwesomeIcon icon={faTrashAlt} />
                             </Button>
                           )}
                           {session.game_id && (
                             <Button to={"/game/show/" + session.game_id}>
-                              <i className="fas fa-chess-knight" />
+                              <FontAwesomeIcon icon={faChessKnight} />
                             </Button>
                           )}
                         </td>
@@ -344,7 +346,7 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
                 } ref={apiKeyForm.control.register("game_id").ref}/>
               </div>
               <Button callback={() => setOwnGames(undefined)}>
-                <i className="fas fa-sync-alt" />
+                <FontAwesomeIcon icon={faSyncAlt} />
               </Button>
               <Button submit>Add</Button>
             </form>
