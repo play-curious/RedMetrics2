@@ -68,7 +68,7 @@ export default function CreateAccount({ user }: { user?: types.ApiKeyUser }) {
               type="email"
               name="email"
               placeholder="Email"
-              ref={register("email",{ required: true }).ref}
+              ref={register("email", { required: true }).ref}
             />
             <input
               type="hidden"
@@ -85,7 +85,12 @@ export default function CreateAccount({ user }: { user?: types.ApiKeyUser }) {
               <span> or </span>
               <label>
                 dev
-                <input type="radio" name="role" value="dev" ref={register("role").ref} />
+                <input
+                  type="radio"
+                  name="role"
+                  value="dev"
+                  ref={register("role").ref}
+                />
               </label>
             </div>
             <Button submit clipboard={password}>

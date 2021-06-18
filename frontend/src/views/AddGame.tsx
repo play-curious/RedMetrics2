@@ -66,13 +66,16 @@ export default function AddGame({ user }: { user?: types.ApiKeyUser }) {
             type="text"
             name="name"
             placeholder="Game name"
-            ref={register("name",{ required: true, minLength: 3, maxLength: 256 }).ref}
+            ref={
+              register("name", { required: true, minLength: 3, maxLength: 256 })
+                .ref
+            }
           />
           <input
             type="text"
             name="author"
             placeholder="Game author"
-            ref={register("author",{ minLength: 3, maxLength: 256 }).ref}
+            ref={register("author", { minLength: 3, maxLength: 256 }).ref}
           />
           <textarea
             name="description"

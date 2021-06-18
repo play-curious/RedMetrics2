@@ -14,7 +14,7 @@ export enum Permission {
   CREATE_ACCOUNTS = "createAccounts",
   DELETE_ACCOUNTS = "deleteAccounts",
   EDIT_ACCOUNTS = "editAccounts",
-  
+
   /**
    * Includes SHOW_GAMES, CREATE_GAMES, DELETE_GAMES and EDIT_GAMES.
    */

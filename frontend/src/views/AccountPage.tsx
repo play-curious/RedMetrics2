@@ -81,7 +81,7 @@ export default function AccountPage({ user }: { user?: types.ApiKeyUser }) {
             type="email"
             name="email"
             placeholder="Email"
-            ref={register("email",{ required: true }).ref}
+            ref={register("email", { required: true }).ref}
           />
           <input
             type="password"
