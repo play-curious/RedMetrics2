@@ -1,5 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
-import * as uuid from "uuid"
+import * as uuid from "uuid";
 import * as app from "../../app";
 import * as types from "rm2-typings";
 import * as utils from "../../utils";
@@ -52,11 +52,15 @@ app.v2
       async (context) =>
         (
           await game.getGame(
-            ((await game.getGameVersion(
-              ((await events.getGameSession(
-                context.params.id
-              )) as types.Session)?.game_version_id ?? uuid.v4()
-            )) as types.GameVersion)?.game_id ?? uuid.v4()
+            (
+              (await game.getGameVersion(
+                (
+                  (await events.getGameSession(
+                    context.params.id
+                  )) as types.Session
+                )?.game_version_id ?? uuid.v4()
+              )) as types.GameVersion
+            )?.game_id ?? uuid.v4()
           )
         )?.publisher_id === context.account.id
     ),
@@ -80,11 +84,15 @@ app.v2
       async (context) =>
         (
           await game.getGame(
-            ((await game.getGameVersion(
-              ((await events.getGameSession(
-                context.params.id
-              )) as types.Session)?.game_version_id as string
-            )) as types.GameVersion)?.game_id
+            (
+              (await game.getGameVersion(
+                (
+                  (await events.getGameSession(
+                    context.params.id
+                  )) as types.Session
+                )?.game_version_id as string
+              )) as types.GameVersion
+            )?.game_id
           )
         )?.publisher_id === context.account.id
     ),
@@ -142,10 +150,15 @@ app.v2.get(
     async (context) =>
       (
         await game.getGame(
-          ((await game.getGameVersion(
-            ((await events.getGameSession(context.params.id)) as types.Session)
-              .game_version_id as string
-          )) as types.GameVersion).game_id
+          (
+            (await game.getGameVersion(
+              (
+                (await events.getGameSession(
+                  context.params.id
+                )) as types.Session
+              ).game_version_id as string
+            )) as types.GameVersion
+          ).game_id
         )
       )?.publisher_id === context.account.id
   ),

@@ -1,4 +1,4 @@
-const { test, describe } = require("@jest/globals");
+const { test, describe, beforeAll, afterAll } = require("@jest/globals");
 const request = require("supertest");
 const bcrypt = require("bcrypt");
 const uuid = require("uuid");
@@ -6,67 +6,32 @@ const app = require("../dist/app");
 
 require("dotenv/config");
 
-const users = {
-  user: {
-    apiKey: null,
-    id: null,
-    email: "user@test.test",
-  },
-  dev: {
-    apiKey: null,
-    id: null,
-    email: "dev@test.test",
-  },
-  admin: {
-    apiKey: null,
-    id: null,
-    email: "admin@test.test",
-  },
+const ADMIN = {
+  email: "admin@example.com",
+  password: "$2b$10$9yj3GlOCSngBxZ19LkKRf.k9eBDqVYGOnDa4zRrEW8YyJKXfyRqti",
 };
 
-const games = {
-  game: {
-    versions: {
-      version: {
-        id: null,
-      },
-    },
-    sessions: {
-      session: {
-        id: null,
-      },
-    },
-  },
-};
+beforeAll(async () => {
+  // start transaction
+  await app.database.raw("START TRANSACTION");
 
-describe("⚙ Config", () => {
-  describe("prepare database", () => {
-    test("start transaction", (done) => {
-      app.database
-        .raw("START TRANSACTION")
-        .then(() => done())
-        .catch(done);
-    });
+  // create admin
+  ADMIN.id = await app
+    .database("account")
+    .insert({
+      ...ADMIN,
+      role: "admin",
+    })
+    .returning("id")
+    .first();
 
-    test("add admin account", (done) => {
-      app
-        .database("account")
-        .insert({
-          email: users.admin.email,
-          password: bcrypt.hashSync("test", parseInt(process.env.SALT_ROUNDS)),
-          role: "admin",
-        })
-        .then(() => done())
-        .catch(done);
-    });
-  });
+  // init db
+  await app.loadRoutes(false);
+});
 
-  test("prepare endpoints", (done) => {
-    app
-      .loadRoutes(false)
-      .then(() => done())
-      .catch(done);
-  });
+afterAll(() => {
+  // stop transaction
+  return app.database.raw("ROLLBACK");
 });
 
 describe("🔒 Auth", () => {
@@ -742,26 +707,11 @@ describe("🔔 Events", () => {
           .post(route(users.admin.apiKey))
           .send({
             game_version_id: games.game.versions.version.id,
-            game_session_id: games.game.sessions.session.id
+            game_session_id: games.game.sessions.session.id,
           })
           .expect(200)
           .end(done);
       });
     });
-  });
-});
-
-describe("🗑 Cleanup", () => {
-  test("cleanup database", (done) => {
-    // app
-    //   .database("account")
-    //   .truncate()
-    //   .then(() => done())
-    //   .catch(done);
-
-    app.database
-      .raw("ROLLBACK")
-      .then(() => done())
-      .catch(done);
   });
 });
