@@ -106,7 +106,7 @@ export function checkUser(
           ).includes(permission)
         )
       ) {
-        console.error("session", session.permissions);
+        console.error("missing permissions", session.permissions);
         return sendError(res, {
           code: 401,
           description: "Access denied",

@@ -263,13 +263,19 @@ describe("🔒 Auth", () => {
             .end(done);
         });
 
-        // TODO: the user should be able to get their own account, but not another user
-        // test("admin only", (done) => {
-        //   request(app.server)
-        //     .get(route(users.user.id, users.user.apiKey))
-        //     .expect(401)
-        //     .end(done);
-        // });
+        test("admin only (but it's own account)", (done) => {
+          request(app.server)
+            .get(route(data.users.user.id, data.users.user.apiKey))
+            .expect(200)
+            .end(done);
+        });
+
+        test("admin only", (done) => {
+          request(app.server)
+            .get(route(data.users.dev.id, data.users.user.apiKey))
+            .expect(401)
+            .end(done);
+        });
 
         test("success", (done) => {
           request(app.server)
@@ -297,13 +303,25 @@ describe("🔒 Auth", () => {
             .end(done);
         });
 
-        // TODO: the user should be able to get their own account, but not another user
-        // test("admin only", (done) => {
-        //   request(app.server)
-        //     .put(route(users.user.id, users.user.apiKey))
-        //     .expect(401)
-        //     .end(done);
-        // });
+        test("admin only (but it's own account)", (done) => {
+          request(app.server)
+            .put(route(data.users.user.id, data.users.user.apiKey))
+            .send({
+              email: "email@user.user",
+            })
+            .expect(200)
+            .end(done);
+        });
+
+        test("admin only", (done) => {
+          request(app.server)
+            .put(route(data.users.dev.id, data.users.user.apiKey))
+            .send({
+              email: "email@user.user",
+            })
+            .expect(401)
+            .end(done);
+        });
 
         test("invalid email", (done) => {
           request(app.server)
