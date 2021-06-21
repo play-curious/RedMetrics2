@@ -38,7 +38,7 @@ export default function SearchBar({ focus }: { focus?: boolean }) {
             className="absolute right-0 top-0 mt-0.5 mr-2 hover:text-red-500"
             onClick={submit}
           >
-            <FontAwesomeIcon icon={faSearch}/>
+            <FontAwesomeIcon icon={faSearch} />
           </button>
         </div>
       </>

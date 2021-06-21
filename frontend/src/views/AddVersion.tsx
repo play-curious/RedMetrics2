@@ -80,12 +80,20 @@ export default function AddVersion({ user }: { user?: types.ApiKeyUser }) {
         />
         <h1> Add your game version </h1>
         <form onSubmit={handleSubmit(submit)} className="flex flex-col">
-          <input type="hidden" name="game_id" ref={register("game_id").ref} value={id} />
+          <input
+            type="hidden"
+            name="game_id"
+            ref={register("game_id").ref}
+            value={id}
+          />
           <input
             type="text"
             name="name"
             placeholder="Version name"
-            ref={register("name", { required: true, minLength: 3, maxLength: 256 }).ref}
+            ref={
+              register("name", { required: true, minLength: 3, maxLength: 256 })
+                .ref
+            }
           />
           <textarea name="description" ref={register("description").ref}>
             No description.

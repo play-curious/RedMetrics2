@@ -57,7 +57,7 @@ export default function Register({
                 type="email"
                 name="email"
                 placeholder="Email"
-                ref={register("email",{ required: true }).ref}
+                ref={register("email", { required: true }).ref}
               />
               <input
                 type="password"
@@ -74,7 +74,12 @@ export default function Register({
                 <span> or </span>
                 <label>
                   dev
-                  <input type="radio" name="role" value="dev" ref={register("role").ref} />
+                  <input
+                    type="radio"
+                    name="role"
+                    value="dev"
+                    ref={register("role").ref}
+                  />
                 </label>
               </div>
               <div className="flex justify-around">

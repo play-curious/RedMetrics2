@@ -1,6 +1,5 @@
 import axios from "axios";
 import React from "react";
-import Select from "react-select";
 import * as Form from "react-hook-form";
 import NotificationSystem from "react-notification-system";
 
@@ -12,8 +11,13 @@ import * as constants from "../constants";
 
 import Center from "../nodes/Center";
 import Button from "../nodes/Button";
+import CustomForm, { CustomOption } from "../nodes/CustomForm";
 
-import { faTrashAlt, faChessKnight, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faTrashAlt,
+  faChessKnight,
+  faSyncAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface ApiKeyValues {
@@ -71,17 +75,13 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
       .finally(() => profileForm.setValue("password", ""));
   };
 
-  const generateApiKey = (session: {
-    name: string;
-    permissions: types.Permission[];
-    game_id?: { label: string; value: string };
-  }) => {
+  const generateApiKey = (session: types.POSTApiKey) => {
     axios
       .post(
         "/session?" + qs.stringify({ apikey: user.api_key }),
         {
           ...session,
-          game_id: session.game_id?.value,
+          game_id: session.game_id,
         },
         {
           baseURL: constants.API_BASE_URL,
@@ -155,41 +155,34 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
       </Center>
       <div className="xl:flex flex-shrink">
         <div className="p-4 m-4 border-2 rounded flex flex-col">
-          <h2 className="text-lg text-center font-bold">Profile</h2>
-          <form
-            onSubmit={profileForm.handleSubmit(editAccount)}
+          <h2 className="text-lg text-center font-bold"> Profile </h2>
+          <CustomForm
             className="flex flex-col h-full justify-center"
-          >
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              ref={profileForm.register("email", { required: true }).ref}
-            />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              ref={profileForm.register("password", { required: true }).ref}
-            />
-            <div>
-              <span> as </span>
-              <label>
-                user
-                <input type="radio" name="role" value="user" />
-              </label>
-              <label>
-                dev
-                <input
-                  type="radio"
-                  name="role"
-                  value="dev"
-                  ref={profileForm.register("role").ref}
-                />
-              </label>
-            </div>
-            <Button submit>Go</Button>
-          </form>
+            onSubmit={editAccount}
+            inputs={{
+              email: {
+                is: "email",
+                required: true,
+                placeholder: "Email",
+                value: user.email,
+              },
+              password: {
+                is: "password",
+                required: true,
+                placeholder: "Password",
+              },
+              role: {
+                is: "radio",
+                required: true,
+                choices: [
+                  { label: "Admin", value: "admin" },
+                  { label: "Dev", value: "dev" },
+                  { label: "User", value: "user" },
+                ],
+              },
+            }}
+            submitText="Edit account"
+          />
         </div>
         <div className="xl:grid-cols-8">
           <div className="p-4 m-4 border-2 rounded">
@@ -278,78 +271,68 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
           </div>
           <div className="p-4 m-4 border-2 rounded">
             <h2 className="text-lg text-center font-bold">Add API Key</h2>
-            <form
-              onSubmit={apiKeyForm.handleSubmit(generateApiKey)}
+            <CustomForm
               className="flex items-center"
-            >
-              <input
-                type="text"
-                name="name"
-                placeholder="ApiKey name"
-                ref={apiKeyForm.register("name", {
+              onSubmit={generateApiKey}
+              inputs={{
+                name: {
+                  is: "text",
+                  placeholder: "Api Key Name",
                   required: true,
-                  minLength: 3,
-                  maxLength: 32,
-                }).ref}
-              />
-              <div className="flex flex-col">
-                {Object.values(types.Permission).map((permission) => {
-                  if (!user?.permissions.includes(permission)) {
-                    if (
-                      permission === "showAccounts" ||
-                      permission === "createAccounts" ||
-                      permission === "deleteAccounts" ||
-                      permission === "editAccounts"
-                    ) {
-                      if (
-                        !user?.permissions.includes(
-                          types.Permission.MANAGE_ACCOUNTS
-                        )
-                      ) {
-                        return;
+                },
+                permissions: {
+                  is: "checkboxes",
+                  checks: Object.values(types.Permission)
+                    .map((permission) => {
+                      if (!user?.permissions.includes(permission)) {
+                        if (
+                          permission === "showAccounts" ||
+                          permission === "createAccounts" ||
+                          permission === "deleteAccounts" ||
+                          permission === "editAccounts"
+                        ) {
+                          if (
+                            !user?.permissions.includes(
+                              types.Permission.MANAGE_ACCOUNTS
+                            )
+                          ) {
+                            return;
+                          }
+                        } else if (
+                          permission === "showGames" ||
+                          permission === "createGames" ||
+                          permission === "deleteGames" ||
+                          permission === "editGames"
+                        ) {
+                          if (
+                            !user?.permissions.includes(
+                              types.Permission.MANAGE_GAMES
+                            )
+                          ) {
+                            return;
+                          }
+                        }
                       }
-                    } else if (
-                      permission === "showGames" ||
-                      permission === "createGames" ||
-                      permission === "deleteGames" ||
-                      permission === "editGames"
-                    ) {
-                      if (
-                        !user?.permissions.includes(
-                          types.Permission.MANAGE_GAMES
-                        )
-                      ) {
-                        return;
-                      }
-                    }
-                  }
 
-                  return (
-                    <label className="whitespace-nowrap">
-                      <input
-                        className="mr-1"
-                        type="checkbox"
-                        name="permissions[]"
-                        value={permission}
-                        ref={apiKeyForm.register("permissions").ref}
-                      />
-                      {permission}
-                    </label>
-                  );
-                })}
-              </div>
-              <div className="w-full mx-2">
-                <Select name="game_id" options={
-                  ownGames?.map((game) => {
-                    return { value: game.id, label: game.name };
-                  }) ?? []
-                } ref={apiKeyForm.control.register("game_id").ref}/>
-              </div>
+                      return { label: permission, value: permission };
+                    })
+                    .filter((option) => !!option) as CustomOption[],
+                },
+                game_id: {
+                  is: "select",
+                  label: "game",
+                  options:
+                    ownGames?.map((game) => {
+                      return { value: game.id as string, label: game.name };
+                    }) ?? [],
+                },
+              }}
+              submitText="Add"
+            >
               <Button callback={() => setOwnGames(undefined)}>
                 <FontAwesomeIcon icon={faSyncAlt} />
               </Button>
-              <Button submit>Add</Button>
-            </form>
+            </CustomForm>
           </div>
         </div>
       </div>

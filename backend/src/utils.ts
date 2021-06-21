@@ -106,7 +106,7 @@ export function checkUser(
           ).includes(permission)
         )
       ) {
-        console.error("session", session.permissions)
+        console.error("session", session.permissions);
         return sendError(res, {
           code: 401,
           description: "Access denied",
@@ -127,7 +127,7 @@ export function checkUser(
 }
 
 export function sendError(res: express.Response, error: types.RMError) {
-  console.error(error)
+  console.error(error);
   return res.status(error.code).json(error);
 }
 
