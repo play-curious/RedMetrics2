@@ -10,7 +10,7 @@ import * as constants from "../constants";
 import * as types from "rm2-typings";
 
 import Center from "../nodes/Center";
-import Button from "../nodes/Button";
+import CustomForm from "../nodes/CustomForm";
 
 export default function Login({
   setApiKey,
@@ -52,26 +52,23 @@ export default function Login({
       <div className="min-h-full">
         <Center height="min-h-full">
           <h1> Login </h1>
-          <form onSubmit={handleSubmit(submit)} className="flex flex-col">
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              ref={register("email", { required: true }).ref}
-            />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              ref={register("password", {}).ref}
-            />
-            <div className="flex justify-around">
-              <Button submit> Go </Button>
-              {/*<Dom.Link className="button" to={{ pathname: "/register" }}>*/}
-              {/*  Register*/}
-              {/*</Dom.Link>*/}
-            </div>
-          </form>
+          <CustomForm
+            onSubmit={submit}
+            className="flex flex-col"
+            submitText="Login"
+            inputs={{
+              email: {
+                type: "email",
+                placeholder: "Email",
+                required: true,
+              },
+              password: {
+                type: "password",
+                placeholder: "Password",
+                required: true,
+              }
+            }}
+          />
         </Center>
       </div>
     </>

@@ -1,6 +1,5 @@
 import axios from "axios";
 import React from "react";
-import Select from "react-select";
 import * as Form from "react-hook-form";
 import NotificationSystem from "react-notification-system";
 
@@ -76,7 +75,7 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
       .finally(() => profileForm.setValue("password", ""));
   };
 
-  const generateApiKey = (session: types.ApiKey) => {
+  const generateApiKey = (session: types.POSTApiKey) => {
     axios
       .post(
         "/session?" + qs.stringify({ apikey: user.api_key }),
@@ -164,13 +163,13 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
               email: {
                 type: "email",
                 required: true,
-                placeHolder: "Email",
+                placeholder: "Email",
                 value: user.email,
               },
               password: {
                 type: "password",
                 required: true,
-                placeHolder: "Password",
+                placeholder: "Password",
               },
               role: {
                 required: true,
@@ -276,7 +275,7 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
               onSubmit={generateApiKey}
               inputs={{
                 name: {
-                  placeHolder: "Api Key Name",
+                  placeholder: "Api Key Name",
                   required: true,
                 },
                 permissions: {
@@ -315,10 +314,11 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
                   }).filter((option) => !!option) as CustomOption[]
                 },
                 game_id: {
+                  label: "game",
                   options: ownGames?.map((game) => {
                     return { value: game.id as string, label: game.name };
                   }) ?? []
-                }
+                },
               }}
               submitText="Add"
             >
