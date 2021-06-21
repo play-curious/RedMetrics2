@@ -58,15 +58,15 @@ export default function Login({
             submitText="Login"
             inputs={{
               email: {
-                type: "email",
+                is: "email",
                 placeholder: "Email",
                 required: true,
               },
               password: {
-                type: "password",
+                is: "password",
                 placeholder: "Password",
                 required: true,
-              }
+              },
             }}
           />
         </Center>

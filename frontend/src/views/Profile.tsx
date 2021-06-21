@@ -11,7 +11,7 @@ import * as constants from "../constants";
 
 import Center from "../nodes/Center";
 import Button from "../nodes/Button";
-import CustomForm, {CustomOption} from "../nodes/CustomForm";
+import CustomForm, { CustomOption } from "../nodes/CustomForm";
 
 import {
   faTrashAlt,
@@ -161,23 +161,24 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
             onSubmit={editAccount}
             inputs={{
               email: {
-                type: "email",
+                is: "email",
                 required: true,
                 placeholder: "Email",
                 value: user.email,
               },
               password: {
-                type: "password",
+                is: "password",
                 required: true,
                 placeholder: "Password",
               },
               role: {
+                is: "radio",
                 required: true,
                 choices: [
                   { label: "Admin", value: "admin" },
                   { label: "Dev", value: "dev" },
                   { label: "User", value: "user" },
-                ]
+                ],
               },
             }}
             submitText="Edit account"
@@ -275,49 +276,55 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
               onSubmit={generateApiKey}
               inputs={{
                 name: {
+                  is: "text",
                   placeholder: "Api Key Name",
                   required: true,
                 },
                 permissions: {
-                  checks: Object.values(types.Permission).map((permission) => {
-                    if (!user?.permissions.includes(permission)) {
-                      if (
-                        permission === "showAccounts" ||
-                        permission === "createAccounts" ||
-                        permission === "deleteAccounts" ||
-                        permission === "editAccounts"
-                      ) {
+                  is: "checkboxes",
+                  checks: Object.values(types.Permission)
+                    .map((permission) => {
+                      if (!user?.permissions.includes(permission)) {
                         if (
-                          !user?.permissions.includes(
-                            types.Permission.MANAGE_ACCOUNTS
-                          )
+                          permission === "showAccounts" ||
+                          permission === "createAccounts" ||
+                          permission === "deleteAccounts" ||
+                          permission === "editAccounts"
                         ) {
-                          return;
-                        }
-                      } else if (
-                        permission === "showGames" ||
-                        permission === "createGames" ||
-                        permission === "deleteGames" ||
-                        permission === "editGames"
-                      ) {
-                        if (
-                          !user?.permissions.includes(
-                            types.Permission.MANAGE_GAMES
-                          )
+                          if (
+                            !user?.permissions.includes(
+                              types.Permission.MANAGE_ACCOUNTS
+                            )
+                          ) {
+                            return;
+                          }
+                        } else if (
+                          permission === "showGames" ||
+                          permission === "createGames" ||
+                          permission === "deleteGames" ||
+                          permission === "editGames"
                         ) {
-                          return;
+                          if (
+                            !user?.permissions.includes(
+                              types.Permission.MANAGE_GAMES
+                            )
+                          ) {
+                            return;
+                          }
                         }
                       }
-                    }
-  
-                    return { label: permission, value: permission }
-                  }).filter((option) => !!option) as CustomOption[]
+
+                      return { label: permission, value: permission };
+                    })
+                    .filter((option) => !!option) as CustomOption[],
                 },
                 game_id: {
+                  is: "select",
                   label: "game",
-                  options: ownGames?.map((game) => {
-                    return { value: game.id as string, label: game.name };
-                  }) ?? []
+                  options:
+                    ownGames?.map((game) => {
+                      return { value: game.id as string, label: game.name };
+                    }) ?? [],
                 },
               }}
               submitText="Add"
