@@ -10,14 +10,13 @@ import axios from "axios";
 import * as uuid from "uuid";
 
 import Center from "../nodes/Center";
-import Button from "../nodes/Button";
 import CheckUser from "../nodes/CheckUser";
+import CustomForm from "../nodes/CustomForm";
 
 export default function CreateAccount({ user }: { user?: types.ApiKeyUser }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
   const [redirect, setRedirect] = React.useState<null | string>(null);
-  const { register, handleSubmit } = Form.useForm<types.User>();
-
+  
   const password = uuid.v4();
 
   const submit = (data: types.User) => {
@@ -27,6 +26,11 @@ export default function CreateAccount({ user }: { user?: types.ApiKeyUser }) {
       })
       .then((response) => {
         const id = response.data.id;
+        
+        const message = `new account created.\nwith id: ${id}\nwith password: ${password}`
+        
+        console.info(message)
+        alert(message)
 
         notificationSystem.current?.addNotification({
           message: "Successful registered",
@@ -34,7 +38,7 @@ export default function CreateAccount({ user }: { user?: types.ApiKeyUser }) {
         });
         notificationSystem.current?.addNotification({
           message:
-            "The new user temporary password is copied in your clipboard",
+            `new account created (#${id}) with password: ${password}`,
           level: "info",
         });
 
@@ -63,40 +67,28 @@ export default function CreateAccount({ user }: { user?: types.ApiKeyUser }) {
       <div className="register">
         <Center>
           <h1> Create account </h1>
-          <form onSubmit={handleSubmit(submit)} className="flex flex-col">
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              ref={register("email", { required: true }).ref}
-            />
-            <input
-              type="hidden"
-              name="password"
-              value={password}
-              ref={register("password").ref}
-            />
-            <div className="flex justify-around">
-              <span> as </span>
-              <label>
-                user
-                <input type="radio" name="role" value="user" />
-              </label>
-              <span> or </span>
-              <label>
-                dev
-                <input
-                  type="radio"
-                  name="role"
-                  value="dev"
-                  ref={register("role").ref}
-                />
-              </label>
-            </div>
-            <Button submit clipboard={password}>
-              Go
-            </Button>
-          </form>
+          <CustomForm
+            className="flex flex-col"
+            onSubmit={submit}
+            submitText="Create"
+            inputs={{
+              password,
+              email: {
+                is: "email",
+                required: true,
+                placeholder: "Email"
+              },
+              role: {
+                is: "radio",
+                required: true,
+                choices: [
+                  { label: "User", value: "user" },
+                  { label: "Dev", value: "dev" },
+                  { label: "Admin", value: "admin" }
+                ]
+              }
+            }}
+          />
         </Center>
       </div>
     </>
