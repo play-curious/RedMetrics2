@@ -16,7 +16,7 @@ import CustomForm from "../nodes/CustomForm";
 export default function CreateAccount({ user }: { user?: types.ApiKeyUser }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
   const [redirect, setRedirect] = React.useState<null | string>(null);
-  
+
   const password = uuid.v4();
 
   const submit = (data: types.User) => {
@@ -26,19 +26,18 @@ export default function CreateAccount({ user }: { user?: types.ApiKeyUser }) {
       })
       .then((response) => {
         const id = response.data.id;
-        
-        const message = `new account created.\nwith id: ${id}\nwith password: ${password}`
-        
-        console.info(message)
-        alert(message)
+
+        const message = `new account created.\nwith id: ${id}\nwith password: ${password}`;
+
+        console.info(message);
+        alert(message);
 
         notificationSystem.current?.addNotification({
           message: "Successful registered",
           level: "success",
         });
         notificationSystem.current?.addNotification({
-          message:
-            `new account created (#${id}) with password: ${password}`,
+          message: `new account created (#${id}) with password: ${password}`,
           level: "info",
         });
 
@@ -76,7 +75,7 @@ export default function CreateAccount({ user }: { user?: types.ApiKeyUser }) {
               email: {
                 is: "email",
                 required: true,
-                placeholder: "Email"
+                placeholder: "Email",
               },
               role: {
                 is: "radio",
@@ -84,9 +83,9 @@ export default function CreateAccount({ user }: { user?: types.ApiKeyUser }) {
                 choices: [
                   { label: "User", value: "user" },
                   { label: "Dev", value: "dev" },
-                  { label: "Admin", value: "admin" }
-                ]
-              }
+                  { label: "Admin", value: "admin" },
+                ],
+              },
             }}
           />
         </Center>
