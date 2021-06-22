@@ -6,9 +6,7 @@ import Button from "../nodes/Button";
 export default function Home() {
   return (
     <>
-      <h1 className="font-bold text-xl mt-2">
-        What is RedMetrics ?
-      </h1>
+      <h1 className="font-bold text-xl mt-2">What is RedMetrics ?</h1>
       <p className="my-2">
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor ducimus
         eos fugit officia, rem reprehenderit sequi totam. Accusamus consequatur

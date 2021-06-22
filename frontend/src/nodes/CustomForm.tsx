@@ -1,5 +1,4 @@
 import React from "react";
-import Select from "react-select";
 import * as Form from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 
@@ -133,10 +132,14 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
             return (
               <label>
                 {input.label ?? name} <hr />
-                <Select
+                <select
                   {...register(name, { required: input.required })}
                   {...input}
-                />
+                >
+                  {input.options.map((option) => {
+                    return <option value={option.value}>{option.label}</option>;
+                  })}
+                </select>
                 <ErrorMessage errors={errors} name={name as any} />
               </label>
             );
@@ -180,21 +183,23 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
               <textarea
                 {...register(name, {
                   required: input.required ?? false,
-                  validate: input.jsonValidation ? (value) => {
-                    const stringValue = String(value)
-                    try {
-                      JSON.parse(stringValue);
-                      //const custom_data = JSON.parse(stringValue);
-                      // value = JSON.stringify(
-                      //   custom_data,
-                      //   null,
-                      //   2
-                      // );
-                      return true
-                    } catch (error) {
-                      return error.message
-                    }
-                  } : undefined,
+                  validate: input.jsonValidation
+                    ? (value) => {
+                        const stringValue = String(value);
+                        try {
+                          JSON.parse(stringValue);
+                          //const custom_data = JSON.parse(stringValue);
+                          // value = JSON.stringify(
+                          //   custom_data,
+                          //   null,
+                          //   2
+                          // );
+                          return true;
+                        } catch (error) {
+                          return error.message;
+                        }
+                      }
+                    : undefined,
                 })}
                 {...input}
                 defaultValue={input.jsonValidation ? "{}" : ""}
