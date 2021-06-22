@@ -20,6 +20,9 @@ export async function up(knex: Knex): Promise<void> {
     });
   });
 
+  // @ts-ignore
+  await knex.schema.alterTable("account", (table) => table.unique("email"));
+
   await knex.schema.createTable("game", (table) => {
     table
       .uuid("id")
@@ -116,19 +119,6 @@ export async function up(knex: Knex): Promise<void> {
       .references("game_session.id")
       .onDelete("CASCADE");
   });
-
-  // Create admin account
-  const adminEmail = process.env.ADMIN_EMAIL || "admin@example.com";
-  const adminPassword = Math.random().toString(16).substr(2, 14);
-  await knex("account").insert({
-    email: adminEmail,
-    password: bcrypt.hashSync(
-      adminPassword,
-      parseInt((process.env.SALT_ROUNDS as string) || "10")
-    ),
-    role: "admin",
-  });
-  console.log(`Created admin account for ${adminEmail} ${adminPassword}`);
 }
 
 export async function down(knex: Knex): Promise<void> {

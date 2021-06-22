@@ -19,15 +19,14 @@ services:
       - db
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
+    env_file: .env
     environment:
       PGHOST: db
-      PGUSER: "${PGUSER}"
-      PGDATABASE: "${PGDATABASE}"
-      PGPASSWORD: "${PGPASSWORD}"
     volumes:
       - ./backend/src:/usr/src/app/src:ro
       - ./backend/tests:/usr/src/app/tests:ro
       - ./backend/migrations_src:/usr/src/app/migrations_src:ro
+      - ./backend/seeds:/usr/src/app/seeds:ro
 
   db:
     image: postgres

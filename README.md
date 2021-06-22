@@ -29,3 +29,7 @@ This project uses a `package.json` file only to run scripts through yarn or npm.
 Migrations are created in TypeScript in the `backend/migrations_src` directory and compiled to the standard `backend/migrations` directory in JS, before being run.
 
 To build and run the migrations, use `yarn knex migrate` on the backend.
+
+## Admin account
+
+To create an admin account, run `yarn seed` on the backend. It will create an account with the email `ADMIN_EMAIL` and `ADMIN_PASSWORD`, if they are in the `.env` file, or they will use a preset email and random password. The account information will be written to standard out.
