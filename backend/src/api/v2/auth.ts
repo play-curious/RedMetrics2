@@ -112,7 +112,7 @@ app.v2.get(
   "/account",
   utils.checkUser(),
   expressAsyncHandler(async (req, res) => {
-    if (utils.isLogin(req)) res.json(req.user);
+    if (utils.isLogin(req)) res.json(req.account);
   })
 );
 
@@ -141,7 +141,7 @@ app.v2.get(
   utils.checkUser(),
   expressAsyncHandler(async (req, res) => {
     if (!utils.isLogin(req)) return;
-    res.json(await auth.getUserSessions(req.user.account_id));
+    res.json(await auth.getUserApiKeys(req.user.account_id));
   })
 );
 
@@ -151,7 +151,7 @@ app.v2
   .get(
     expressAsyncHandler(async (req, res) => {
       if (!utils.isLogin(req)) return;
-      res.json(await auth.getSession(req.user.api_key));
+      res.json(await auth.getApiKey(req.user.api_key));
     })
   )
   .post(

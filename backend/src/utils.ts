@@ -87,6 +87,7 @@ export function checkUser(
       });
 
     if (
+      !account.is_admin &&
       !(await condition({
         account,
         params: req.params,
