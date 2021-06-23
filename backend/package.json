@@ -10,9 +10,8 @@
     "migrate-down": "yarn build-migrations && yarn knex migrate:down",
     "seed": "yarn knex seed:run",
     "start": "yarn migrate && yarn serve",
-    "format": "yarn prettier",
     "watch": "tsc-watch --onSuccess \"node .\"",
-    "prettier": "prettier --write src tests",
+    "format": "prettier --write src tests",
     "test": "tsc && jest",
     "clean": "rm -rf dist"
   },
@@ -42,7 +41,7 @@
     "graphql": "^15.4.0",
     "knex": "^0.21.15",
     "pg": "^8.5.0",
-    "rm2-typings": "git+https://github.com/play-curious/RedMetrics2-typing.git",
+    "rm2-typings": "git+https://github.com/play-curious/RedMetrics2-typing.git#new-perm",
     "tsc-watch": "^4.2.9",
     "uuid": "^8.3.2"
   },
@@ -61,7 +60,7 @@
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "jest": "^26.6.3",
-    "prettier": "^2.1.2",
+    "prettier": "^2.3.1",
     "superagent": "^6.1.0",
     "supertest": "^6.0.1",
     "typescript": "^4.1.3",
