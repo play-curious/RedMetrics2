@@ -3,7 +3,7 @@ import * as types from "rm2-typings";
 import * as constants from "../constants";
 
 export const accounts = () => app.database<types.Account>("account");
-export const apiKeys = () => app.database<types.RawApiKey>("session");
+export const apiKeys = () => app.database<types.ApiKey>("session");
 
 export function getAccount(id: string): Promise<types.Account | undefined> {
   return accounts().where("id", id).first();
@@ -16,9 +16,13 @@ export async function deleteAccount(id: string): Promise<void> {
 export function getAccountByEmail(
   email: types.Email
 ): Promise<types.Account | undefined> {
-  return accounts()
-    .where("email", email)
-    .then((account) => account[0]);
+  return accounts().where("email", email).first();
+}
+
+export function getAccountFromToken(
+  token: string
+): Promise<types.Account | undefined> {
+  return accounts().where("connection_token", token).first();
 }
 
 export function emailAlreadyUsed(email: types.Email): Promise<boolean> {
@@ -29,8 +33,13 @@ export function emailAlreadyUsed(email: types.Email): Promise<boolean> {
     .then(({ c }) => (c ?? 0) > 0);
 }
 
-export function postAccount(account: types.Account): Promise<string[]> {
-  return accounts().insert(account).returning("id");
+export function postAccount(
+  account: Omit<types.Account, "id">
+): Promise<string> {
+  return accounts()
+    .insert(account)
+    .returning("id")
+    .then((ids) => ids[0]);
 }
 
 export async function getSession(
@@ -56,10 +65,6 @@ export async function getUserSessions(
 
 export async function refreshSession(apikey: types.Id): Promise<void> {
   await apiKeys().where("api_key", apikey).update("start_at", new Date());
-}
-
-export async function postSession(session: types.RawApiKey): Promise<void> {
-  await apiKeys().insert(session);
 }
 
 export async function purgeSessions(): Promise<void> {

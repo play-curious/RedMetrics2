@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import * as uuid from "uuid";
 import * as app from "../../app";
 import * as utils from "../../utils";
+import * as constants from "../../constants";
 import * as auth from "../../controllers/auth";
 import * as game from "../../controllers/game";
 import * as types from "rm2-typings";
@@ -21,7 +22,7 @@ app.v2.post(
         code: 401,
       });
 
-    if (!types.isValidEmail(email)) {
+    if (!utils.isValidEmail(email)) {
       return utils.sendError(res, { code: 401, description: "Invalid email" });
     }
 
@@ -38,25 +39,21 @@ app.v2.post(
       });
     }
 
-    const existingSession = await auth.getUserSession(account.id as string);
+    const connectionToken = uuid.v4();
 
-    if (existingSession) {
-      await auth.refreshSession(existingSession.api_key);
-      return res.json({ apiKey: existingSession.api_key });
-    }
+    await auth
+      .accounts()
+      .update({
+        connection_token: connectionToken,
+      })
+      .where("id", account.id);
 
-    const apiKey = uuid.v4();
-
-    await auth.postSession({
-      name: "unique connexion apikey",
-      api_key: apiKey,
-      account_id: account.id as string,
-      start_at: new Date().toISOString(),
-      permissions: JSON.stringify(types.permissions[account.role].slice()),
-      is_connection_key: true,
+    res.cookie(constants.COOKIE_NAME, connectionToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      httpOnly: true,
     });
 
-    res.json({ apiKey });
+    res.json({ token: connectionToken });
   })
 );
 
@@ -69,7 +66,7 @@ app.v2.post(
 
     const email = req.body?.email,
       password = req.body?.password,
-      role = req.body?.role === "dev" ? "dev" : "user";
+      is_admin = /^(?:true|1|)$/.test(String(req.body?.is_admin ?? "false"));
 
     if (!email || !password)
       return utils.sendError(res, {
@@ -77,7 +74,7 @@ app.v2.post(
         description: "Missing email or password",
       });
 
-    if (!types.isValidEmail(email)) {
+    if (!utils.isValidEmail(email)) {
       return utils.sendError(res, { code: 401, description: "Invalid email" });
     }
 
@@ -93,24 +90,21 @@ app.v2.post(
       parseInt(process.env.SALT_ROUNDS as string)
     );
 
+    const connectionToken = uuid.v4();
+
     const [id] = await auth.postAccount({
       email,
       password: hash,
-      role,
+      is_admin,
+      connection_token: connectionToken,
     });
 
-    const apiKey = uuid.v4();
-
-    await auth.postSession({
-      name: "unique connexion apikey",
-      api_key: apiKey,
-      account_id: id,
-      start_at: new Date().toISOString(),
-      permissions: JSON.stringify(types.permissions[role].slice()),
-      is_connection_key: true,
+    res.cookie(constants.COOKIE_NAME, connectionToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      httpOnly: true,
     });
 
-    res.json({ id, apiKey });
+    res.json({ id, token: connectionToken });
   })
 );
 
@@ -124,10 +118,7 @@ app.v2.get(
 
 app.v2.delete(
   "/account/:id",
-  utils.checkUser(
-    [types.Permission.DELETE_ACCOUNTS, types.Permission.MANAGE_ACCOUNTS],
-    (context) => context.params.id === context.account.id
-  ),
+  utils.checkUser((context) => context.params.id === context.account.id),
   expressAsyncHandler(async (req, res) => {
     await auth.deleteAccount(req.params.id);
     res.sendStatus(200);
@@ -236,7 +227,7 @@ app.v2
         currentSession.game_id = game_id;
       }
 
-      await auth.postSession(currentSession);
+      await auth.postApiKey(currentSession);
 
       res.json({ apiKey: currentSession.api_key });
     })

@@ -1,6 +1,7 @@
 import { graphqlHTTP } from "express-graphql";
 import { buildSchema } from "graphql";
 import relative from "dayjs/plugin/relativeTime";
+import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import express from "express";
 import dotenv from "dotenv";
@@ -44,6 +45,7 @@ export const view = express.Router();
 server.use(
   bodyParser.urlencoded({ extended: false }),
   bodyParser.json(),
+  cookieParser(),
   cors()
 );
 

@@ -13,6 +13,7 @@ export async function up(knex: Knex): Promise<void> {
       .defaultTo(knex.raw("uuid_generate_v4()"));
     table.string("email").unique().notNullable();
     table.string("password").notNullable();
+    table.string("connection_token");
     table.boolean("is_admin").defaultTo(false);
   });
 

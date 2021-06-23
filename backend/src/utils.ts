@@ -1,11 +1,13 @@
 import path from "path";
 import express from "express";
 import fsp from "fs/promises";
+import Cookies from "js-cookie";
 import expressAsyncHandler from "express-async-handler";
 
 import * as uuid from "uuid";
 import * as types from "rm2-typings";
 import * as auth from "./controllers/auth";
+import * as constants from "./constants";
 
 interface ForFilesOptions {
   recursive?: boolean;
@@ -50,38 +52,33 @@ export async function forFiles(
 }
 
 export function checkUser(
-  permissions?: types.Permission[],
   condition: (context: {
-    session: types.RawApiKey;
     account: types.Account;
     params: any;
     body: any;
   }) => boolean | Promise<boolean> = () => false
 ): express.RequestHandler {
   return expressAsyncHandler(async (req, res, next) => {
-    const apiKey = req.query.apikey;
+    const cookie: Cookies.CookieAttributes | undefined =
+      req.cookies[constants.COOKIE_NAME];
 
-    if (apiKey == null)
+    if (!cookie)
       return sendError(res, {
         code: 401,
         description: "Missing apiKey",
       });
 
-    if (typeof apiKey !== "string" || !uuid.validate(apiKey))
+    console.log(cookie);
+
+    const token = cookie.value;
+
+    if (typeof token !== "string" || !uuid.validate(token))
       return sendError(res, {
         code: 400,
-        description: "Invalid apiKey",
+        description: "Invalid token",
       });
 
-    const session = await auth.getSession(apiKey);
-
-    if (!session)
-      return sendError(res, {
-        code: 401,
-        description: "Expired session",
-      });
-
-    const account = await auth.getAccount(session.account_id);
+    const account = await auth.getAccountFromToken(token);
 
     if (!account)
       return sendError(res, {
@@ -91,61 +88,39 @@ export function checkUser(
 
     if (
       !(await condition({
-        session,
         account,
         params: req.params,
         body: req.body,
       }))
     ) {
-      if (
-        permissions &&
-        !permissions.some((permission) =>
-          (Array.isArray(session.permissions)
-            ? session.permissions
-            : JSON.parse(session.permissions)
-          ).includes(permission)
-        )
-      ) {
-        console.error("missing permissions", session.permissions);
-        return sendError(res, {
-          code: 401,
-          description: "Access denied",
-        });
-      }
+      return sendError(res, {
+        code: 401,
+        description: "Access denied (bad token given, please login again)",
+      });
     }
 
     // @ts-ignore
-    req.user = {
-      ...session,
-      role: account.role,
-      email: account.email,
-      password: account.password,
-    } as types.ApiKeyUser;
+    req.account = account;
 
     next();
   });
 }
 
-export function sendError(res: express.Response, error: types.RMError) {
+export function sendError(res: express.Response, error: types.Error) {
   console.error(error);
   return res.status(error.code).json(error);
 }
 
 export function isLogin(
   req: express.Request
-): req is express.Request & { user: types.ApiKeyUser } {
-  return req.hasOwnProperty("user");
+): req is express.Request & { account: types.Account } {
+  return req.hasOwnProperty("account");
 }
 
 export function extractLocale(req: express.Request): string {
   return typeof req.query.locale === "string" ? req.query.locale : "en";
 }
 
-export const checkConnexionCookie: express.RequestHandler = (
-  req,
-  res,
-  next
-) => {
-  console.log(req.cookies, req.signedCookies);
-  next();
-};
+export function isValidEmail(email: string): email is types.Email {
+  return /^\S+@\S+\.\S+$/.test(email);
+}
