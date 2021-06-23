@@ -53,7 +53,7 @@ app.v2
       //  A default version of the game will be created.
       //  The Location response header will contain the URL for the new game.
 
-      if (!utils.isLogin(req)) return;
+      if (!utils.hasAccount(req)) return;
 
       if (!req.body.name)
         return utils.sendError(res, {
@@ -118,7 +118,7 @@ app.v2
     expressAsyncHandler(async (req, res) => {
       // Updates game information with the provided GameMeta.
 
-      if (!utils.isLogin(req)) return;
+      if (!utils.hasAccount(req)) return;
 
       const targetGame = await game.getGame(req.params.id);
 
@@ -146,7 +146,7 @@ app.v2
         context.account.id
     ),
     expressAsyncHandler(async (req, res) => {
-      if (!utils.isLogin(req)) return;
+      if (!utils.hasAccount(req)) return;
 
       const targetGame = await game.getGame(req.params.id);
 
@@ -199,7 +199,7 @@ app.v2
       //  A GameVersionMeta object should be sent in the body.
       //  The Location response header will contain the URL for the new game.
 
-      if (!utils.isLogin(req)) return;
+      if (!utils.hasAccount(req)) return;
 
       if (!req.body.name)
         return utils.sendError(res, {
@@ -255,7 +255,7 @@ app.v2
     expressAsyncHandler(async (req, res) => {
       // Updates game information with the provided GameVersionMeta.
 
-      if (!utils.isLogin(req)) return;
+      if (!utils.hasAccount(req)) return;
 
       const version = await game.getGameVersion(req.params.id);
 

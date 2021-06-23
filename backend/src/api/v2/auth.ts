@@ -9,6 +9,15 @@ import * as game from "../../controllers/game";
 import * as types from "rm2-typings";
 import { removeUserApiKeys } from "../../controllers/auth";
 
+app.v2.get(
+  "/logout",
+  utils.checkUser(),
+  expressAsyncHandler(async (req, res) => {
+    if (utils.hasAccount(req)) await auth.logout(req.account.id);
+    res.sendStatus(200);
+  })
+);
+
 app.v2.post(
   "/login",
   expressAsyncHandler(async (req, res) => {
@@ -113,112 +122,20 @@ app.v2.get(
   "/account",
   utils.checkUser(),
   expressAsyncHandler(async (req, res) => {
-    if (utils.isLogin(req)) res.json(req.account);
+    if (utils.hasAccount(req)) res.json(req.account);
   })
 );
 
-app.v2.delete(
-  "/account/:id",
-  utils.checkUser((context) => context.params.id === context.account.id),
-  expressAsyncHandler(async (req, res) => {
-    await auth.deleteAccount(req.params.id);
-    res.sendStatus(200);
-  })
-);
-
-app.v2.get(
-  "/accounts",
-  utils.checkUser("admin"),
-  expressAsyncHandler(async (req, res) => {
-    res.json(await auth.getAccounts());
-  })
-);
-
-app.v2
-  .route("/keys")
-  .get(
-    utils.checkUser(),
-    expressAsyncHandler(async (req, res) => {
-      if (!utils.isLogin(req)) return;
-      res.json(await auth.getUserApiKeys(req.account.id));
-    })
-  )
-  .delete(
-    utils.checkUser(),
-    expressAsyncHandler(async (req, res) => {
-      if (!utils.isLogin(req)) return;
-      await auth.removeUserApiKeys(req.account.id);
-      res.sendStatus(200);
-    })
-  );
-
-app.v2.post(
-  "/key",
-  utils.checkUser(),
-  expressAsyncHandler(async (req, res) => {
-    if (!utils.isLogin(req)) return;
-
-    if (!req.body.name)
-      return utils.sendError(res, {
-        code: 400,
-        description: "Missing 'name' property in body",
-      });
-
-    if (!req.body.game_id)
-      return utils.sendError(res, {
-        code: 400,
-        description: "Missing 'game_id' property in body",
-      });
-
-    const currentGame = await game.getGame(req.body.game_id);
-
-    if (!currentGame)
-      return utils.sendError(res, {
-        code: 404,
-        description: "Game not found",
-      });
-
-    const currentSession: types.ApiKey = {
-      start_at: new Date().toISOString(),
-      account_id: req.account.id,
-      name: req.body.name,
-      fingerprint: uuid.v4(),
-      game_id: req.body.game_id,
-    };
-
-    await auth.apiKeys().insert(currentSession);
-
-    res.json({ apiKey: currentSession.fingerprint });
-  })
-);
-
-app.v2.delete(
-  "/key/:fingerprint",
-  utils.checkUser(async (context) => {
-    const apiKey = await auth.getApiKey(context.params.fingerprint);
-    return apiKey?.account_id === context.account.id;
-  }),
-  expressAsyncHandler(async (req, res) => {
-    if (!utils.isLogin(req)) return;
-    await auth.removeApiKey(req.params.fingerprint);
-    res.sendStatus(200);
-  })
-);
-
-app.v2.get(
-  "/logout",
-  utils.checkUser(),
-  expressAsyncHandler(async (req, res) => {
-    if (utils.isLogin(req)) await auth.logout(req.account.id);
-    res.sendStatus(200);
-  })
-);
-
-/** “me” can be used instead of id to reference own account */
 app.v2
   .route("/account/:id")
+  .all(utils.checkUser((context) => context.params.id === context.account.id))
+  .delete(
+    expressAsyncHandler(async (req, res) => {
+      await auth.deleteAccount(req.params.id);
+      res.sendStatus(200);
+    })
+  )
   .get(
-    utils.checkUser((context) => context.params.id === context.account.id),
     expressAsyncHandler(async (req, res) => {
       //  Retrieves the AccountMeta for the given account.
       //  Only admins can access accounts other than their own
@@ -235,7 +152,6 @@ app.v2
     })
   )
   .put(
-    utils.checkUser((context) => context.params.id === context.account.id),
     expressAsyncHandler(async (req, res) => {
       //  Update the given account.
       //  An AccountMeta object should be sent in the body.
@@ -281,6 +197,85 @@ app.v2
         id,
         success: "Success",
       });
+    })
+  );
+
+app.v2.get(
+  "/accounts",
+  utils.checkUser("admin"),
+  expressAsyncHandler(async (req, res) => {
+    res.json(await auth.getAccounts());
+  })
+);
+
+app.v2.post(
+  "/key",
+  utils.checkUser(),
+  expressAsyncHandler(async (req, res) => {
+    if (!utils.hasAccount(req)) return;
+
+    if (!req.body.name)
+      return utils.sendError(res, {
+        code: 400,
+        description: "Missing 'name' property in body",
+      });
+
+    if (!req.body.game_id)
+      return utils.sendError(res, {
+        code: 400,
+        description: "Missing 'game_id' property in body",
+      });
+
+    const currentGame = await game.getGame(req.body.game_id);
+
+    if (!currentGame)
+      return utils.sendError(res, {
+        code: 404,
+        description: "Game not found",
+      });
+
+    const currentSession: types.ApiKey = {
+      start_at: new Date().toISOString(),
+      account_id: req.account.id,
+      name: req.body.name,
+      fingerprint: uuid.v4(),
+      game_id: req.body.game_id,
+    };
+
+    await auth.apiKeys().insert(currentSession);
+
+    res.json({ apiKey: currentSession.fingerprint });
+  })
+);
+
+app.v2.delete(
+  "/key/:fingerprint",
+  utils.checkUser(async (context) => {
+    const apiKey = await auth.getApiKey(context.params.fingerprint);
+    return apiKey?.account_id === context.account.id;
+  }),
+  expressAsyncHandler(async (req, res) => {
+    if (!utils.hasAccount(req)) return;
+    await auth.removeApiKey(req.params.fingerprint);
+    res.sendStatus(200);
+  })
+);
+
+app.v2
+  .route("/keys")
+  .get(
+    utils.checkUser(),
+    expressAsyncHandler(async (req, res) => {
+      if (!utils.hasAccount(req)) return;
+      res.json(await auth.getUserApiKeys(req.account.id));
+    })
+  )
+  .delete(
+    utils.checkUser(),
+    expressAsyncHandler(async (req, res) => {
+      if (!utils.hasAccount(req)) return;
+      await auth.removeUserApiKeys(req.account.id);
+      res.sendStatus(200);
     })
   );
 

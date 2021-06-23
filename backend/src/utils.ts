@@ -7,6 +7,7 @@ import expressAsyncHandler from "express-async-handler";
 import * as uuid from "uuid";
 import * as types from "rm2-typings";
 import * as auth from "./controllers/auth";
+import * as game from "./controllers/game";
 import * as constants from "./constants";
 
 interface ForFilesOptions {
@@ -51,6 +52,90 @@ export async function forFiles(
   }
 }
 
+export function checkGame(
+  condition:
+    | "own"
+    | "admin"
+    | ((context: {
+        game: types.Game;
+        account: types.Account;
+        params: any;
+        body: any;
+      }) => boolean | Promise<boolean>) = () => true
+): express.RequestHandler {
+  if (condition === "own")
+    condition = (context) => context.game.publisher_id === context.account.id;
+  else if (condition === "admin") condition = () => false;
+
+  return expressAsyncHandler(async (req, res, next) => {
+    const fingerprint =
+      req.query.apikey ??
+      req.query.apiKey ??
+      req.body.apikey ??
+      req.body.apiKey ??
+      req.params.apikey ??
+      req.params.apiKey;
+
+    if (!fingerprint)
+      return sendError(res, {
+        code: 401,
+        description: "Missing apiKey",
+      });
+
+    if (typeof fingerprint !== "string" || !uuid.validate(fingerprint))
+      return sendError(res, {
+        code: 400,
+        description: "Invalid token",
+      });
+
+    const apiKey = await auth.getApiKey(fingerprint);
+
+    if (!apiKey)
+      return sendError(res, {
+        code: 404,
+        description: "ApiKey not found",
+      });
+
+    const currentGame = await game.getGame(apiKey.game_id);
+    const account = await auth.getAccount(apiKey.account_id);
+
+    if (!account)
+      return sendError(res, {
+        code: 404,
+        description: "Account not found",
+      });
+
+    if (!currentGame)
+      return sendError(res, {
+        code: 404,
+        description: "Game not found",
+      });
+
+    if (
+      !account.is_admin &&
+      typeof condition !== "string" &&
+      !(await condition({
+        game: currentGame,
+        params: req.params,
+        body: req.body,
+        account,
+      }))
+    ) {
+      return sendError(res, {
+        code: 401,
+        description: "Access denied",
+      });
+    }
+
+    // @ts-ignore
+    req.game = currentGame;
+    // @ts-ignore
+    req.account = account;
+
+    next();
+  });
+}
+
 export function checkUser(
   condition:
     | "admin"
@@ -69,7 +154,7 @@ export function checkUser(
     if (!cookie)
       return sendError(res, {
         code: 401,
-        description: "Missing apiKey",
+        description: "Missing cookie (please login again)",
       });
 
     console.log(cookie);
@@ -117,10 +202,16 @@ export function sendError(res: express.Response, error: types.Error) {
   return res.status(error.code).json(error);
 }
 
-export function isLogin(
+export function hasAccount(
   req: express.Request & { account?: types.Account }
 ): req is express.Request & { account: types.Account } {
   return "account" in req && !!req.account;
+}
+
+export function hasGame(
+  req: express.Request & { game?: types.Game }
+): req is express.Request & { game: types.Game } {
+  return "game" in req && !!req.game;
 }
 
 export function extractLocale(req: express.Request): string {

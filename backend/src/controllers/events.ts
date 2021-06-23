@@ -1,21 +1,20 @@
 import * as app from "../app";
 import * as types from "rm2-typings";
 
-export const gameSessions = () =>
-  app.database<types.RawSession>("game_session");
-export const events = () => app.database<types.RawRMEvent>("event");
+export const gameSessions = () => app.database<types.Session>("game_session");
+export const events = () => app.database<types.Event>("event");
 
 export function getGameSession(
-  id: string
-): Promise<types.RawSession | undefined> {
+  id: types.Session["id"]
+): Promise<types.Session | undefined> {
   return gameSessions().where("id", id).first();
 }
 
-export function getGameSessions(id: string): Promise<types.RawSession[]> {
+export function getGameSessions(id: string): Promise<types.Session[]> {
   return gameSessions().where("game_version_id", id);
 }
 
-export function postGameSession(session: types.RawSession): Promise<string> {
+export function postGameSession(session: types.Session): Promise<string> {
   // @ts-ignore
   return gameSessions()
     .insert(session)
@@ -25,7 +24,7 @@ export function postGameSession(session: types.RawSession): Promise<string> {
 
 export function updateGameSession(
   id: string,
-  values: Partial<types.RawSession>
+  values: Partial<types.Session>
 ): Promise<string> {
   // @ts-ignore
   return gameSessions()
@@ -35,15 +34,15 @@ export function updateGameSession(
     .then((ids) => ids[0]);
 }
 
-export function getEvents(id: string): Promise<types.RawRMEvent[]> {
+export function getEvents(id: string): Promise<types.Event[]> {
   return events().where("session_id", id);
 }
 
-export function getEvent(id: number): Promise<types.RawRMEvent | undefined> {
+export function getEvent(id: number): Promise<types.Event | undefined> {
   return events().where("id", id).first();
 }
 
-export function postEvent(event: types.RawRMEvent): Promise<string> {
+export function postEvent(event: types.Event): Promise<string> {
   // @ts-ignore
   return events()
     .insert(event)

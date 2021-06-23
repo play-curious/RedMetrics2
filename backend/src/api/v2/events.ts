@@ -7,24 +7,24 @@ import * as events from "../../controllers/events";
 import * as game from "../../controllers/game";
 
 app.v2.post(
-  "/game-session",
-  utils.checkUser([types.Permission.CREATE_GAMES, types.Permission.SHOW_GAMES]),
+  "/session",
+  utils.checkGame(),
   expressAsyncHandler(async (req, res) => {
     //  Creates a new session.
     //  A SessionMeta object should be sent in the body.
     //  The Location response header will contain the URL for the new session.
     //  Only accessible to dev and admin.
 
-    if (!utils.isLogin(req)) return;
+    if (!utils.hasAccount(req)) return;
 
     const external_id = req.body.external_id,
       platform = req.body.platform,
       screen_size = req.body.screen_size,
       software = req.body.software,
       custom_data = JSON.stringify(req.body.custom_data ?? {}),
-      game_version_id = req.body.game_version_id;
+      version_id = req.body.version_id;
 
-    if (!game_version_id || !(await game.getGameVersion(game_version_id))) {
+    if (!version_id || !(await game.getGameVersion(version_id))) {
       return utils.sendError(res, {
         code: 401,
         description: "Invalid game version uuid",
@@ -37,7 +37,7 @@ app.v2.post(
       screen_size,
       software,
       custom_data,
-      game_version_id,
+      version_id,
     });
 
     res.json({ id });
@@ -45,25 +45,13 @@ app.v2.post(
 );
 
 app.v2
-  .route("/game-session/:id")
+  .route("/session/:id")
+  .all(
+    utils.checkGame((context) =>
+      game.gameHasSession(context.game.id, context.params.id)
+    )
+  )
   .get(
-    utils.checkUser(
-      [types.Permission.SHOW_GAMES, types.Permission.MANAGE_GAMES],
-      async (context) =>
-        (
-          await game.getGame(
-            (
-              (await game.getGameVersion(
-                (
-                  (await events.getGameSession(
-                    context.params.id
-                  )) as types.Session
-                )?.game_version_id ?? uuid.v4()
-              )) as types.GameVersion
-            )?.game_id ?? uuid.v4()
-          )
-        )?.publisher_id === context.account.id
-    ),
     expressAsyncHandler(async (req, res) => {
       // Retrieves the SessionMeta for the identified session
 
@@ -79,27 +67,11 @@ app.v2
     })
   )
   .put(
-    utils.checkUser(
-      [types.Permission.EDIT_GAMES, types.Permission.MANAGE_GAMES],
-      async (context) =>
-        (
-          await game.getGame(
-            (
-              (await game.getGameVersion(
-                (
-                  (await events.getGameSession(
-                    context.params.id
-                  )) as types.Session
-                )?.game_version_id as string
-              )) as types.GameVersion
-            )?.game_id
-          )
-        )?.publisher_id === context.account.id
-    ),
+    utils.checkGame(),
     expressAsyncHandler(async (req, res) => {
       // Updates the SessionMeta. Only accessible to dev and admin.
 
-      const values: Partial<types.RawSession> = {
+      const values: Partial<types.Session> = {
         custom_data: JSON.stringify(req.body.custom_data ?? {}),
         software: req.body.software,
         screen_size: req.body.screen_size,
@@ -127,40 +99,19 @@ app.v2
   );
 
 app.v2.get(
-  "/version-session/:id",
-  utils.checkUser(
-    [types.Permission.SHOW_GAMES, types.Permission.MANAGE_GAMES],
-    async (context) =>
-      (
-        await game.getGame(
-          ((await game.getGameVersion(context.params.id)) as types.GameVersion)
-            .game_id
-        )
-      )?.publisher_id === context.account.id
+  "/sessions/:version_id",
+  utils.checkGame((context) =>
+    game.gameHasVersion(context.game.id, context.params.version_id)
   ),
   expressAsyncHandler(async (req, res) => {
-    res.json(await events.getGameSessions(req.params.id));
+    res.json(await events.getGameSessions(req.params.version_id));
   })
 );
 
 app.v2.get(
   "/session/:id/events",
-  utils.checkUser(
-    [types.Permission.SHOW_GAMES, types.Permission.MANAGE_GAMES],
-    async (context) =>
-      (
-        await game.getGame(
-          (
-            (await game.getGameVersion(
-              (
-                (await events.getGameSession(
-                  context.params.id
-                )) as types.Session
-              ).game_version_id as string
-            )) as types.GameVersion
-          ).game_id
-        )
-      )?.publisher_id === context.account.id
+  utils.checkGame((context) =>
+    game.gameHasSession(context.game.id, context.params.id)
   ),
   expressAsyncHandler(async (req, res) => {
     res.json(await events.getEvents(req.params.id));
@@ -170,10 +121,7 @@ app.v2.get(
 app.v2
   .route("/event")
   .get(
-    utils.checkUser([
-      types.Permission.SHOW_GAMES,
-      types.Permission.MANAGE_GAMES,
-    ]),
+    utils.checkUser(),
     expressAsyncHandler(async (req, res) => {
       //  Lists Event objects (see section on Paging below).
       //  Admin and dev accounts can see the game events they have access to.
@@ -213,10 +161,7 @@ app.v2
     })
   )
   .post(
-    utils.checkUser([
-      types.Permission.EDIT_GAMES,
-      types.Permission.MANAGE_GAMES,
-    ]),
+    utils.checkUser(),
     expressAsyncHandler(async (req, res) => {
       //  Adds more event information sent with the Event object, or array or Event objects.
       //  The gameVersionId query parameters is required.
@@ -229,8 +174,8 @@ app.v2
           description: "Missing game session id",
         });
 
-      const event: types.RawRMEvent = {
-        game_session_id: req.body.game_session_id,
+      const event: types.Event = {
+        session_id: req.body.game_session_id,
         coordinates: JSON.stringify(req.body.coordinates ?? {}),
         custom_data: JSON.stringify(req.body.custom_data ?? {}),
         section: req.body.section,
