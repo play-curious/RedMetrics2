@@ -4,6 +4,12 @@ import * as types from "rm2-typings";
 export const accounts = () => app.database<types.Account>("account");
 export const apiKeys = () => app.database<types.ApiKey>("session");
 
+export async function logout(id: types.Account["id"]): Promise<void> {
+  await accounts().where({ id }).update({
+    connection_token: "",
+  });
+}
+
 export function getAccount(id: string): Promise<types.Account | undefined> {
   return accounts().where("id", id).first();
 }
@@ -46,13 +52,15 @@ export function getApiKey(
   return apiKeys().where({ fingerprint }).first();
 }
 
-export function getUserApiKeys(
-  account_id: types.Account["id"]
-): Promise<types.ApiKey[]> {
+export function getUserApiKeys(account_id: types.Account["id"]) {
   return apiKeys().where({ account_id });
 }
 
-export async function removeSession(
+export function removeUserApiKeys(account_id: types.Account["id"]) {
+  return getUserApiKeys(account_id).delete();
+}
+
+export async function removeApiKey(
   fingerprint: types.ApiKey["fingerprint"]
 ): Promise<void> {
   await apiKeys().where({ fingerprint }).delete();

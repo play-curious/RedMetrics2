@@ -7,6 +7,7 @@ import * as constants from "../../constants";
 import * as auth from "../../controllers/auth";
 import * as game from "../../controllers/game";
 import * as types from "rm2-typings";
+import { removeUserApiKeys } from "../../controllers/auth";
 
 app.v2.post(
   "/login",
@@ -127,122 +128,79 @@ app.v2.delete(
 
 app.v2.get(
   "/accounts",
-  utils.checkUser([
-    types.Permission.MANAGE_ACCOUNTS,
-    types.Permission.SHOW_ACCOUNTS,
-  ]),
+  utils.checkUser("admin"),
   expressAsyncHandler(async (req, res) => {
     res.json(await auth.getAccounts());
   })
 );
 
-app.v2.get(
-  "/sessions",
-  utils.checkUser(),
-  expressAsyncHandler(async (req, res) => {
-    if (!utils.isLogin(req)) return;
-    res.json(await auth.getUserApiKeys(req.user.account_id));
-  })
-);
-
 app.v2
-  .route("/session")
-  .all(utils.checkUser())
+  .route("/keys")
   .get(
+    utils.checkUser(),
     expressAsyncHandler(async (req, res) => {
       if (!utils.isLogin(req)) return;
-      res.json(await auth.getApiKey(req.user.api_key));
+      res.json(await auth.getUserApiKeys(req.account.id));
     })
   )
-  .post(
+  .delete(
+    utils.checkUser(),
     expressAsyncHandler(async (req, res) => {
       if (!utils.isLogin(req)) return;
-
-      if (!req.body.name)
-        return utils.sendError(res, {
-          code: 400,
-          description: "Missing 'name' property in body",
-        });
-
-      if (!req.body.permissions || !Array.isArray(req.body.permissions))
-        return utils.sendError(res, {
-          code: 400,
-          description: "Missing 'permissions' property in body",
-        });
-
-      for (const permission of req.body.permissions) {
-        let error = false;
-
-        if (!req.user.permissions.includes(permission)) {
-          if (
-            permission === "showAccounts" ||
-            permission === "createAccounts" ||
-            permission === "deleteAccounts" ||
-            permission === "editAccounts"
-          ) {
-            if (
-              !req.user.permissions.includes(types.Permission.MANAGE_ACCOUNTS)
-            ) {
-              error = true;
-            }
-          } else if (
-            permission === "showGames" ||
-            permission === "createGames" ||
-            permission === "deleteGames" ||
-            permission === "editGames"
-          ) {
-            if (!req.user.permissions.includes(types.Permission.MANAGE_GAMES)) {
-              error = true;
-            }
-          }
-        }
-
-        if (error)
-          return utils.sendError(res, {
-            code: 400,
-            description: `Bad permission is pushed to new session: ${permission}`,
-          });
-      }
-
-      const currentSession: types.RawApiKey = {
-        start_at: new Date().toISOString(),
-        account_id: req.user.account_id,
-        name: req.body.name,
-        api_key: uuid.v4(),
-        is_connection_key: false,
-        permissions: JSON.stringify(req.body.permissions),
-      };
-
-      if (req.body.game_id) {
-        const game_id = req.body.game_id;
-
-        const currentGame = await game.getGame(game_id);
-
-        if (!currentGame)
-          return utils.sendError(res, {
-            code: 404,
-            description: "Game not found",
-          });
-
-        currentSession.game_id = game_id;
-      }
-
-      await auth.postApiKey(currentSession);
-
-      res.json({ apiKey: currentSession.api_key });
+      await auth.removeUserApiKeys(req.account.id);
+      res.sendStatus(200);
     })
   );
 
-app.v2.delete(
-  "/session/:apikey",
-  utils.checkUser(
-    [types.Permission.MANAGE_ACCOUNTS],
-    (context) => context.session.api_key === context.params.apikey
-  ),
+app.v2.post(
+  "/key",
+  utils.checkUser(),
   expressAsyncHandler(async (req, res) => {
     if (!utils.isLogin(req)) return;
-    const apikey = req.params.apikey;
-    await auth.removeSession(apikey);
+
+    if (!req.body.name)
+      return utils.sendError(res, {
+        code: 400,
+        description: "Missing 'name' property in body",
+      });
+
+    if (!req.body.game_id)
+      return utils.sendError(res, {
+        code: 400,
+        description: "Missing 'game_id' property in body",
+      });
+
+    const currentGame = await game.getGame(req.body.game_id);
+
+    if (!currentGame)
+      return utils.sendError(res, {
+        code: 404,
+        description: "Game not found",
+      });
+
+    const currentSession: types.ApiKey = {
+      start_at: new Date().toISOString(),
+      account_id: req.account.id,
+      name: req.body.name,
+      fingerprint: uuid.v4(),
+      game_id: req.body.game_id,
+    };
+
+    await auth.apiKeys().insert(currentSession);
+
+    res.json({ apiKey: currentSession.fingerprint });
+  })
+);
+
+app.v2.delete(
+  "/key/:fingerprint",
+  utils.checkUser(async (context) => {
+    const apiKey = await auth.getApiKey(context.params.fingerprint);
+    return apiKey?.account_id === context.account.id;
+  }),
+  expressAsyncHandler(async (req, res) => {
+    if (!utils.isLogin(req)) return;
+    await auth.removeApiKey(req.params.fingerprint);
     res.sendStatus(200);
   })
 );
@@ -251,7 +209,7 @@ app.v2.get(
   "/logout",
   utils.checkUser(),
   expressAsyncHandler(async (req, res) => {
-    if (utils.isLogin(req)) await auth.removeSession(req.user.api_key);
+    if (utils.isLogin(req)) await auth.logout(req.account.id);
     res.sendStatus(200);
   })
 );
@@ -260,10 +218,7 @@ app.v2.get(
 app.v2
   .route("/account/:id")
   .get(
-    utils.checkUser(
-      [types.Permission.SHOW_ACCOUNTS, types.Permission.MANAGE_ACCOUNTS],
-      (context) => context.params.id === context.account.id
-    ),
+    utils.checkUser((context) => context.params.id === context.account.id),
     expressAsyncHandler(async (req, res) => {
       //  Retrieves the AccountMeta for the given account.
       //  Only admins can access accounts other than their own
@@ -276,21 +231,11 @@ app.v2
           description: "Account not found",
         });
 
-      account.games = await auth.getAccountGames(account.id as string);
-
-      res.json({
-        email: account.email,
-        id: account.id,
-        role: account.role,
-        games: account.games,
-      });
+      res.json(account);
     })
   )
   .put(
-    utils.checkUser(
-      [types.Permission.EDIT_ACCOUNTS, types.Permission.MANAGE_ACCOUNTS],
-      (context) => context.params.id === context.account.id
-    ),
+    utils.checkUser((context) => context.params.id === context.account.id),
     expressAsyncHandler(async (req, res) => {
       //  Update the given account.
       //  An AccountMeta object should be sent in the body.
@@ -299,9 +244,9 @@ app.v2
       const id = req.params.id,
         email = req.body?.email,
         password = req.body?.password,
-        type = req.body?.type;
+        is_admin = req.body?.is_admin;
 
-      if (email && !types.isValidEmail(email)) {
+      if (email && !utils.isValidEmail(email)) {
         return utils.sendError(res, {
           code: 401,
           description: "Invalid email",
@@ -329,7 +274,7 @@ app.v2
       await auth.updateAccount(id, {
         email,
         password: hash,
-        role: type === "dev" ? "dev" : "user",
+        is_admin,
       });
 
       res.json({

@@ -52,12 +52,16 @@ export async function forFiles(
 }
 
 export function checkUser(
-  condition: (context: {
-    account: types.Account;
-    params: any;
-    body: any;
-  }) => boolean | Promise<boolean> = () => false
+  condition:
+    | "admin"
+    | ((context: {
+        account: types.Account;
+        params: any;
+        body: any;
+      }) => boolean | Promise<boolean>) = () => true
 ): express.RequestHandler {
+  if (condition === "admin") condition = () => false;
+
   return expressAsyncHandler(async (req, res, next) => {
     const cookie: Cookies.CookieAttributes | undefined =
       req.cookies[constants.COOKIE_NAME];
@@ -88,6 +92,7 @@ export function checkUser(
 
     if (
       !account.is_admin &&
+      typeof condition !== "string" &&
       !(await condition({
         account,
         params: req.params,
@@ -113,9 +118,9 @@ export function sendError(res: express.Response, error: types.Error) {
 }
 
 export function isLogin(
-  req: express.Request
+  req: express.Request & { account?: types.Account }
 ): req is express.Request & { account: types.Account } {
-  return req.hasOwnProperty("account");
+  return "account" in req && !!req.account;
 }
 
 export function extractLocale(req: express.Request): string {
