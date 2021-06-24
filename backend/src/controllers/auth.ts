@@ -2,7 +2,7 @@ import * as app from "../app";
 import * as types from "rm2-typings";
 
 export const accounts = () => app.database<types.Account>("account");
-export const apiKeys = () => app.database<types.ApiKey>("session");
+export const apiKeys = () => app.database<types.ApiKey>("api_key");
 
 export async function logout(id: types.Account["id"]): Promise<void> {
   await accounts().where({ id }).update({
@@ -47,9 +47,9 @@ export function postAccount(
 }
 
 export function getApiKey(
-  fingerprint: types.ApiKey["fingerprint"]
+  key: types.ApiKey["key"]
 ): Promise<types.ApiKey | undefined> {
-  return apiKeys().where({ fingerprint }).first();
+  return apiKeys().where({ key }).first();
 }
 
 export function getUserApiKeys(account_id: types.Account["id"]) {
@@ -60,10 +60,8 @@ export function removeUserApiKeys(account_id: types.Account["id"]) {
   return getUserApiKeys(account_id).delete();
 }
 
-export async function removeApiKey(
-  fingerprint: types.ApiKey["fingerprint"]
-): Promise<void> {
-  await apiKeys().where({ fingerprint }).delete();
+export async function removeApiKey(key: types.ApiKey["key"]): Promise<void> {
+  await apiKeys().where({ key }).delete();
 }
 
 export async function updateAccount(

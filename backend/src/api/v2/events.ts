@@ -22,12 +22,12 @@ app.v2.post(
       screen_size = req.body.screen_size,
       software = req.body.software,
       custom_data = JSON.stringify(req.body.custom_data ?? {}),
-      version_id = req.body.version_id;
+      game_id = req.body.game_id;
 
-    if (!version_id || !(await game.getGameVersion(version_id))) {
+    if (!game_id || !(await game.getGame(game_id))) {
       return utils.sendError(res, {
         code: 401,
-        description: "Invalid game version uuid",
+        description: "Invalid game uuid",
       });
     }
 
@@ -37,7 +37,7 @@ app.v2.post(
       screen_size,
       software,
       custom_data,
-      version_id,
+      game_id,
     });
 
     res.json({ id });
@@ -99,10 +99,8 @@ app.v2
   );
 
 app.v2.get(
-  "/sessions/:version_id",
-  utils.checkGame((context) =>
-    game.gameHasVersion(context.game.id, context.params.version_id)
-  ),
+  "/sessions/:game_id",
+  utils.checkGame((context) => context.game.id === context.params.game_id),
   expressAsyncHandler(async (req, res) => {
     res.json(await events.getGameSessions(req.params.version_id));
   })
@@ -121,7 +119,7 @@ app.v2.get(
 app.v2
   .route("/event")
   .get(
-    utils.checkUser(),
+    utils.checkGame(),
     expressAsyncHandler(async (req, res) => {
       //  Lists Event objects (see section on Paging below).
       //  Admin and dev accounts can see the game events they have access to.
@@ -138,22 +136,23 @@ app.v2
       //  - beforeUserTime - Date
 
       let query = events.events();
-      if (req.body.game_id) {
+
+      if (req.body.game_id)
         query = query
-          .leftJoin("game_version", "game_version.id", "event.game_version_id")
-          .leftJoin("game", "game.id", "game_version.game_id")
+          .leftJoin("game", "game.id", "game_id")
           .where("game.id", req.body.game_id);
-      }
-      if (req.body.version)
-        query = query.andWhere("game_version.name", req.body.version);
+
       if (req.body.session_id)
         query = query.andWhere("session_id", req.body.session_id);
+
       if (req.body.type) query = query.andWhere("type", req.body.type);
       if (req.body.section) query = query.andWhere("section", req.body.section);
+
       if (req.body.after)
         query = query.andWhere("server_time", ">", req.body.after);
       if (req.body.before)
         query = query.andWhere("server_time", "<", req.body.before);
+
       if (req.body.offset) query = query.offset(+req.body.offset);
       if (req.body.count) query = query.limit(+req.body.count);
 
@@ -161,7 +160,7 @@ app.v2
     })
   )
   .post(
-    utils.checkUser(),
+    utils.checkGame(),
     expressAsyncHandler(async (req, res) => {
       //  Adds more event information sent with the Event object, or array or Event objects.
       //  The gameVersionId query parameters is required.
@@ -174,7 +173,7 @@ app.v2
           description: "Missing game session id",
         });
 
-      const event: types.Event = {
+      const event: Omit<types.Event, "id"> = {
         session_id: req.body.game_session_id,
         coordinates: JSON.stringify(req.body.coordinates ?? {}),
         custom_data: JSON.stringify(req.body.custom_data ?? {}),
@@ -184,8 +183,8 @@ app.v2
         user_time: req.body.user_time,
       };
 
-      await events.postEvent(event);
+      const id = await events.postEvent(event);
 
-      res.json(event);
+      res.json({ id, ...event });
     })
   );

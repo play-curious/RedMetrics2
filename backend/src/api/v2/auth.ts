@@ -238,25 +238,25 @@ app.v2.post(
       start_at: new Date().toISOString(),
       account_id: req.account.id,
       name: req.body.name,
-      fingerprint: uuid.v4(),
+      key: uuid.v4(),
       game_id: req.body.game_id,
     };
 
     await auth.apiKeys().insert(currentSession);
 
-    res.json({ apiKey: currentSession.fingerprint });
+    res.json({ apiKey: currentSession.key });
   })
 );
 
 app.v2.delete(
-  "/key/:fingerprint",
+  "/key/:key",
   utils.checkUser(async (context) => {
-    const apiKey = await auth.getApiKey(context.params.fingerprint);
+    const apiKey = await auth.getApiKey(context.params.key);
     return apiKey?.account_id === context.account.id;
   }),
   expressAsyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
-    await auth.removeApiKey(req.params.fingerprint);
+    await auth.removeApiKey(req.params.key);
     res.sendStatus(200);
   })
 );

@@ -68,7 +68,7 @@ export function checkGame(
   else if (condition === "admin") condition = () => false;
 
   return expressAsyncHandler(async (req, res, next) => {
-    const fingerprint =
+    const key =
       req.query.apikey ??
       req.query.apiKey ??
       req.body.apikey ??
@@ -76,19 +76,19 @@ export function checkGame(
       req.params.apikey ??
       req.params.apiKey;
 
-    if (!fingerprint)
+    if (!key)
       return sendError(res, {
         code: 401,
         description: "Missing apiKey",
       });
 
-    if (typeof fingerprint !== "string" || !uuid.validate(fingerprint))
+    if (typeof key !== "string" || !uuid.validate(key))
       return sendError(res, {
         code: 400,
         description: "Invalid token",
       });
 
-    const apiKey = await auth.getApiKey(fingerprint);
+    const apiKey = await auth.getApiKey(key);
 
     if (!apiKey)
       return sendError(res, {

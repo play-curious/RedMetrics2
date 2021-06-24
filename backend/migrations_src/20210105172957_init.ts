@@ -37,7 +37,7 @@ export async function up(knex: Knex): Promise<void> {
 
   await knex.schema.createTable("api_key", (table) => {
     table
-      .uuid("fingerprint")
+      .uuid("key")
       .notNullable()
       .primary()
       .defaultTo(knex.raw("uuid_generate_v4()"));
@@ -57,23 +57,6 @@ export async function up(knex: Knex): Promise<void> {
       .notNullable();
   });
 
-  await knex.schema.createTable("version", (table) => {
-    table
-      .uuid("id")
-      .notNullable()
-      .primary()
-      .defaultTo(knex.raw("uuid_generate_v4()"));
-    table.string("name").notNullable();
-    table.text("description");
-    table.json("custom_data");
-    table
-      .uuid("game_id")
-      .references("id")
-      .inTable("game")
-      .onDelete("CASCADE")
-      .notNullable();
-  });
-
   await knex.schema.createTable("session", (table) => {
     table
       .uuid("id")
@@ -85,10 +68,11 @@ export async function up(knex: Knex): Promise<void> {
     table.string("software");
     table.string("external_id");
     table.json("custom_data");
+    table.string("version");
     table
-      .uuid("version_id")
+      .uuid("game_id")
       .references("id")
-      .inTable("version")
+      .inTable("game")
       .onDelete("CASCADE")
       .notNullable();
   });
@@ -113,7 +97,6 @@ export async function up(knex: Knex): Promise<void> {
 export async function down(knex: Knex): Promise<void> {
   await knex.schema.dropTable("event");
   await knex.schema.dropTable("session");
-  await knex.schema.dropTable("version");
   await knex.schema.dropTable("api_key");
   await knex.schema.dropTable("game");
   await knex.schema.dropTable("account");
