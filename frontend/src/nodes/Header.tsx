@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as types from "rm2-typings";
+import { tables as types } from "rm2-typings";
 
 import MenuItem from "./MenuItem";
 import Menu from "./Menu";
@@ -8,20 +8,14 @@ import Menu from "./Menu";
 export default function Footer({
   user,
   deleteUser,
-  setApiKey,
 }: {
-  user?: types.ApiKeyUser;
-  setApiKey: (apiKey: string | null) => unknown;
+  user?: types.Account;
   deleteUser: () => unknown;
 }) {
   return (
-    <Menu user={user} setApiKey={setApiKey} deleteUser={deleteUser}>
-      {user?.permissions.some((permission) => {
-        return permission === types.Permission.MANAGE_GAMES;
-      }) && <MenuItem to="/games"> Games </MenuItem>}
-      {user?.permissions.some((permission) => {
-        return permission === types.Permission.MANAGE_ACCOUNTS;
-      }) && <MenuItem to="/accounts"> Accounts </MenuItem>}
+    <Menu user={user} deleteUser={deleteUser}>
+      {user?.is_admin && <MenuItem to="/games"> Games </MenuItem>}
+      {user?.is_admin && <MenuItem to="/accounts"> Accounts </MenuItem>}
       <MenuItem to="/docs"> Docs </MenuItem>
       <MenuItem to="/tutorial"> Usage </MenuItem>
       <MenuItem to="/about"> About </MenuItem>

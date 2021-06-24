@@ -20,99 +20,21 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-interface ApiKeyValues {
-  name: string;
-  permissions: types.Permission[];
-  game_id?: string;
-}
-
-export default function Profile({ user }: { user?: types.ApiKeyUser }) {
-  const [sessions, setSessions] = React.useState<types.ApiKey[]>();
-  const [ownGames, setOwnGames] = React.useState<types.Game[]>();
-
-  const profileForm = Form.useForm<types.User>();
-  const apiKeyForm = Form.useForm<ApiKeyValues>();
+export default function Profile({ user }: { user?: types.tables.Account }) {
+  const [apiKeys, setApiKeys] = React.useState<types.tables.ApiKey[]>();
+  const [ownGames, setOwnGames] = React.useState<types.tables.Game[]>();
 
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
   if (!user) return <></>;
 
-  profileForm.setValue("email", user.email);
-  profileForm.setValue("role", user.role);
-
-  const fetchSessions = () => {
+  const fetchApiKeys = () => {
     axios
-      .get<types.ApiKey[]>(
-        "/sessions?" + qs.stringify({ apikey: user.api_key }),
-        { baseURL: constants.API_BASE_URL }
-      )
-      .then(({ data }) => {
-        setSessions(data);
-      })
-      .catch((error) => {
-        notificationSystem.current?.addNotification({
-          message: error.message,
-          level: "error",
-        });
-      });
-  };
-
-  const editAccount = (data: types.User) => {
-    axios
-      .put<types.User>(
-        `account/${user.account_id}?` + qs.stringify({ apikey: user.api_key }),
-        data,
-        {
-          baseURL: constants.API_BASE_URL,
-        }
-      )
-      .catch((error: Error) => {
-        notificationSystem.current?.addNotification({
-          message: error.message,
-          level: "error",
-        });
-      })
-      .finally(() => profileForm.setValue("password", ""));
-  };
-
-  const generateApiKey = (session: types.POSTApiKey) => {
-    axios
-      .post(
-        "/session?" + qs.stringify({ apikey: user.api_key }),
-        {
-          ...session,
-          game_id: session.game_id,
-        },
-        {
-          baseURL: constants.API_BASE_URL,
-        }
-      )
-      .then(() => {
-        notificationSystem.current?.addNotification({
-          message: "Successful generated apiKey",
-          level: "success",
-        });
-        fetchSessions();
-      })
-      .catch((error) => {
-        notificationSystem.current?.addNotification({
-          message: error.message,
-          level: "error",
-        });
-      });
-  };
-
-  const removeApiKey = (apiKey: string) => {
-    axios
-      .delete(`/session/${apiKey}?${qs.stringify({ apikey: user.api_key })}`, {
+      .get<types.api.Keys["Get"]["Response"]>("/keys", {
         baseURL: constants.API_BASE_URL,
       })
-      .then(() => {
-        notificationSystem.current?.addNotification({
-          message: "Successful deleted apiKey",
-          level: "success",
-        });
-        fetchSessions();
+      .then(({ data }) => {
+        setApiKeys(data);
       })
       .catch((error) => {
         notificationSystem.current?.addNotification({
@@ -129,14 +51,13 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
     });
   };
 
-  if (sessions === undefined) fetchSessions();
+  if (apiKeys === undefined) fetchApiKeys();
   if (ownGames === undefined)
     axios
-      .get<types.Game[]>(`/game`, {
+      .get<types.api.Game["Get"]["Response"]>(`/game`, {
         baseURL: constants.API_BASE_URL,
         params: {
-          apikey: user.api_key,
-          publisher_id: user.account_id,
+          publisher_id: user.id,
         },
       })
       .then((response) => setOwnGames(response.data))
@@ -158,7 +79,22 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
           <h2 className="text-lg text-center font-bold"> Profile </h2>
           <CustomForm
             className="flex flex-col h-full justify-center"
-            onSubmit={editAccount}
+            onSubmit={(data: types.api.AccountById["Put"]["Body"]) => {
+              axios
+                .put<types.api.AccountById["Put"]["Response"]>(
+                  `account/${user.id}`,
+                  data,
+                  {
+                    baseURL: constants.API_BASE_URL,
+                  }
+                )
+                .catch((error) => {
+                  notificationSystem.current?.addNotification({
+                    message: error.message,
+                    level: "error",
+                  });
+                });
+            }}
             inputs={{
               email: {
                 is: "email",
@@ -171,14 +107,10 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
                 required: true,
                 placeholder: "Password",
               },
-              role: {
-                is: "radio",
-                required: true,
-                choices: [
-                  { label: "Admin", value: "admin" },
-                  { label: "Dev", value: "dev" },
-                  { label: "User", value: "user" },
-                ],
+              is_admin: {
+                is: "checkbox",
+                label: "as admin?",
+                checked: user.is_admin,
               },
             }}
             submitText="Edit account"
@@ -187,84 +119,74 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
         <div className="xl:grid-cols-8">
           <div className="p-4 m-4 border-2 rounded">
             <h2 className="text-lg text-center font-bold">API Keys</h2>
-            {sessions && (
+            {apiKeys && (
               <table>
                 <thead>
                   <tr>
                     <th>Name</th>
-                    <th>Permissions</th>
                     <th>Game</th>
-                    <th>apiKey</th>
-                    <th>Expire in</th>
+                    <th>Key</th>
                     <th />
                   </tr>
                 </thead>
                 <tbody>
-                  {sessions.map((session) => {
+                  {apiKeys.map((apiKey) => {
                     return (
                       <tr>
                         <td
                           className="p-1 text-red-900 whitespace-nowrap overflow-hidden"
-                          title={session.name}
+                          title={apiKey.name}
                         >
-                          {session.name}
-                        </td>
-                        <td className="p-1 whitespace-nowrap overflow-y-scroll">
-                          <code className="h-1">
-                            {session.permissions.map((permission) => {
-                              return <div>{permission}</div>;
-                            })}
-                          </code>
+                          {apiKey.name}
                         </td>
                         <td className="p-1">
-                          {ownGames?.find((game) => game.id === session.game_id)
+                          {ownGames?.find((game) => game.id === apiKey.game_id)
                             ?.name ?? ""}
                         </td>
                         <td className="p-1">
                           <div
-                            data-clipboard-text={session.api_key}
+                            data-clipboard-text={apiKey.key}
                             onClick={notifyClipboard}
                             className="clipboard flex items-center bg-gray-800 font-mono inline-block rounded-full text-gray-300 hover:text-white px-1.5 whitespace-nowrap overflow-hidden"
                           >
-                            <span className="flex-grow">{session.api_key}</span>
+                            <span className="flex-grow">{apiKey.key}</span>
                             <i
                               className="pl-2 text-white far fa-copy cursor-pointer"
                               title="Copy to clipboard"
                             />
                           </div>
                         </td>
-                        <td className="p-1">
-                          <code className="whitespace-nowrap overflow-hidden">
-                            {session.is_connection_key
-                              ? tims.fromNow(
-                                  new Date(session.start_at).getTime() +
-                                    constants.SESSION_DURATION,
-                                  {
-                                    format: "hour",
-                                  }
-                                )
-                              : "never"}
-                          </code>
-                        </td>
                         <td className="p-1 flex items-center h-full">
-                          {user?.api_key !== session.api_key && (
-                            <Button
-                              callback={function (this: string) {
-                                removeApiKey(this);
-                              }.bind(session.api_key)}
-                            >
-                              <FontAwesomeIcon icon={faTrashAlt} />
-                            </Button>
-                          )}
-                          {session.game_id && (
-                            <Button to={"/game/show/" + session.game_id}>
-                              <FontAwesomeIcon icon={faChessKnight} />
-                            </Button>
-                          )}
+                          <Button
+                            callback={function (this: types.tables.ApiKey) {
+                              axios
+                                .delete(`/key/${this.key}`, {
+                                  baseURL: constants.API_BASE_URL,
+                                })
+                                .then(() => {
+                                  notificationSystem.current?.addNotification({
+                                    message: "Successful deleted apiKey",
+                                    level: "success",
+                                  });
+                                  fetchApiKeys();
+                                })
+                                .catch((error) => {
+                                  notificationSystem.current?.addNotification({
+                                    message: error.message,
+                                    level: "error",
+                                  });
+                                });
+                            }.bind(apiKey)}
+                          >
+                            <FontAwesomeIcon icon={faTrashAlt} />
+                          </Button>
+                          <Button to={"/game/show/" + apiKey.game_id}>
+                            <FontAwesomeIcon icon={faChessKnight} />
+                          </Button>
                         </td>
                       </tr>
                     );
-                  }) ?? "No apiKey"}
+                  }) || "No apiKey"}
                 </tbody>
               </table>
             )}
@@ -273,50 +195,30 @@ export default function Profile({ user }: { user?: types.ApiKeyUser }) {
             <h2 className="text-lg text-center font-bold">Add API Key</h2>
             <CustomForm
               className="flex items-center"
-              onSubmit={generateApiKey}
+              onSubmit={(session: types.api.Key["Post"]["Body"]) => {
+                axios
+                  .post<types.api.Key["Post"]["Response"]>("/key", session, {
+                    baseURL: constants.API_BASE_URL,
+                  })
+                  .then(() => {
+                    notificationSystem.current?.addNotification({
+                      message: "Successful generated apiKey",
+                      level: "success",
+                    });
+                    fetchApiKeys();
+                  })
+                  .catch((error) => {
+                    notificationSystem.current?.addNotification({
+                      message: error.message,
+                      level: "error",
+                    });
+                  });
+              }}
               inputs={{
                 name: {
                   is: "text",
                   placeholder: "Api Key Name",
                   required: true,
-                },
-                permissions: {
-                  is: "checkboxes",
-                  checks: Object.values(types.Permission)
-                    .map((permission) => {
-                      if (!user?.permissions.includes(permission)) {
-                        if (
-                          permission === "showAccounts" ||
-                          permission === "createAccounts" ||
-                          permission === "deleteAccounts" ||
-                          permission === "editAccounts"
-                        ) {
-                          if (
-                            !user?.permissions.includes(
-                              types.Permission.MANAGE_ACCOUNTS
-                            )
-                          ) {
-                            return;
-                          }
-                        } else if (
-                          permission === "showGames" ||
-                          permission === "createGames" ||
-                          permission === "deleteGames" ||
-                          permission === "editGames"
-                        ) {
-                          if (
-                            !user?.permissions.includes(
-                              types.Permission.MANAGE_GAMES
-                            )
-                          ) {
-                            return;
-                          }
-                        }
-                      }
-
-                      return { label: permission, value: permission };
-                    })
-                    .filter((option) => !!option) as CustomOption[],
                 },
                 game_id: {
                   is: "select",

@@ -7,7 +7,7 @@ import * as utils from "../utils";
 import SearchBar from "../nodes/SearchBar";
 import Center from "../nodes/Center";
 
-export default function Search({ user }: { user?: types.ApiKeyUser }) {
+export default function Search({ user }: { user?: types.tables.Account }) {
   const params = Router.useParams<{ q: string }>();
 
   const resultCount = 0;

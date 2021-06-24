@@ -3,53 +3,35 @@ import ReactPaginate from "react-paginate";
 import NotificationSystem from "react-notification-system";
 
 import axios from "axios";
-import qs from "querystring";
 
 import * as types from "rm2-typings";
-import * as utils from "../utils";
 import * as constants from "../constants";
 
 import GameCard from "../nodes/GameCard";
 import Wrapper from "../nodes/Wrapper";
 import SubMenu from "../nodes/SubMenu";
 import Button from "../nodes/Button";
-import CheckUser from "../nodes/CheckUser";
+import ErrorPage from "./ErrorPage";
 
-export default function Games({ user }: { user?: types.ApiKeyUser }) {
+export default function Games({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
-  const [games, setGames] = React.useState<types.Game[]>();
-  const [gameCount, setGameCount] = React.useState<number>();
+  const [games, setGames] = React.useState<types.tables.Game[]>();
   const [offset, setOffset] = React.useState<number>(0);
+
+  if (!user.is_admin)
+    return ErrorPage({
+      text: "You must be administrator to access this page.",
+    });
 
   const gamePerPage = 15;
 
   if (games === undefined)
     axios
-      .get<types.Game[]>(
-        "/game?" +
-          qs.stringify({ apikey: user?.api_key, offset, count: gamePerPage }),
-        {
-          baseURL: constants.API_BASE_URL,
-        }
-      )
+      .get<types.api.Game["Get"]["Response"]>("/game", {
+        baseURL: constants.API_BASE_URL,
+      })
       .then((response) => {
         setGames(response.data);
-      })
-      .catch((error) => {
-        notificationSystem.current?.addNotification({
-          message: error.message,
-          level: "error",
-        });
-      });
-
-  if (gameCount === undefined)
-    axios
-      .get<types.Game[]>("/game", {
-        baseURL: constants.API_BASE_URL,
-        params: { apikey: user?.api_key },
-      })
-      .then((response) => {
-        setGameCount(response.data.length);
       })
       .catch((error) => {
         notificationSystem.current?.addNotification({
@@ -61,14 +43,6 @@ export default function Games({ user }: { user?: types.ApiKeyUser }) {
   return (
     <>
       <NotificationSystem ref={notificationSystem} />
-      <CheckUser
-        user={user}
-        permissions={[
-          types.Permission.SHOW_GAMES,
-          types.Permission.MANAGE_GAMES,
-        ]}
-        condition={() => false}
-      />
       <SubMenu>
         <Button to="/game/add" children="New Game" />
       </SubMenu>
@@ -79,7 +53,9 @@ export default function Games({ user }: { user?: types.ApiKeyUser }) {
       </Wrapper>
       <ReactPaginate
         pageCount={
-          gameCount !== undefined ? Math.ceil(gameCount / gamePerPage) : 1
+          games?.length !== undefined
+            ? Math.ceil(games.length / gamePerPage)
+            : 1
         }
         onPageChange={({ selected }) => {
           setOffset(Math.ceil(selected * gamePerPage));

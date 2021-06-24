@@ -3,7 +3,6 @@ import * as Dom from "react-router-dom";
 import NotificationSystem from "react-notification-system";
 
 import axios from "axios";
-import qs from "querystring";
 import Clipboard from "clipboard";
 
 import * as types from "rm2-typings";
@@ -19,14 +18,11 @@ export default function App() {
   new Clipboard(".clipboard");
 
   const notificationSystem = React.createRef<NotificationSystem.System>();
-  const [apikey, setApiKey] = React.useState<string | null>(
-    sessionStorage.getItem("apiKey")
-  );
-  const [user, setUser] = React.useState<types.ApiKeyUser>();
+  const [user, setUser] = React.useState<types.tables.Account>();
 
   if (!user)
     axios
-      .get<types.ApiKeyUser>("/account?" + qs.stringify({ apikey }), {
+      .get<types.api.Account["Get"]["Response"]>("/account", {
         baseURL: constants.API_BASE_URL,
       })
       .then((response) => {
@@ -43,17 +39,10 @@ export default function App() {
     <>
       <NotificationSystem ref={notificationSystem} />
       <Dom.BrowserRouter>
-        <Header
-          setApiKey={(apiKey: string | null) => setApiKey(apiKey)}
-          user={user}
-          deleteUser={() => setUser(undefined)}
-        />
+        <Header user={user} deleteUser={() => setUser(undefined)} />
         <Body>
           <Container>
-            <Routing
-              setApiKey={(apiKey: string) => setApiKey(apiKey)}
-              user={user}
-            />
+            <Routing user={user} />
           </Container>
         </Body>
         <Footer />

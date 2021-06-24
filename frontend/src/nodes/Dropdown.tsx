@@ -16,21 +16,17 @@ import "./Dropdown.scss";
 
 export default function Dropdown({
   user,
-  setApiKey,
   deleteUser,
 }: {
-  user?: types.ApiKeyUser;
-  setApiKey: (apiKey: string | null) => unknown;
+  user?: types.tables.Account;
   deleteUser: () => unknown;
 }) {
   const [redirect, setRedirect] = React.useState<string>();
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
-  const logout = () => {
+  const logout = () =>
     axios
-      .get("/logout?" + qs.stringify({ apikey: user?.api_key }), {
-        baseURL: constants.API_BASE_URL,
-      })
+      .get("/logout", { baseURL: constants.API_BASE_URL })
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,
@@ -44,10 +40,8 @@ export default function Dropdown({
         });
         sessionStorage.removeItem("apiKey");
         deleteUser();
-        setApiKey(null);
         setRedirect("/login");
       });
-  };
 
   return (
     <>

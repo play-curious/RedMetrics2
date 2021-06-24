@@ -7,7 +7,6 @@ import * as constants from "../../constants";
 import * as auth from "../../controllers/auth";
 import * as game from "../../controllers/game";
 import * as types from "rm2-typings";
-import { removeUserApiKeys } from "../../controllers/auth";
 
 app.v2.get(
   "/logout",
@@ -193,10 +192,7 @@ app.v2
         is_admin,
       });
 
-      res.json({
-        id,
-        success: "Success",
-      });
+      res.json({ id });
     })
   );
 
@@ -234,7 +230,7 @@ app.v2.post(
         description: "Game not found",
       });
 
-    const currentSession: types.ApiKey = {
+    const apiKey: types.ApiKey = {
       start_at: new Date().toISOString(),
       account_id: req.account.id,
       name: req.body.name,
@@ -242,9 +238,9 @@ app.v2.post(
       game_id: req.body.game_id,
     };
 
-    await auth.apiKeys().insert(currentSession);
+    await auth.apiKeys().insert(apiKey);
 
-    res.json({ apiKey: currentSession.key });
+    res.json(apiKey);
   })
 );
 

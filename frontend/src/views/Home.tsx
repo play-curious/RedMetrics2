@@ -1,6 +1,5 @@
 import React from "react";
 
-import Logo from "../nodes/Logo";
 import Button from "../nodes/Button";
 
 export default function Home() {

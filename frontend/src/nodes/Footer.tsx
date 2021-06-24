@@ -1,5 +1,4 @@
 import React from "react";
-import Body from "./Body";
 import Container from "./Container";
 
 export default function Footer({}: {}) {

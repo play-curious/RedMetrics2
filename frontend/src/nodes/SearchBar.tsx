@@ -27,7 +27,7 @@ export default function SearchBar({ focus }: { focus?: boolean }) {
             className="bg-white h-7 px-2 py-0 pr-10 rounded-full text-sm focus:outline-none"
             type="text"
             value={query}
-            autoFocus={!!focus}
+            autoFocus={focus}
             onChange={(event) => setQuery(event.currentTarget.value)}
             onKeyDown={(event) => {
               if (event.key === "Enter") submit();
