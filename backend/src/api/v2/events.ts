@@ -21,6 +21,7 @@ app.v2.post(
       platform = req.body.platform,
       screen_size = req.body.screen_size,
       software = req.body.software,
+      version = req.body.version,
       custom_data = JSON.stringify(req.body.custom_data ?? {}),
       game_id = req.body.game_id;
 
@@ -31,16 +32,19 @@ app.v2.post(
       });
     }
 
-    const id = await events.postGameSession({
+    const session: types.api.Session["Post"]["Body"] = {
       external_id,
       platform,
       screen_size,
       software,
+      version,
       custom_data,
       game_id,
-    });
+    };
 
-    res.json({ id });
+    const id = await events.postGameSession(session);
+
+    res.json({ id, ...session });
   })
 );
 
@@ -91,20 +95,9 @@ app.v2
 
       await events.updateGameSession(id, values);
 
-      res.json({
-        id,
-        success: "Success",
-      });
+      res.sendStatus(200);
     })
   );
-
-app.v2.get(
-  "/sessions/:game_id",
-  utils.checkGame((context) => context.game.id === context.params.game_id),
-  expressAsyncHandler(async (req, res) => {
-    res.json(await events.getGameSessions(req.params.version_id));
-  })
-);
 
 app.v2.get(
   "/session/:id/events",
@@ -113,6 +106,14 @@ app.v2.get(
   ),
   expressAsyncHandler(async (req, res) => {
     res.json(await events.getEvents(req.params.id));
+  })
+);
+
+app.v2.get(
+  "/sessions/:game_id",
+  utils.checkGame((context) => context.game.id === context.params.game_id),
+  expressAsyncHandler(async (req, res) => {
+    res.json(await events.getGameSessions(req.params.version_id));
   })
 );
 

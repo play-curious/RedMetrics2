@@ -63,8 +63,11 @@ app.v2
         name: req.body.name,
       };
 
+      const id = await game.postGame(currentGame);
+
       res.json({
-        id: await game.postGame(currentGame),
+        id,
+        ...currentGame,
       });
     })
   );
