@@ -13,11 +13,12 @@ exports.seed = async function (knex) {
         adminPassword,
         parseInt(process.env.SALT_ROUNDS || "10")
       ),
-      role: "admin",
+      is_admin: true,
     });
 
     console.log(`Created admin account for ${adminEmail} ${adminPassword}`);
   } catch (err) {
     console.error("Error creating admin account", err);
+    throw err;
   }
 };
