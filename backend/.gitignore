@@ -6,4 +6,3 @@ migrations/
 yarn-error.log
 /initDatabase.js
 yarn.lock
-package-lock.json
