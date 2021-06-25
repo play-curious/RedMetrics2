@@ -57,8 +57,8 @@ export function checkGame(
     | "own"
     | "admin"
     | ((context: {
-        game: types.Game;
-        account: types.Account;
+        game: types.tables.Game;
+        account: types.tables.Account;
         params: any;
         body: any;
       }) => boolean | Promise<boolean>) = () => true
@@ -140,7 +140,7 @@ export function checkUser(
   condition:
     | "admin"
     | ((context: {
-        account: types.Account;
+        account: types.tables.Account;
         params: any;
         body: any;
       }) => boolean | Promise<boolean>) = () => true
@@ -197,20 +197,20 @@ export function checkUser(
   });
 }
 
-export function sendError(res: express.Response, error: types.Error) {
+export function sendError(res: express.Response, error: types.api.Error) {
   console.error(error);
   return res.status(error.code).json(error);
 }
 
 export function hasAccount(
-  req: express.Request & { account?: types.Account }
-): req is express.Request & { account: types.Account } {
+  req: express.Request & { account?: types.tables.Account }
+): req is express.Request & { account: types.tables.Account } {
   return "account" in req && !!req.account;
 }
 
 export function hasGame(
-  req: express.Request & { game?: types.Game }
-): req is express.Request & { game: types.Game } {
+  req: express.Request & { game?: types.tables.Game }
+): req is express.Request & { game: types.tables.Game } {
   return "game" in req && !!req.game;
 }
 

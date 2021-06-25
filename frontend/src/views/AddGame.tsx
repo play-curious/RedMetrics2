@@ -10,7 +10,7 @@ import * as constants from "../constants";
 import Center from "../nodes/Center";
 import CustomForm from "../nodes/CustomForm";
 
-export default function AddGame() {
+export default function AddGame({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
   const [redirect, setRedirect] = React.useState<null | string>(null);
 
@@ -64,6 +64,7 @@ export default function AddGame() {
               label: "Custom data",
               jsonValidation: true,
             },
+            publisher_id: user.id,
           }}
         />
       </Center>
