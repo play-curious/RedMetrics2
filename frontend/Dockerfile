@@ -5,13 +5,13 @@ WORKDIR /usr/src/app
 
 # Install app dependencies
 COPY package*.json ./
-RUN yarn 
+RUN npm install
 
 # Copy the rest
 COPY . ./
 
 EXPOSE 3000
-CMD ["yarn", "start"]
+CMD ["npm", "run", "start"]
 
 # DEBUG: Keep the container running for debugging purposes
 # CMD ["tail", "-f", "/dev/null"]
