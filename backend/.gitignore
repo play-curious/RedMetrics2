@@ -3,6 +3,7 @@ node_modules/
 .vscode/
 dist/
 migrations/
-package-lock.json
 yarn-error.log
 /initDatabase.js
+yarn.lock
+package-lock.json
