@@ -40,13 +40,12 @@ export const database = knex({
 
 export const server = express();
 export const v2 = express.Router();
-export const view = express.Router();
 
 server.use(
   bodyParser.urlencoded({ extended: false }),
   bodyParser.json(),
   cookieParser(),
-  cors({ credentials: true }),
+  cors({ credentials: true, origin: process.env.FRONTEND_ORIGIN }),
   (req, res, next) => {
     // debug
     console.table(req.cookies);
