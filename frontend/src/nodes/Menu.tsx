@@ -1,9 +1,7 @@
 import React from "react";
-import * as Dom from "react-router-dom";
 
 import { tables as types } from "rm2-typings";
 
-import SearchBar from "./SearchBar";
 import Container from "./Container";
 
 import Dropdown from "./Dropdown";

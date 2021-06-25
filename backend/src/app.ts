@@ -46,7 +46,7 @@ server.use(
   bodyParser.urlencoded({ extended: false }),
   bodyParser.json(),
   cookieParser(),
-  cors()
+  cors({ credentials: true })
 );
 
 server.use("/v2", v2);

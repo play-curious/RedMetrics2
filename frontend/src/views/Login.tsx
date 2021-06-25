@@ -24,9 +24,7 @@ export default function Login() {
           <CustomForm
             onSubmit={(data: types.Login["Post"]["Body"]) => {
               axios
-                .post<types.Login["Post"]["Response"]>("/login", data, {
-                  baseURL: constants.API_BASE_URL,
-                })
+                .post<types.Login["Post"]["Response"]>("/login", data)
                 .then((response) => {
                   notificationSystem.current?.addNotification({
                     message: "Successful connected",

@@ -2,7 +2,6 @@ import React from "react";
 import * as Router from "react-router";
 
 import * as types from "rm2-typings";
-import * as utils from "../utils";
 
 import SearchBar from "../nodes/SearchBar";
 import Center from "../nodes/Center";
