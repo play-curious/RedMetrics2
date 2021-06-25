@@ -13,9 +13,10 @@ app.v2
     utils.checkUser(),
     expressAsyncHandler(async (req, res) => {
       // Lists the games using the service as GameMeta objects (see section on Paging below)
-      const publisher_id = req.params.publisher_id,
-        offset = req.params.offset,
-        count = req.params.count;
+
+      const publisher_id = req.body.publisher_id,
+        offset = req.body.offset,
+        count = req.body.count;
 
       let query: any;
 
@@ -55,7 +56,7 @@ app.v2
           description: "Missing game name",
         });
 
-      const currentGame: Omit<types.Game, "id"> = {
+      const currentGame: types.api.Game["Post"]["Body"] = {
         publisher_id: req.account.id,
         author: req.body.author,
         custom_data: JSON.stringify(req.body.custom_data ?? {}),

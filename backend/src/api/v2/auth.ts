@@ -83,16 +83,14 @@ app.v2.post(
         description: "Missing email or password",
       });
 
-    if (!utils.isValidEmail(email)) {
+    if (!utils.isValidEmail(email))
       return utils.sendError(res, { code: 401, description: "Invalid email" });
-    }
 
-    if (await auth.emailAlreadyUsed(email)) {
+    if (await auth.emailAlreadyUsed(email))
       return utils.sendError(res, {
         code: 401,
         description: "Already used email",
       });
-    }
 
     const hash = await bcrypt.hash(
       password,
@@ -230,7 +228,7 @@ app.v2.post(
         description: "Game not found",
       });
 
-    const apiKey: types.ApiKey = {
+    const apiKey: types.tables.ApiKey = {
       start_at: new Date().toISOString(),
       account_id: req.account.id,
       name: req.body.name,

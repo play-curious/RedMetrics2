@@ -38,7 +38,8 @@
     "start": "react-dotenv && craco start",
     "build": "react-dotenv && craco build",
     "eject": "react-dotenv && craco eject",
-    "format": "prettier --write src"
+    "format": "prettier --write src",
+    "types": "npm up rm2-typings -f"
   },
   "eslintConfig": {
     "extends": [

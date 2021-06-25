@@ -75,7 +75,7 @@ app.v2
     expressAsyncHandler(async (req, res) => {
       // Updates the SessionMeta. Only accessible to dev and admin.
 
-      const values: Partial<types.Session> = {
+      const values: Partial<types.api.SessionById["Put"]["Body"]> = {
         custom_data: JSON.stringify(req.body.custom_data ?? {}),
         software: req.body.software,
         screen_size: req.body.screen_size,
@@ -174,7 +174,7 @@ app.v2
           description: "Missing game session id",
         });
 
-      const event: Omit<types.Event, "id"> = {
+      const event: types.api.Event["Post"]["Body"] = {
         session_id: req.body.game_session_id,
         coordinates: JSON.stringify(req.body.coordinates ?? {}),
         custom_data: JSON.stringify(req.body.custom_data ?? {}),

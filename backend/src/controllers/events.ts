@@ -1,21 +1,23 @@
 import * as app from "../app";
 import * as types from "rm2-typings";
 
-export const sessions = () => app.database<types.Session>("session");
-export const events = () => app.database<types.Event>("event");
+export const sessions = () => app.database<types.tables.Session>("session");
+export const events = () => app.database<types.tables.Event>("event");
 
 export function getGameSession(
-  id: types.Session["id"]
-): Promise<types.Session | undefined> {
+  id: types.tables.Session["id"]
+): Promise<types.tables.Session | undefined> {
   return sessions().where("id", id).first();
 }
 
-export function getGameSessions(id: string): Promise<types.Session[]> {
-  return sessions().where("game_version_id", id);
+export function getGameSessions(
+  id: types.tables.Game["id"]
+): Promise<types.tables.Session[]> {
+  return sessions().where("game_id", id);
 }
 
 export function postGameSession(
-  session: Omit<types.Session, "id">
+  session: types.utils.Insert<types.tables.Session>
 ): Promise<string> {
   return sessions()
     .insert(session)
@@ -24,8 +26,8 @@ export function postGameSession(
 }
 
 export function updateGameSession(
-  id: string,
-  values: Partial<types.Session>
+  id: types.tables.Session["id"],
+  values: types.utils.Update<types.tables.Session>
 ): Promise<string> {
   return sessions()
     .where("id", id)
@@ -34,15 +36,21 @@ export function updateGameSession(
     .then((ids) => ids[0]);
 }
 
-export function getEvents(id: string): Promise<types.Event[]> {
+export function getEvents(
+  id: types.tables.Session["id"]
+): Promise<types.tables.Event[]> {
   return events().where("session_id", id);
 }
 
-export function getEvent(id: number): Promise<types.Event | undefined> {
+export function getEvent(
+  id: types.tables.Event["id"]
+): Promise<types.tables.Event | undefined> {
   return events().where("id", id).first();
 }
 
-export function postEvent(event: Omit<types.Event, "id">): Promise<number> {
+export function postEvent(
+  event: types.utils.Insert<types.tables.Event>
+): Promise<number> {
   return events()
     .insert(event)
     .returning("id")
