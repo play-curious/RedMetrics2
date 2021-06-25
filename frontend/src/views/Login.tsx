@@ -4,7 +4,6 @@ import * as Router from "react-router";
 
 import NotificationSystem from "react-notification-system";
 
-import * as constants from "../constants";
 import { api as types } from "rm2-typings";
 
 import Center from "../nodes/Center";
@@ -24,8 +23,12 @@ export default function Login() {
           <CustomForm
             onSubmit={(data: types.Login["Post"]["Body"]) => {
               axios
-                .post<types.Login["Post"]["Response"]>("/login", data)
-                .then((response) => {
+                .post<types.Login["Post"]["Response"]>("/login", data, {
+                  headers: {
+                    "Set-Cookie": "",
+                  },
+                })
+                .then(() => {
                   notificationSystem.current?.addNotification({
                     message: "Successful connected",
                     level: "success",

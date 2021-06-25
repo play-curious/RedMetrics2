@@ -8,7 +8,7 @@
     "build-migrations": "tsc -p tsconfig.migrations.json",
     "migrate": "yarn build-migrations && yarn knex migrate:latest",
     "migrate-down": "yarn build-migrations && yarn knex migrate:down",
-    "seed": "yarn knex seed:run",
+    "seed": "yarn types && yarn knex seed:run",
     "start": "yarn migrate && yarn serve",
     "watch": "tsc-watch --onSuccess \"node .\"",
     "format": "prettier --write src tests",

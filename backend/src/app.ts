@@ -46,7 +46,12 @@ server.use(
   bodyParser.urlencoded({ extended: false }),
   bodyParser.json(),
   cookieParser(),
-  cors({ credentials: true })
+  cors({ credentials: true }),
+  (req, res, next) => {
+    // debug
+    console.table(req.cookies);
+    next();
+  }
 );
 
 server.use("/v2", v2);
