@@ -35,7 +35,7 @@
     "web-vitals": "^2.0.1"
   },
   "scripts": {
-    "start": "yarn types && react-dotenv && craco start",
+    "start": "npm run types && react-dotenv && craco start",
     "build": "react-dotenv && craco build",
     "eject": "react-dotenv && craco eject",
     "format": "prettier --write src",
