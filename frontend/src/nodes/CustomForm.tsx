@@ -105,7 +105,10 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
         className={options.className}
       >
         {inputEntries.map(([name, input]) => {
-          if (typeof input === "string") {
+          if(typeof input === "undefined") {
+            console.error("Form input is undefined for", name);
+            return <div>{ name + " is undefined" }</div>;
+          } else if (typeof input === "string") {
             return (
               <input type="hidden" {...register(name, { value: input })} />
             );

@@ -1,5 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
+import * as _ from "underscore";
 import * as uuid from "uuid";
 import * as app from "../../app";
 import * as utils from "../../utils";
@@ -119,7 +120,7 @@ app.v2.get(
   "/account",
   utils.checkUser(),
   expressAsyncHandler(async (req, res) => {
-    if (utils.hasAccount(req)) res.json(req.account);
+    if (utils.hasAccount(req)) res.json(_.pick(req.account, "email", "is_admin"));
   })
 );
 
@@ -145,7 +146,7 @@ app.v2
           description: "Account not found",
         });
 
-      res.json(account);
+      res.json(_.pick(account, "email", "is_admin"));
     })
   )
   .put(
@@ -198,7 +199,9 @@ app.v2.get(
   "/accounts",
   utils.checkUser("admin"),
   expressAsyncHandler(async (req, res) => {
-    res.json(await auth.getAccounts());
+    const accounts = await auth.getAccounts();
+    
+    res.json(_.map(accounts, x => _.pick(x, "email", "is_admin")));
   })
 );
 

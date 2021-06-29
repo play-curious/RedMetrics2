@@ -148,24 +148,20 @@ export function checkUser(
   if (condition === "admin") condition = () => false;
 
   return expressAsyncHandler(async (req, res, next) => {
-    const cookie: Cookies.CookieAttributes | undefined =
-      req.cookies[constants.COOKIE_NAME];
+    const token = req.cookies[constants.COOKIE_NAME];
 
-    if (!cookie)
+    if (!token)
       return sendError(res, {
         code: 401,
-        description: "Missing cookie (please login again)",
+        description: "Missing cookie token (please login again)",
       });
 
-    console.log(cookie);
-
-    const token = cookie.value;
-
-    if (typeof token !== "string" || !uuid.validate(token))
+    if (typeof token !== "string" || !uuid.validate(token)) {
       return sendError(res, {
         code: 400,
         description: "Invalid token",
       });
+    }
 
     const account = await auth.getAccountFromToken(token);
 
@@ -192,6 +188,8 @@ export function checkUser(
 
     // @ts-ignore
     req.account = account;
+
+    console.debug("checkUser validated token", token, "to account", account);
 
     next();
   });

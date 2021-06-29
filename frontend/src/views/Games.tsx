@@ -65,6 +65,7 @@ export default function Games({ user }: { user: types.tables.Account }) {
         containerClassName="flex w-full justify-around mt-5"
         pageLinkClassName="cursor-pointer hover:bg-gray-200 px-2 rounded-full"
         activeClassName="border-2 bg-gray-200 rounded-full"
+        disabledClassName="opacity-50 no-underline"
       />
     </>
   );

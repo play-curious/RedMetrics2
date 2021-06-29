@@ -49,11 +49,17 @@ export default function Routing({ user }: { user?: types.tables.Account }) {
       <Dom.Route exact path="/search" children={<Search user={user} />} />
       <Dom.Route exact path="/profile" children={<Profile user={user} />} />
       {user && (
-        <Dom.Route exact path="/game/show/:id" children={GamePage({ user })} />
-      )}
-      {user && <Dom.Route exact path="/games" children={Games({ user })} />}
-      {user && (
-        <Dom.Route exact path="/game/add" children={AddGame({ user })} />
+        <>
+          <Dom.Route exact path="/game/show/:id">
+            <GamePage user={user}/>
+          </Dom.Route>
+          <Dom.Route exact path="/games">
+            <Games user={user}/>
+          </Dom.Route>
+          <Dom.Route exact path="/game/add">
+            <AddGame user={user}/>
+          </Dom.Route>
+        </>
       )}
       {user && (
         <Dom.Route
