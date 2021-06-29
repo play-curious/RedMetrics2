@@ -16,8 +16,7 @@ export default function Footer({
     <Menu user={user} deleteUser={deleteUser}>
       {user?.is_admin && <MenuItem to="/games"> Games </MenuItem>}
       {user?.is_admin && <MenuItem to="/accounts"> Accounts </MenuItem>}
-      <MenuItem to="/docs"> Docs </MenuItem>
-      <MenuItem to="/tutorial"> Usage </MenuItem>
+      <MenuItem to="/documentation"> Docs </MenuItem>
       <MenuItem to="/about"> About </MenuItem>
     </Menu>
   );

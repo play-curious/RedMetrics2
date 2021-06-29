@@ -7,7 +7,6 @@ import Container from "./Container";
 import Dropdown from "./Dropdown";
 import Logo from "./Logo";
 
-import { faBell } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function Menu({
@@ -43,12 +42,6 @@ export default function Menu({
               {/*>*/}
               {/*  <FontAwesomeIcon icon={fa-search} />*/}
               {/*</Dom.Link>*/}
-              <div
-                className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none "
-                title="WIP"
-              >
-                <FontAwesomeIcon icon={faBell} />
-              </div>
               <div className="ml-3 relative">
                 <Dropdown user={user} deleteUser={deleteUser} />
               </div>

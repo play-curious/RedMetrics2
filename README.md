@@ -24,6 +24,8 @@ This project uses a `package.json` file only to run scripts through yarn or npm.
 
 5. To run the test suite on the backend, run the container, connect to it, and run `npm test`
 
+6. To run the backend in watch mode, first stop the existing backend container. Then use the command `docker-compose run --service-ports backend npm run watch`.
+
 ## Developing the database
 
 Migrations are created in TypeScript in the `backend/migrations_src` directory and compiled to the standard `backend/migrations` directory in JS, before being run.

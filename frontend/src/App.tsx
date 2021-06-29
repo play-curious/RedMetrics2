@@ -7,7 +7,7 @@ import Clipboard from "clipboard";
 import * as types from "rm2-typings";
 import * as constants from "./constants";
 
-import Footer from "./nodes/Footer";
+// import Footer from "./nodes/Footer";
 import Header from "./nodes/Header";
 import Body from "./nodes/Body";
 import Routing from "./Routing";
@@ -47,7 +47,7 @@ export default function App() {
             <Routing user={user} />
           </Container>
         </Body>
-        <Footer />
+        {/* <Footer /> */}
       </Dom.BrowserRouter>
     </>
   );

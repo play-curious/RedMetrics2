@@ -10,7 +10,7 @@
     "migrate-down": "npm run build-migrations && npx knex migrate:down",
     "seed": "npx knex seed:run",
     "start": "npm run types && npm run migrate && npm run serve",
-    "watch": "tsc-watch --onSuccess \"node .\"",
+    "watch": "npm run types && npm run migrate && tsc-watch --onSuccess \"node dist/index.js\"",
     "format": "prettier --write src tests",
     "test": "tsc && jest",
     "clean": "rm -rf dist",

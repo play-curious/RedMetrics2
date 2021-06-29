@@ -11,6 +11,7 @@ export default function Logo({ bg }: { bg?: boolean }) {
       >
         <span className="text-red-600">Red</span>
         <span className="text-red-100">Metrics</span>
+        <span className="text-red-600">2</span>
       </span>
     </Dom.Link>
   );
