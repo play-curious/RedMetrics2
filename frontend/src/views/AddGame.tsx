@@ -64,7 +64,7 @@ export default function AddGame({ user }: { user: types.tables.Account }) {
               label: "Custom data",
               jsonValidation: true,
             },
-            publisher_id: user.id,
+            // publisher_id: user.id,
           }}
         />
       </Center>

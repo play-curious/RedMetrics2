@@ -28,18 +28,16 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "react-select": "^4.3.1",
-    "rm2-typings": "git+https://github.com/play-curious/RedMetrics2-typing.git#new-perm",
     "tims": "^2.0.5",
     "typescript": "^4.3.3",
     "uuid": "^8.3.2",
     "web-vitals": "^2.0.1"
   },
   "scripts": {
-    "start": "npm run types && react-dotenv && craco start",
+    "start": "react-dotenv && craco start",
     "build": "react-dotenv && craco build",
     "eject": "react-dotenv && craco eject",
-    "format": "prettier --write src",
-    "types": "npm up rm2-typings -f"
+    "format": "prettier --write src"
   },
   "eslintConfig": {
     "extends": [

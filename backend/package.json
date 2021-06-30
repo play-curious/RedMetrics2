@@ -9,12 +9,11 @@
     "migrate": "npm run build-migrations && npx knex migrate:latest",
     "migrate-down": "npm run build-migrations && npx knex migrate:down",
     "seed": "npx knex seed:run",
-    "start": "npm run types && npm run migrate && npm run serve",
-    "watch": "npm run types && npm run migrate && tsc-watch --onSuccess \"node dist/index.js\"",
+    "start": "npm run migrate && npm run serve",
+    "watch": "npm run migrate && tsc-watch --onSuccess \"node dist/index.js\"",
     "format": "prettier --write src tests",
     "test": "tsc && jest",
-    "clean": "rm -rf dist",
-    "types": "npm up rm2-typings -f"
+    "clean": "rm -rf dist"
   },
   "repository": {
     "type": "git",
@@ -43,7 +42,6 @@
     "graphql": "^15.4.0",
     "knex": "^0.21.15",
     "pg": "^8.5.0",
-    "rm2-typings": "git+https://github.com/play-curious/RedMetrics2-typing.git#new-perm",
     "tsc-watch": "^4.2.9",
     "underscore": "^1.13.1",
     "uuid": "^8.3.2"

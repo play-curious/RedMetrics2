@@ -2,7 +2,7 @@ version: "3.9"
 services:
   frontend:
     build:
-      context: frontend
+      dockerfile: frontend/Dockerfile
     depends_on:
       - backend
     ports:
@@ -10,11 +10,14 @@ services:
     environment:
       API_URL: "http://localhost:${BACKEND_PORT}"
     volumes:
+      - ./frontend/package.json:/usr/src/app/package.json:ro
+      - ./frontend/package-lock.json:/usr/src/app/package-lock.json:rw
       - ./frontend/src:/usr/src/app/src:ro
+      - ./typings:/usr/src/app/rm2-typings:ro
 
   backend:
     build:
-      context: backend
+      dockerfile: backend/Dockerfile 
     depends_on:
       - db
     ports:
@@ -23,14 +26,17 @@ services:
     environment:
       PGHOST: db
     volumes:
+      - ./backend/package.json:/usr/src/app/package.json:ro
+      - ./backend/package-lock.json:/usr/src/app/package-lock.json:rw
       - ./backend/src:/usr/src/app/src:ro
       - ./backend/tests:/usr/src/app/tests:ro
       - ./backend/migrations_src:/usr/src/app/migrations_src:ro
       - ./backend/seeds:/usr/src/app/seeds:ro
+      - ./typings:/usr/src/app/rm2-typings:ro
 
   db:
     image: postgres
-    restart: always
+    restart: on-failure
     environment:
       POSTGRES_USER: "${PGUSER}"
       POSTGRES_DB: "${PGDATABASE}"
@@ -38,7 +44,7 @@ services:
 
   adminer:
     image: adminer
-    restart: always
+    restart: on-failure
     depends_on:
       - db
     ports:

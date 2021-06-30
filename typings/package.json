@@ -1,0 +1,31 @@
+{
+  "name": "rm2-typings",
+  "version": "1.0.10",
+  "description": "Typings for RM2",
+  "main": "./dist/index.js",
+  "scripts": {
+    "format": "prettier --write src",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "prettier": {
+    "semi": false
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/play-curious/RedMetrics2-typing.git"
+  },
+  "keywords": [
+    "typescript"
+  ],
+  "author": "ghom",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/play-curious/RedMetrics2-typing/issues"
+  },
+  "homepage": "https://github.com/play-curious/RedMetrics2-typing#readme",
+  "devDependencies": {
+    "prettier": "^2.3.1",
+    "typescript": "^4.3.2"
+  }
+}
