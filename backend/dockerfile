@@ -11,7 +11,12 @@ RUN npm i
 COPY . ./
 
 EXPOSE 6627
-CMD ["npm", "run", "start"]
+
+# Just run dist server
+# CMD ["npm", "run", "start"]
+
+# Restart when file changes
+CMD ["npm", "run", "watch"]
 
 # DEBUG: Keep the container running for debugging purposes
 # CMD ["tail", "-f", "/dev/null"]
