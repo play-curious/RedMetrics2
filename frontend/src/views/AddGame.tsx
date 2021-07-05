@@ -23,9 +23,7 @@ export default function AddGame({ user }: { user: types.tables.Account }) {
         <CustomForm
           onSubmit={(game: types.api.Game["Post"]["Body"]) => {
             axios
-              .post<types.api.Game["Post"]["Response"]>("/game", game, {
-                baseURL: constants.API_BASE_URL,
-              })
+              .post<types.api.Game["Post"]["Response"]>("/game", game)
               .then((response) => {
                 setRedirect("/game/show/" + response.data.id);
               })

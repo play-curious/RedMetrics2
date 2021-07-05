@@ -9,7 +9,7 @@ import * as types from "rm2-typings";
 
 import Button from "../nodes/Button";
 
-export default function GamePage({ user }: { user: types.tables.Account }) {
+export default function GamePage() {
   const { id } = Router.useParams<{ id: string }>();
 
   const notificationSystem = React.createRef<NotificationSystem.System>();
@@ -19,9 +19,7 @@ export default function GamePage({ user }: { user: types.tables.Account }) {
 
   if (game === undefined)
     axios
-      .get<types.api.GameById["Get"]["Response"]>(`/game/${id}`, {
-        baseURL: constants.API_BASE_URL,
-      })
+      .get<types.api.GameById["Get"]["Response"]>(`/game/${id}`)
       .then((response) => setGame(response.data))
       .catch((error) => {
         notificationSystem.current?.addNotification({
@@ -34,16 +32,17 @@ export default function GamePage({ user }: { user: types.tables.Account }) {
     <>
       <NotificationSystem ref={notificationSystem} />
       {redirect && <Router.Redirect to={redirect} />}
-      <h1> {game?.name ?? "No name"} </h1>
+      <div className="flex items-baseline">
+        <h1> {game?.name ?? "No name"} </h1>
+        <code className="px-3 font-light text-gray-600">{game?.id}</code>
+      </div>
       <p> {game?.description ?? "No description"} </p>
       <div className="flex">
         <Button to={"/game/edit/" + id}> Edit </Button>
         <Button
           callback={() => {
             axios
-              .delete<types.api.GameById["Delete"]["Response"]>(`/game/${id}`, {
-                baseURL: constants.API_BASE_URL,
-              })
+              .delete<types.api.GameById["Delete"]["Response"]>(`/game/${id}`)
               .then(() => setRedirect("/games"))
               .catch((error) => {
                 notificationSystem.current?.addNotification({

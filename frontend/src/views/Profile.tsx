@@ -28,9 +28,7 @@ export default function Profile({ user }: { user: types.tables.Account }) {
 
   const fetchApiKeys = () => {
     axios
-      .get<types.api.Keys["Get"]["Response"]>("/keys", {
-        baseURL: constants.API_BASE_URL,
-      })
+      .get<types.api.Keys["Get"]["Response"]>("/keys")
       .then(({ data }) => {
         setApiKeys(data);
       })
@@ -81,10 +79,7 @@ export default function Profile({ user }: { user: types.tables.Account }) {
               axios
                 .put<types.api.AccountById["Put"]["Response"]>(
                   `account/${user.id}`,
-                  data,
-                  {
-                    baseURL: constants.API_BASE_URL,
-                  }
+                  data
                 )
                 .catch((error) => {
                   notificationSystem.current?.addNotification({
@@ -195,9 +190,7 @@ export default function Profile({ user }: { user: types.tables.Account }) {
               className="flex items-center"
               onSubmit={(session: types.api.Key["Post"]["Body"]) => {
                 axios
-                  .post<types.api.Key["Post"]["Response"]>("/key", session, {
-                    baseURL: constants.API_BASE_URL,
-                  })
+                  .post<types.api.Key["Post"]["Response"]>("/key", session)
                   .then(() => {
                     notificationSystem.current?.addNotification({
                       message: "Successful generated apiKey",

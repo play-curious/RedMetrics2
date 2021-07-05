@@ -42,9 +42,7 @@ export default function Register() {
               }}
               onSubmit={(data: types.Register["Post"]["Body"]) => {
                 axios
-                  .post<types.Register["Post"]["Response"]>("/register", data, {
-                    baseURL: constants.API_BASE_URL,
-                  })
+                  .post<types.Register["Post"]["Response"]>("/register", data)
                   .then((response) => {
                     notificationSystem.current?.addNotification({
                       message: "Successful registered",

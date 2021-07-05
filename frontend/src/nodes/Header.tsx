@@ -7,13 +7,13 @@ import Menu from "./Menu";
 
 export default function Footer({
   user,
-  deleteUser,
+  fetchUser,
 }: {
   user?: types.Account;
-  deleteUser: () => unknown;
+  fetchUser: () => unknown;
 }) {
   return (
-    <Menu user={user} deleteUser={deleteUser}>
+    <Menu user={user} deleteUser={fetchUser}>
       {user?.is_admin && <MenuItem to="/games"> Games </MenuItem>}
       {user?.is_admin && <MenuItem to="/accounts"> Accounts </MenuItem>}
       <MenuItem to="/docs"> Docs </MenuItem>

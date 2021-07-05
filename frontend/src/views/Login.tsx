@@ -30,7 +30,8 @@ export default function Login({ deleteUser }: { deleteUser: () => unknown }) {
                     level: "success",
                   });
                   deleteUser();
-                  //setRedirect("/home");
+                  setRedirect("/home");
+                  window.location.reload(true);
                 })
                 .catch((error) => {
                   notificationSystem.current?.addNotification({

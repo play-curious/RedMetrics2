@@ -19,9 +19,7 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
     if (id !== user.id) {
       if (user.is_admin) {
         axios
-          .get<types.api.AccountById["Get"]["Response"]>("/account/" + id, {
-            baseURL: constants.API_BASE_URL,
-          })
+          .get<types.api.AccountById["Get"]["Response"]>("/account/" + id)
           .then((response) => {
             setAccount(response?.data ?? user);
           })

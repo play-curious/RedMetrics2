@@ -27,9 +27,7 @@ export default function GameSessionPage({
 
   if (session === undefined)
     axios
-      .get<types.api.SessionById["Get"]["Response"]>("/session/" + id, {
-        baseURL: constants.API_BASE_URL,
-      })
+      .get<types.api.SessionById["Get"]["Response"]>("/session/" + id)
       .then((response) => setSession(response.data))
       .catch((error) => {
         notificationSystem.current?.addNotification({
@@ -56,9 +54,7 @@ export default function GameSessionPage({
 
   if (game === undefined && session !== undefined)
     axios
-      .get<types.api.GameById["Get"]["Response"]>("/game/" + session.game_id, {
-        baseURL: constants.API_BASE_URL,
-      })
+      .get<types.api.GameById["Get"]["Response"]>("/game/" + session.game_id)
       .then((response) => setGame(response.data))
       .catch((error) => {
         notificationSystem.current?.addNotification({

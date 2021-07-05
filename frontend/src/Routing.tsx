@@ -1,4 +1,5 @@
 import React from "react";
+import env from "react-dotenv";
 import * as Dom from "react-router-dom";
 
 import * as types from "rm2-typings";
@@ -25,15 +26,15 @@ import Debug from "./nodes/Debug";
 
 export default function Routing({
   user,
-  deleteUser,
+  fetchUser,
 }: {
   user?: types.tables.Account;
-  deleteUser: () => unknown;
+  fetchUser: () => unknown;
 }) {
   return (
     <Dom.Switch>
       <Dom.Route exact path="/debug">
-        <Debug {...user} />
+        <Debug {...{ ...user, ...env }} />
       </Dom.Route>
 
       <Dom.Route exact path={["/", "/home"]}>
@@ -43,7 +44,7 @@ export default function Routing({
         <Register />
       </Dom.Route>
       <Dom.Route exact path="/login">
-        <Login deleteUser={deleteUser} />
+        <Login deleteUser={fetchUser} />
       </Dom.Route>
       <Dom.Route exact path="/docs">
         <Documentation />
@@ -73,7 +74,7 @@ export default function Routing({
             <Profile user={user} />
           </Dom.Route>
           <Dom.Route exact path="/game/show/:id">
-            <GamePage user={user} />
+            <GamePage />
           </Dom.Route>
           <Dom.Route exact path="/games">
             <Games user={user} />

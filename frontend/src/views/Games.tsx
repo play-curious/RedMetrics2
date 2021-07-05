@@ -27,9 +27,7 @@ export default function Games({ user }: { user: types.tables.Account }) {
 
   if (games === undefined)
     axios
-      .get<types.api.Game["Get"]["Response"]>("/game", {
-        baseURL: constants.API_BASE_URL,
-      })
+      .get<types.api.Game["Get"]["Response"]>("/game")
       .then((response) => {
         setGames(response.data);
       })

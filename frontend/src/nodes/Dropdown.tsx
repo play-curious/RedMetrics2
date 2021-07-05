@@ -1,10 +1,10 @@
 import React from "react";
 import * as Dom from "react-router-dom";
 import * as Router from "react-router";
+import * as Cookies from "react-cookie";
 import NotificationSystem from "react-notification-system";
 
 import axios from "axios";
-import qs from "querystring";
 
 import * as types from "rm2-typings";
 import * as constants from "../constants";
@@ -22,11 +22,12 @@ export default function Dropdown({
   deleteUser: () => unknown;
 }) {
   const [redirect, setRedirect] = React.useState<string>();
+  const [, , removeCookie] = Cookies.useCookies([constants.COOKIE_NAME]);
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
   const logout = () =>
     axios
-      .get("/logout", { baseURL: constants.API_BASE_URL })
+      .get("/logout")
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,
@@ -38,7 +39,7 @@ export default function Dropdown({
           message: "Successful disconnected",
           level: "success",
         });
-        sessionStorage.removeItem("apiKey");
+        removeCookie(constants.COOKIE_NAME);
         deleteUser();
         setRedirect("/login");
       });
@@ -87,13 +88,6 @@ export default function Dropdown({
               >
                 Login
               </Dom.Link>
-              {/*<Dom.Link*/}
-              {/*  to="/register"*/}
-              {/*  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"*/}
-              {/*  role="menuitem"*/}
-              {/*>*/}
-              {/*  Register*/}
-              {/*</Dom.Link>*/}
             </>
           )}
           <Dom.Link

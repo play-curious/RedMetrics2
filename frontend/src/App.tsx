@@ -7,9 +7,10 @@ import Clipboard from "clipboard";
 import * as types from "rm2-typings";
 import * as constants from "./constants";
 
-import Header from "./nodes/Header";
-import Body from "./nodes/Body";
 import Routing from "./Routing";
+
+import Body from "./nodes/Body";
+import Header from "./nodes/Header";
 import Container from "./nodes/Container";
 
 import axios from "axios";
@@ -23,27 +24,32 @@ export default function App() {
   const notificationSystem = React.createRef<NotificationSystem.System>();
   const [user, setUser] = React.useState<types.tables.Account>();
 
-  if (!user)
+  const fetchUser = () => {
     axios
       .get<types.api.Account["Get"]["Response"]>("/account")
       .then((response) => {
         const user = response.data;
+
         notificationSystem.current?.addNotification({
           message: "Logged-in as " + user.email,
           level: "success",
         });
+
         setUser(user);
       })
       .catch(console.error);
+  };
+
+  if (!user) fetchUser();
 
   return (
     <>
       <NotificationSystem ref={notificationSystem} />
       <Dom.BrowserRouter>
-        <Header user={user} deleteUser={() => setUser(undefined)} />
+        <Header {...{ fetchUser, user }} />
         <Body>
           <Container>
-            <Routing user={user} deleteUser={() => setUser(undefined)} />
+            <Routing {...{ fetchUser, user }} />
           </Container>
         </Body>
       </Dom.BrowserRouter>
