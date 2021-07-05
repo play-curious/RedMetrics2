@@ -45,34 +45,29 @@ server.use(
   bodyParser.urlencoded({ extended: false }),
   bodyParser.json(),
   cookieParser(),
-  cors({ credentials: true, origin: process.env.FRONTEND_ORIGIN }),
-  (req, res, next) => {
-    // debug
-    console.table(req.cookies);
-    next();
-  }
+  cors({ credentials: true, origin: process.env.FRONTEND_ORIGIN })
 );
 
 server.use("/v2", v2);
 
 // GraphQL
 
-const rootValue = require("../graphql/resolvers");
-const schema = fs.readFileSync(
-  path.join(__dirname, "../graphql/schema.graphql"),
-  {
-    encoding: "utf-8",
-  }
-);
+// const rootValue = require("../graphql/resolvers");
+// const schema = fs.readFileSync(
+//   path.join(__dirname, "../graphql/schema.graphql"),
+//   {
+//     encoding: "utf-8",
+//   }
+// );
 
-server.use(
-  "/v2/graphql",
-  graphqlHTTP({
-    schema: buildSchema(schema),
-    rootValue,
-    graphiql: true,
-  })
-);
+// server.use(
+//   "/v2/graphql",
+//   graphqlHTTP({
+//     schema: buildSchema(schema),
+//     rootValue,
+//     graphiql: true,
+//   })
+// );
 
 // Load routes
 

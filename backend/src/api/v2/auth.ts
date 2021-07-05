@@ -120,7 +120,8 @@ app.v2.get(
   "/account",
   utils.checkUser(),
   expressAsyncHandler(async (req, res) => {
-    if (utils.hasAccount(req)) res.json(_.pick(req.account, "email", "is_admin"));
+    if (utils.hasAccount(req))
+      res.json(_.pick(req.account, "email", "is_admin"));
   })
 );
 
@@ -200,8 +201,8 @@ app.v2.get(
   utils.checkUser("admin"),
   expressAsyncHandler(async (req, res) => {
     const accounts = await auth.getAccounts();
-    
-    res.json(_.map(accounts, x => _.pick(x, "email", "is_admin")));
+
+    res.json(_.map(accounts, (x) => _.pick(x, "email", "is_admin")));
   })
 );
 

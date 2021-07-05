@@ -196,7 +196,7 @@ export function checkUser(
 }
 
 export function sendError(res: express.Response, error: types.api.Error) {
-  console.error(error);
+  console.error("Error:", error);
   return res.status(error.code).json(error);
 }
 

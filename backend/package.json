@@ -9,6 +9,7 @@
     "migrate": "npm run build-migrations && npx knex migrate:latest",
     "migrate-down": "npm run build-migrations && npx knex migrate:down",
     "seed": "npx knex seed:run",
+    "debug": "set DEBUG=express:* & npm run start",
     "start": "npm run types && npm run migrate && npm run serve",
     "watch": "npm run types && npm run migrate && tsc-watch --onSuccess \"node dist/index.js\"",
     "format": "prettier --write src tests",
