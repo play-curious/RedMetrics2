@@ -39,11 +39,6 @@ export default function Register() {
                   label: "Password",
                   required: true,
                 },
-                is_admin: {
-                  is: "checkbox",
-                  checked: false,
-                  label: "as admin?",
-                },
               }}
               onSubmit={(data: types.Register["Post"]["Body"]) => {
                 axios

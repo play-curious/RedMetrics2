@@ -1,9 +1,7 @@
 import React from "react";
 import * as Router from "react-router";
-import * as Form from "react-hook-form";
 
 import * as types from "rm2-typings";
-import * as constants from "../constants";
 
 import NotificationSystem from "react-notification-system";
 import axios from "axios";
@@ -37,19 +35,11 @@ export default function CreateAccount({
           <h1> Create account </h1>
           <CustomForm
             className="flex flex-col"
-            onSubmit={(data: types.api.Register["Post"]["Body"]) => {
+            onSubmit={(data: types.api.Account["Post"]["Body"]) => {
               axios
-                .post<types.api.Register["Post"]["Response"]>(
-                  "/register",
-                  data,
-                  {
-                    baseURL: constants.API_BASE_URL,
-                  }
-                )
-                .then((response) => {
-                  const id = response.data.id;
-
-                  const message = `new account created.\nwith id: ${id}\nwith password: ${password}`;
+                .post<types.api.Account["Post"]["Response"]>("/account", data)
+                .then(() => {
+                  const message = `new account created with password: ${password}`;
 
                   console.info(message);
                   alert(message);
@@ -59,11 +49,11 @@ export default function CreateAccount({
                     level: "success",
                   });
                   notificationSystem.current?.addNotification({
-                    message: `new account created (#${id}) with password: ${password}`,
+                    message: `new account created with password: ${password}`,
                     level: "info",
                   });
 
-                  setRedirect("/account/show/" + id);
+                  setRedirect("/accounts");
                 })
                 .catch((error) => {
                   notificationSystem.current?.addNotification({

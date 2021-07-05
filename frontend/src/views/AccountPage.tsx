@@ -9,7 +9,6 @@ import * as constants from "../constants";
 
 import Center from "../nodes/Center";
 import CustomForm from "../nodes/CustomForm";
-import { set } from "react-hook-form";
 
 export default function AccountPage({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
@@ -75,14 +74,11 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
           }}
           onSubmit={(data: types.api.AccountById["Put"]["Body"]) => {
             axios
-              .post<types.api.AccountById["Put"]["Response"]>(
+              .put<types.api.AccountById["Put"]["Response"]>(
                 "/account/" + id,
-                data,
-                {
-                  baseURL: constants.API_BASE_URL,
-                }
+                data
               )
-              .then((response) => {
+              .then(() => {
                 notificationSystem.current?.addNotification({
                   message: "Successful registered",
                   level: "success",

@@ -76,7 +76,7 @@ app.v2.post(
 
     const email = req.body?.email,
       password = req.body?.password,
-      is_admin = /^(?:true|1|)$/.test(String(req.body?.is_admin ?? "false"));
+      is_admin = false;
 
     if (!email || !password)
       return utils.sendError(res, {
@@ -116,14 +116,54 @@ app.v2.post(
   })
 );
 
-app.v2.get(
-  "/account",
-  utils.checkUser(),
-  expressAsyncHandler(async (req, res) => {
-    if (utils.hasAccount(req))
-      res.json(_.pick(req.account, "email", "is_admin"));
+app.v2
+  .route("/account")
+  .get(utils.checkUser(), (req, res) => {
+    if (utils.hasAccount(req)) res.json(req.account);
   })
-);
+  .post(
+    utils.checkUser("admin"),
+    expressAsyncHandler(async (req, res) => {
+      //  Registers a new account.
+      //  An AccountMeta object should be sent in the body.
+      //  The Location response header will contain the URL for the new account.
+
+      const email = req.body?.email,
+        password = req.body?.password,
+        is_admin = /^(?:true|1|)$/.test(String(req.body?.is_admin ?? "false"));
+
+      if (!email || !password)
+        return utils.sendError(res, {
+          code: 401,
+          description: "Missing email or password",
+        });
+
+      if (!utils.isValidEmail(email))
+        return utils.sendError(res, {
+          code: 401,
+          description: "Invalid email",
+        });
+
+      if (await auth.emailAlreadyUsed(email))
+        return utils.sendError(res, {
+          code: 401,
+          description: "Already used email",
+        });
+
+      const hash = await bcrypt.hash(
+        password,
+        parseInt(process.env.SALT_ROUNDS as string)
+      );
+
+      await auth.postAccount({
+        email,
+        password: hash,
+        is_admin,
+      });
+
+      res.sendStatus(200);
+    })
+  );
 
 app.v2
   .route("/account/:id")
@@ -156,10 +196,13 @@ app.v2
       //  An AccountMeta object should be sent in the body.
       //  Only admins can access accounts other than their own
 
+      if (!utils.hasAccount(req)) return;
+
       const id = req.params.id,
         email = req.body?.email,
-        password = req.body?.password,
-        is_admin = req.body?.is_admin;
+        password = req.body?.password;
+
+      const is_admin = req.account.is_admin ? req.body?.is_admin : undefined;
 
       if (email && !utils.isValidEmail(email)) {
         return utils.sendError(res, {
@@ -200,9 +243,7 @@ app.v2.get(
   "/accounts",
   utils.checkUser("admin"),
   expressAsyncHandler(async (req, res) => {
-    const accounts = await auth.getAccounts();
-
-    res.json(_.map(accounts, (x) => _.pick(x, "email", "is_admin")));
+    res.json(await auth.getAccounts());
   })
 );
 

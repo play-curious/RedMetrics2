@@ -21,9 +21,21 @@ import CreateAccount from "./views/CreateAccount";
 import AccountPage from "./views/AccountPage";
 import GameSessionPage from "./views/GameSessionPage";
 
-export default function Routing({ user }: { user?: types.tables.Account }) {
+import Debug from "./nodes/Debug";
+
+export default function Routing({
+  user,
+  deleteUser,
+}: {
+  user?: types.tables.Account;
+  deleteUser: () => unknown;
+}) {
   return (
     <Dom.Switch>
+      <Dom.Route exact path="/debug">
+        <Debug {...user} />
+      </Dom.Route>
+
       <Dom.Route exact path={["/", "/home"]}>
         <Home />
       </Dom.Route>
@@ -31,7 +43,7 @@ export default function Routing({ user }: { user?: types.tables.Account }) {
         <Register />
       </Dom.Route>
       <Dom.Route exact path="/login">
-        <Login />
+        <Login deleteUser={deleteUser} />
       </Dom.Route>
       <Dom.Route exact path="/docs">
         <Documentation />

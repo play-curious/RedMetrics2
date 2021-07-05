@@ -43,7 +43,7 @@ export default function App() {
         <Header user={user} deleteUser={() => setUser(undefined)} />
         <Body>
           <Container>
-            <Routing user={user} />
+            <Routing user={user} deleteUser={() => setUser(undefined)} />
           </Container>
         </Body>
       </Dom.BrowserRouter>
