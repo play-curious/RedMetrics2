@@ -3,7 +3,9 @@ import React from "react";
 import Button from "../nodes/Button";
 
 export default function Home() {
-  return <div>
+  return (
+    <div>
       <p>Dashboard coming soon...</p>
-    </div>;
+    </div>
+  );
 }

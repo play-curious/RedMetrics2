@@ -10,7 +10,8 @@
     @apply text-xl;
   }
 
-  p a, ul a {
+  p a,
+  ul a {
     @apply underline;
   }
 }

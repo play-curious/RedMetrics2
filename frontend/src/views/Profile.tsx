@@ -20,13 +20,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export default function Profile({ user }: { user?: types.tables.Account }) {
+export default function Profile({ user }: { user: types.tables.Account }) {
   const [apiKeys, setApiKeys] = React.useState<types.tables.ApiKey[]>();
   const [ownGames, setOwnGames] = React.useState<types.tables.Game[]>();
 
   const notificationSystem = React.createRef<NotificationSystem.System>();
-
-  if (!user) return <></>;
 
   const fetchApiKeys = () => {
     axios

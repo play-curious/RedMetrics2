@@ -32,16 +32,7 @@ export default function Menu({
                 <div className="flex space-x-4"> {children} </div>
               </div>
             </div>
-            {/*<div className="hidden md:block flex-grow">*/}
-            {/*  <SearchBar key="menu" />*/}
-            {/*</div>*/}
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-              {/*<Dom.Link*/}
-              {/*  className="md:hidden bg-gray-800 p-1 mr-3 rounded-full text-gray-400 hover:text-white focus:outline-none "*/}
-              {/*  to="/search"*/}
-              {/*>*/}
-              {/*  <FontAwesomeIcon icon={fa-search} />*/}
-              {/*</Dom.Link>*/}
               <div className="ml-3 relative">
                 <Dropdown user={user} deleteUser={deleteUser} />
               </div>

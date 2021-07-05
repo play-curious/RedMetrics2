@@ -10,7 +10,6 @@ import Tutorial from "./views/Tutorial";
 import Accounts from "./views/Accounts";
 import Settings from "./views/Settings";
 import Home from "./views/Home";
-import Search from "./views/Search";
 import Profile from "./views/Profile";
 import GamePage from "./views/GamePage";
 import AddGame from "./views/AddGame";
@@ -25,57 +24,61 @@ import GameSessionPage from "./views/GameSessionPage";
 export default function Routing({ user }: { user?: types.tables.Account }) {
   return (
     <Dom.Switch>
-      <Dom.Route exact path="/register" children={<Register />} />
-      <Dom.Route exact path="/login" children={<Login />} />
-      <Dom.Route exact path="/docs" children={<Documentation />} />
-      <Dom.Route exact path="/tutorial" children={<Tutorial />} />
-      <Dom.Route exact path="/about" children={<About />} />
-      <Dom.Route exact path="/accounts" children={<Accounts user={user} />} />
-      <Dom.Route
-        exact
-        path="/account/create"
-        children={<CreateAccount user={user} />}
-      />
-      {user && (
-        <Dom.Route
-          exact
-          path="/account/show/:id"
-          children={AccountPage({ user })}
-        />
-      )}
-      <Dom.Route exact path="/settings" children={<Settings user={user} />} />
-      <Dom.Route exact path="/" children={<Home />} />
-      <Dom.Route exact path="/home" children={<Home />} />
-      <Dom.Route exact path="/search" children={<Search user={user} />} />
-      <Dom.Route exact path="/profile" children={<Profile user={user} />} />
+      <Dom.Route exact path={["/", "/home"]}>
+        <Home />
+      </Dom.Route>
+      <Dom.Route exact path="/register">
+        <Register />
+      </Dom.Route>
+      <Dom.Route exact path="/login">
+        <Login />
+      </Dom.Route>
+      <Dom.Route exact path="/docs">
+        <Documentation />
+      </Dom.Route>
+      <Dom.Route exact path="/tutorial">
+        <Tutorial />
+      </Dom.Route>
+      <Dom.Route exact path="/about">
+        <About />
+      </Dom.Route>
+
       {user && (
         <>
+          <Dom.Route exact path="/accounts">
+            <Accounts user={user} />
+          </Dom.Route>
+          <Dom.Route exact path="/account/create">
+            <CreateAccount user={user} />
+          </Dom.Route>
+          <Dom.Route exact path="/account/show/:id">
+            <AccountPage user={user} />
+          </Dom.Route>
+          <Dom.Route exact path="/settings">
+            <Settings user={user} />
+          </Dom.Route>
+          <Dom.Route exact path="/profile">
+            <Profile user={user} />
+          </Dom.Route>
           <Dom.Route exact path="/game/show/:id">
-            <GamePage user={user}/>
+            <GamePage user={user} />
           </Dom.Route>
           <Dom.Route exact path="/games">
-            <Games user={user}/>
+            <Games user={user} />
           </Dom.Route>
           <Dom.Route exact path="/game/add">
-            <AddGame user={user}/>
+            <AddGame user={user} />
+          </Dom.Route>
+          <Dom.Route exact path="/game/edit/:id">
+            <EditGame user={user} />
+          </Dom.Route>
+          <Dom.Route exact path="/game/session/show/:id">
+            <GameSessionPage user={user} />
           </Dom.Route>
         </>
       )}
-      {user && (
-        <Dom.Route
-          exact
-          path="/game/edit/:id"
-          children={<EditGame user={user} />}
-        />
-      )}
-      {user && (
-        <Dom.Route
-          exact
-          path="/game/session/show/:id"
-          children={<GameSessionPage user={user} />}
-        />
-      )}
-      <Dom.Route path="*" exact component={NotFound} />
+
+      <Dom.Route path="*" component={NotFound} />
     </Dom.Switch>
   );
 }

@@ -9,42 +9,41 @@ import * as constants from "../constants";
 
 import Center from "../nodes/Center";
 import CustomForm from "../nodes/CustomForm";
+import { set } from "react-hook-form";
 
-export default async function AccountPage({
-  user,
-}: {
-  user: types.tables.Account;
-}) {
+export default function AccountPage({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
-
+  const [account, setAccount] = React.useState<types.tables.Account>();
   const { id } = Router.useParams<{ id: string }>();
 
-  let account: types.tables.Account;
-
-  if (id !== user.id) {
-    if (user.is_admin) {
-      const response = await axios
-        .get<types.api.AccountById["Get"]["Response"]>("/account/" + id, {
-          baseURL: constants.API_BASE_URL,
-        })
-        .catch((error) => {
-          notificationSystem.current?.addNotification({
-            message: error.message,
-            level: "error",
+  if (!account)
+    if (id !== user.id) {
+      if (user.is_admin) {
+        axios
+          .get<types.api.AccountById["Get"]["Response"]>("/account/" + id, {
+            baseURL: constants.API_BASE_URL,
+          })
+          .then((response) => {
+            setAccount(response?.data ?? user);
+          })
+          .catch((error) => {
+            notificationSystem.current?.addNotification({
+              message: error.message,
+              level: "error",
+            });
+            setAccount(user);
           });
-          return null;
+      } else {
+        notificationSystem.current?.addNotification({
+          message: "You must be an administrator to edit another profile",
+          level: "error",
         });
-      account = response?.data ?? user;
+
+        setAccount(user);
+      }
     } else {
-      notificationSystem.current?.addNotification({
-        message: "You must be an administrator to edit another profile",
-        level: "error",
-      });
-      account = user;
+      setAccount(user);
     }
-  } else {
-    account = user;
-  }
 
   return (
     <>
