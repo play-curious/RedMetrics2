@@ -57,7 +57,9 @@ export default function CreateAccount({
                 })
                 .catch((error) => {
                   notificationSystem.current?.addNotification({
-                    message: error.message,
+                    message: error.message.includes("401")
+                      ? "Email already used!"
+                      : error.message,
                     level: "error",
                   });
                 });
