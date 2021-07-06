@@ -1,17 +1,13 @@
 import axios from "axios";
 import React from "react";
-import * as Form from "react-hook-form";
 import NotificationSystem from "react-notification-system";
-
-import qs from "querystring";
-import tims from "tims";
 
 import * as types from "rm2-typings";
 import * as constants from "../constants";
 
 import Center from "../nodes/Center";
 import Button from "../nodes/Button";
-import CustomForm, { CustomOption } from "../nodes/CustomForm";
+import CustomForm from "../nodes/CustomForm";
 
 import {
   faTrashAlt,

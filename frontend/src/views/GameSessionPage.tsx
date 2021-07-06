@@ -11,11 +11,7 @@ import Button from "../nodes/Button";
 import Wrapper from "../nodes/Wrapper";
 import Card from "../nodes/Card";
 
-export default function GameSessionPage({
-  user,
-}: {
-  user: types.tables.Account;
-}) {
+export default function GameSessionPage() {
   const { id } = Router.useParams<{ id: string }>();
 
   const notificationSystem = React.createRef<NotificationSystem.System>();
@@ -23,7 +19,6 @@ export default function GameSessionPage({
   const [game, setGame] = React.useState<types.tables.Game>();
   const [events, setEvents] = React.useState<types.tables.Event[]>();
   const [session, setSession] = React.useState<types.tables.Session>();
-  const [redirect, setRedirect] = React.useState<string>();
 
   if (session === undefined)
     axios
@@ -66,13 +61,12 @@ export default function GameSessionPage({
   return (
     <>
       <NotificationSystem ref={notificationSystem} />
-      {redirect && <Router.Redirect to={redirect} />}
       <h1> {session?.id ?? "No id"} </h1>
       <div className="flex">
         <Button to={"/game/show/" + game?.id}> Game </Button>
       </div>
       <Wrapper>
-        {events?.map((event, i) => {
+        {events?.map((event) => {
           return (
             <Card
               title={event.section ?? "no section"}

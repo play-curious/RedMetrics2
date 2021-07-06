@@ -86,7 +86,7 @@ export default function Routing({
             <EditGame user={user} />
           </Dom.Route>
           <Dom.Route exact path="/game/session/show/:id">
-            <GameSessionPage user={user} />
+            <GameSessionPage />
           </Dom.Route>
         </>
       )}

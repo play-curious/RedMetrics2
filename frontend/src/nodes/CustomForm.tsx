@@ -88,7 +88,6 @@ export function is<T extends { is: string }>(
 export default function CustomForm<T>(options: CustomFormOptions<T>) {
   const {
     register,
-    setValue,
     handleSubmit,
     formState: { errors },
   } = Form.useForm<T>();

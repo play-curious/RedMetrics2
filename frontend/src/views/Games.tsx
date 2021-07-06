@@ -5,7 +5,6 @@ import NotificationSystem from "react-notification-system";
 import axios from "axios";
 
 import * as types from "rm2-typings";
-import * as constants from "../constants";
 
 import GameCard from "../nodes/GameCard";
 import Wrapper from "../nodes/Wrapper";
@@ -16,7 +15,7 @@ import ErrorPage from "./ErrorPage";
 export default function Games({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
   const [games, setGames] = React.useState<types.tables.Game[]>();
-  const [offset, setOffset] = React.useState<number>(0);
+  const [, setOffset] = React.useState<number>(0);
 
   if (!user.is_admin)
     return ErrorPage({

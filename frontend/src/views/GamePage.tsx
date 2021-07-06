@@ -4,7 +4,6 @@ import NotificationSystem from "react-notification-system";
 
 import axios from "axios";
 
-import * as constants from "../constants";
 import * as types from "rm2-typings";
 
 import Button from "../nodes/Button";

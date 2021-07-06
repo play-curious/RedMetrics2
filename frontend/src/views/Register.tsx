@@ -5,7 +5,6 @@ import * as Dom from "react-router-dom";
 
 import NotificationSystem from "react-notification-system";
 
-import * as constants from "../constants";
 import { api as types } from "rm2-typings";
 
 import Center from "../nodes/Center";

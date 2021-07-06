@@ -7,8 +7,6 @@ import Container from "./Container";
 import Dropdown from "./Dropdown";
 import Logo from "./Logo";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
 export default function Menu({
   children,
   user,

@@ -5,7 +5,6 @@ import axios from "axios";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
-import * as constants from "../constants";
 
 import Center from "../nodes/Center";
 import CustomForm from "../nodes/CustomForm";
