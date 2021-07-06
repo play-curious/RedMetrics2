@@ -41,6 +41,7 @@ export interface CustomRadioInput {
 
 export interface CustomTextAreaInput {
   is: "area";
+  value?: string;
   label?: string;
   required?: boolean;
   code?: boolean;
@@ -205,7 +206,9 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
                 })}
                 {...input}
                 defaultValue={input.jsonValidation ? "{}" : ""}
-              />
+              >
+                {input.value}
+              </textarea>
             );
 
             if (input.code) {
