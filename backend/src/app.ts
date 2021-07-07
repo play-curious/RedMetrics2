@@ -1,5 +1,5 @@
-import { graphqlHTTP } from "express-graphql";
-import { buildSchema } from "graphql";
+// import { graphqlHTTP } from "express-graphql";
+// import { buildSchema } from "graphql";
 import relative from "dayjs/plugin/relativeTime";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
@@ -10,7 +10,7 @@ import chalk from "chalk";
 import cors from "cors";
 import knex from "knex";
 import path from "path";
-import fs from "fs";
+// import fs from "fs";
 import pg from "pg";
 
 dayjs.extend(relative);

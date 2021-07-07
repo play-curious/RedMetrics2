@@ -1,6 +1,8 @@
 import expressAsyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
 import * as uuid from "uuid";
+
 import * as app from "../../app";
 import * as utils from "../../utils";
 import * as constants from "../../constants";
@@ -338,7 +340,8 @@ app.v2
           description: "Account not found",
         });
 
-      const code = uuid.v4();
+      const digit = () => String(Math.floor(Math.random() * 9.9999999));
+      const code = digit() + digit() + digit() + digit() + digit() + digit();
 
       await auth.confirmations().insert({
         account_id: account.id,
@@ -346,6 +349,40 @@ app.v2
       });
 
       // send code by email !
+      {
+        const transporter = await nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port: Number(process.env.SMTP_PORT),
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          },
+        });
+
+        const info = await transporter.sendMail({
+          from: `"PlayCurious" <hello@playcurious.Games>`,
+          to: email,
+          subject: "Reset your password",
+          html: `
+            <h1> Reset your password - Step 1/2 </h1>
+            <p> To reset your password, use the following code. </p>
+            <div style="
+              padding: 30px;
+              border-radius: 10px;
+              margin-top: 15px;
+              box-shadow: inset grey 0 5px;
+              font-size: 30px;
+            ">
+              ${code}
+            </div>
+            <strong> You have 15 minutes to enter the code from the site! </strong>
+        `,
+        });
+
+        console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
+
+        transporter.close();
+      }
 
       setTimeout(() => {
         auth
@@ -399,6 +436,39 @@ app.v2
       await auth.updateAccount(account.id, { password: hash });
 
       // send password by email !
+      {
+        const transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port: Number(process.env.SMTP_PORT),
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          },
+        });
+
+        const info = await transporter.sendMail({
+          from: `"PlayCurious" <hello@playcurious.Games>`,
+          to: account.email,
+          subject: "Reset your password",
+          html: `
+            <h1> Reset your password - Step 2/2 </h1>
+            <p> Here is your temporary password  </p>
+            <div style="
+              padding: 30px;
+              border-radius: 10px;
+              margin-top: 15px;
+              box-shadow: inset grey 0 5px;
+              font-size: 30px;
+            ">
+              ${newPassword}
+            </div>
+        `,
+        });
+
+        console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
+
+        transporter.close();
+      }
 
       res.sendStatus(200);
     })
