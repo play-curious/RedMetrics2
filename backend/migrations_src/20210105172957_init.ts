@@ -17,6 +17,16 @@ export async function up(knex: Knex): Promise<void> {
     table.boolean("is_admin").defaultTo(false);
   });
 
+  await knex.schema.createTable("confirmation", (table) => {
+    table
+      .uuid("account_id")
+      .references("id")
+      .inTable("account")
+      .onDelete("cascade")
+      .notNullable();
+    table.string("code").notNullable();
+  });
+
   await knex.schema.createTable("game", (table) => {
     table
       .uuid("id")
