@@ -364,22 +364,22 @@ app.v2
           to: email,
           subject: "Reset your password",
           html: `
-            <h1> Reset your password - Step 1/2 </h1>
-            <p> To reset your password, use the following code. </p>
-            <div style="
-              padding: 30px;
-              border-radius: 10px;
-              margin-top: 15px;
-              box-shadow: inset grey 0 5px;
-              font-size: 30px;
-            ">
-              ${code}
-            </div>
-            <strong> You have 15 minutes to enter the code from the site! </strong>
+            <body style="font-family: sans-serif">
+              <h1> Reset your password - Step 1/2 </h1>
+              <p> To reset your password, use the following code. </p>
+              <div style="
+                padding: 30px;
+                border-radius: 10px;
+                margin-top: 15px;
+                box-shadow: inset grey 0 5px;
+                font-size: 30px;
+              ">
+                ${code}
+              </div>
+              <strong> You have 15 minutes to enter the code from the site! </strong>
+            </body>
         `,
         });
-
-        console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
 
         transporter.close();
       }
@@ -451,21 +451,21 @@ app.v2
           to: account.email,
           subject: "Reset your password",
           html: `
-            <h1> Reset your password - Step 2/2 </h1>
-            <p> Here is your temporary password  </p>
-            <div style="
-              padding: 30px;
-              border-radius: 10px;
-              margin-top: 15px;
-              box-shadow: inset grey 0 5px;
-              font-size: 30px;
-            ">
-              ${newPassword}
-            </div>
+            <body style="font-family: sans-serif">
+              <h1> Reset your password - Step 2/2 </h1>
+              <p> Here is your temporary password  </p>
+              <div style="
+                padding: 30px;
+                border-radius: 10px;
+                margin-top: 15px;
+                box-shadow: inset grey 0 5px;
+                font-size: 30px;
+              ">
+                ${newPassword}
+              </div>
+            </body>
         `,
         });
-
-        console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
 
         transporter.close();
       }
