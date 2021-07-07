@@ -1,6 +1,8 @@
 import * as app from "../app";
 import * as types from "rm2-typings";
 
+export const confirmations = () =>
+  app.database<types.tables.Confirmation>("confirmation");
 export const accounts = () => app.database<types.tables.Account>("account");
 export const apiKeys = () => app.database<types.tables.ApiKey>("api_key");
 

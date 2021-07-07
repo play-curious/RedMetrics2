@@ -1,6 +1,5 @@
 import expressAsyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
-import * as _ from "underscore";
 import * as uuid from "uuid";
 import * as app from "../../app";
 import * as utils from "../../utils";
@@ -187,7 +186,7 @@ app.v2
           description: "Account not found",
         });
 
-      res.json(_.pick(account, "email", "is_admin"));
+      res.json(account);
     })
   )
   .put(
@@ -322,11 +321,85 @@ app.v2
   .route("/lost-password")
   .post(
     expressAsyncHandler(async (req, res) => {
+      const email: types.api.LostPassword["Post"]["Body"]["email"] =
+        req.body.email;
+
+      if (!email)
+        return utils.sendError(res, {
+          code: 401,
+          description: "Missing email",
+        });
+
+      const account = await auth.getAccountByEmail(email);
+
+      if (!account)
+        return utils.sendError(res, {
+          code: 404,
+          description: "Account not found",
+        });
+
+      const code = uuid.v4();
+
+      await auth.confirmations().insert({
+        account_id: account.id,
+        code,
+      });
+
+      // send code by email !
+
+      setTimeout(() => {
+        auth
+          .confirmations()
+          .delete()
+          .where("account_id", account.id)
+          .then(() => true)
+          .catch(console.error);
+      }, 1000 * 60 * 15);
+
       res.sendStatus(200);
     })
   )
   .patch(
     expressAsyncHandler(async (req, res) => {
+      const code: types.api.LostPassword["Patch"]["Body"]["code"] =
+        req.body.code;
+
+      const confirmation = await auth
+        .confirmations()
+        .where("code", code)
+        .first();
+
+      if (!confirmation)
+        return utils.sendError(res, {
+          code: 422,
+          description: "Confirmation code not valid",
+        });
+
+      const account = await auth.getAccount(confirmation.account_id);
+
+      if (!account) {
+        await auth
+          .confirmations()
+          .where("account_id", confirmation.account_id)
+          .delete();
+
+        return utils.sendError(res, {
+          code: 404,
+          description: "Account not found",
+        });
+      }
+
+      const newPassword = uuid.v4();
+
+      const hash = await bcrypt.hash(
+        newPassword,
+        parseInt(process.env.SALT_ROUNDS as string)
+      );
+
+      await auth.updateAccount(account.id, { password: hash });
+
+      // send password by email !
+
       res.sendStatus(200);
     })
   );
