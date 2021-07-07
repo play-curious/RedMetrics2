@@ -1,13 +1,14 @@
-import axios from "axios";
 import React from "react";
 import * as Router from "react-router";
-
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
 
+import axios from "axios";
+
 import Center from "../nodes/Center";
 import CustomForm from "../nodes/CustomForm";
+import Button from "../nodes/Button";
 
 export default function Login({ deleteUser }: { deleteUser: () => unknown }) {
   const [redirect, setRedirect] = React.useState<null | string>(null);
@@ -54,7 +55,9 @@ export default function Login({ deleteUser }: { deleteUser: () => unknown }) {
                 required: true,
               },
             }}
-          />
+          >
+            <Button to="/forgotten-password">Forgotten password</Button>
+          </CustomForm>
         </Center>
       </div>
     </>

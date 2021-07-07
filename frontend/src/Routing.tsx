@@ -21,6 +21,7 @@ import EditGame from "./views/EditGame";
 import CreateAccount from "./views/CreateAccount";
 import AccountPage from "./views/AccountPage";
 import GameSessionPage from "./views/GameSessionPage";
+import ForgottenPassword from "./views/ForgottenPassword";
 
 import Debug from "./nodes/Debug";
 
@@ -42,6 +43,9 @@ export default function Routing({
       </Dom.Route>
       <Dom.Route exact path="/register">
         <Register />
+      </Dom.Route>
+      <Dom.Route exact path="/forgotten-password">
+        <ForgottenPassword />
       </Dom.Route>
       <Dom.Route exact path="/login">
         <Login deleteUser={fetchUser} />
