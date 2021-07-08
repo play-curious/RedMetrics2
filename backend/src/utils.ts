@@ -9,6 +9,7 @@ import * as types from "rm2-typings";
 import * as auth from "./controllers/auth";
 import * as game from "./controllers/game";
 import * as constants from "./constants";
+import nodemailer from "nodemailer";
 
 interface ForFilesOptions {
   recursive?: boolean;
@@ -218,4 +219,81 @@ export function extractLocale(req: express.Request): string {
 
 export function isValidEmail(email: string): email is types.Email {
   return /^\S+@\S+\.\S+$/.test(email);
+}
+
+export async function sendDigitCode(
+  account: types.tables.Account,
+  title: string,
+  subject: string
+) {
+  const digit = () => String(Math.floor(Math.random() * 9.9999999));
+  const code = digit() + digit() + digit() + digit() + digit() + digit();
+
+  await auth.confirmations().insert({
+    account_id: account.id,
+    code,
+  });
+
+  await sendMail({
+    html: formatEmail(
+      title,
+      `
+      <div style="
+        padding: 30px;
+        border-radius: 10px;
+        margin-top: 15px;
+        box-shadow: inset grey 0 5px;
+        font-size: 30px;
+      ">
+        ${code}
+      </div>
+      <strong> You have 15 minutes to enter the code from the site! </strong>`
+    ),
+    to: account.email,
+    subject,
+  });
+
+  setTimeout(
+    (account) => {
+      auth
+        .confirmations()
+        .delete()
+        .where("account_id", account.id)
+        .then(() => true)
+        .catch(console.error);
+    },
+    1000 * 60 * 15,
+    account
+  );
+}
+
+export function formatEmail(title: string, content: string) {
+  return `
+    <body style="font-family: sans-serif">
+      ${title}
+      ${content}
+    </body>
+  `;
+}
+
+export async function sendMail(options: {
+  html: string;
+  to: string;
+  subject: string;
+}) {
+  const transporter = await nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  await transporter.sendMail({
+    from: `"PlayCurious" <hello@playcurious.Games>`,
+    ...options,
+  });
+
+  transporter.close();
 }

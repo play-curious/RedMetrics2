@@ -14,6 +14,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("email").unique().notNullable();
     table.string("password").notNullable();
     table.string("connection_token");
+    table.boolean("confirmed").defaultTo(false);
     table.boolean("is_admin").defaultTo(false);
   });
 
