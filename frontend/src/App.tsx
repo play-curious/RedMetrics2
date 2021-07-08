@@ -47,6 +47,15 @@ export default function App() {
       <NotificationSystem ref={notificationSystem} />
       <Dom.BrowserRouter>
         <Header {...{ fetchUser, user }} />
+        {user &&
+          (user.confirmed ? (
+            ""
+          ) : (
+            <div className="p-2 text-grey-400">
+              You need to <a href="/confirm-email"> confirm your email </a> to
+              access some parts of website!
+            </div>
+          ))}
         <Body>
           <Container>
             <Routing {...{ fetchUser, user }} />

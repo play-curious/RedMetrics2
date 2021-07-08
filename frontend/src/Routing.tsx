@@ -22,6 +22,7 @@ import CreateAccount from "./views/CreateAccount";
 import AccountPage from "./views/AccountPage";
 import GameSessionPage from "./views/GameSessionPage";
 import ForgottenPassword from "./views/ForgottenPassword";
+import ConfirmEmail from "./views/ConfirmEmail";
 
 import Debug from "./nodes/Debug";
 
@@ -62,36 +63,43 @@ export default function Routing({
 
       {user && (
         <>
-          <Dom.Route exact path="/accounts">
-            <Accounts user={user} />
+          <Dom.Route exact path="/confirm-email">
+            <ConfirmEmail />
           </Dom.Route>
-          <Dom.Route exact path="/account/create">
-            <CreateAccount user={user} />
-          </Dom.Route>
-          <Dom.Route exact path="/account/show/:id">
-            <AccountPage user={user} />
-          </Dom.Route>
-          <Dom.Route exact path="/settings">
-            <Settings user={user} />
-          </Dom.Route>
-          <Dom.Route exact path="/profile">
-            <Profile user={user} />
-          </Dom.Route>
-          <Dom.Route exact path="/game/show/:id">
-            <GamePage />
-          </Dom.Route>
-          <Dom.Route exact path="/games">
-            <Games user={user} />
-          </Dom.Route>
-          <Dom.Route exact path="/game/add">
-            <AddGame user={user} />
-          </Dom.Route>
-          <Dom.Route exact path="/game/edit/:id">
-            <EditGame />
-          </Dom.Route>
-          <Dom.Route exact path="/game/session/show/:id">
-            <GameSessionPage />
-          </Dom.Route>
+          {user.confirmed && (
+            <>
+              <Dom.Route exact path="/accounts">
+                <Accounts user={user} />
+              </Dom.Route>
+              <Dom.Route exact path="/account/create">
+                <CreateAccount user={user} />
+              </Dom.Route>
+              <Dom.Route exact path="/account/show/:id">
+                <AccountPage user={user} />
+              </Dom.Route>
+              <Dom.Route exact path="/settings">
+                <Settings user={user} />
+              </Dom.Route>
+              <Dom.Route exact path="/profile">
+                <Profile user={user} />
+              </Dom.Route>
+              <Dom.Route exact path="/game/show/:id">
+                <GamePage />
+              </Dom.Route>
+              <Dom.Route exact path="/games">
+                <Games user={user} />
+              </Dom.Route>
+              <Dom.Route exact path="/game/add">
+                <AddGame user={user} />
+              </Dom.Route>
+              <Dom.Route exact path="/game/edit/:id">
+                <EditGame />
+              </Dom.Route>
+              <Dom.Route exact path="/game/session/show/:id">
+                <GameSessionPage />
+              </Dom.Route>
+            </>
+          )}
         </>
       )}
 
