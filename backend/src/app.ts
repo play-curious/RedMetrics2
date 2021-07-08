@@ -10,6 +10,7 @@ import chalk from "chalk";
 import cors from "cors";
 import knex from "knex";
 import path from "path";
+import cron from "cron";
 // import fs from "fs";
 import pg from "pg";
 
@@ -91,3 +92,17 @@ export const loadRoutes = (verbose: boolean) =>
     .then(() => {
       if (verbose) console.log(chalk.green("ready"));
     });
+
+// remove accounts that have not confirmed emails before 1 week
+cron.job("0 0 * * *", () => {
+  database.raw(`
+    delete from account
+    where
+        now() > to_timestamp(
+            to_number(
+                created_timestamp,
+                '9999999999999999'
+            ) / 1000
+        ) + '7 days'::interval
+  `);
+});
