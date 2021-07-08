@@ -14,6 +14,8 @@ exports.seed = async function (knex) {
         parseInt(process.env.SALT_ROUNDS || "10")
       ),
       is_admin: true,
+      confirmed: true,
+      created_timestamp: String(Date.now()),
     });
 
     console.log(`Created admin account for ${adminEmail} ${adminPassword}`);

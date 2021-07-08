@@ -16,6 +16,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string("connection_token");
     table.boolean("confirmed").defaultTo(false);
     table.boolean("is_admin").defaultTo(false);
+    table.string("created_timestamp").notNullable();
   });
 
   await knex.schema.createTable("confirmation", (table) => {

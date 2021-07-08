@@ -190,8 +190,6 @@ export function checkUser(
     // @ts-ignore
     req.account = account;
 
-    console.debug("checkUser validated token", token, "to account", account);
-
     next();
   });
 }
@@ -296,4 +294,15 @@ export async function sendMail(options: {
   });
 
   transporter.close();
+}
+
+export async function sendAccountConfirmation(account: types.tables.Account) {
+  await sendDigitCode(
+    account,
+    `
+        <h1> Confirm your account </h1>
+        <h2> Use the following digit code to confirm your account </h2>
+      `,
+    "Confirm your account"
+  );
 }

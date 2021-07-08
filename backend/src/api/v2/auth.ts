@@ -100,12 +100,20 @@ app.v2.post(
 
     const connectionToken = uuid.v4();
 
-    const [id] = await auth.postAccount({
+    const id = await auth.postAccount({
       email,
       password: hash,
       is_admin,
       connection_token: connectionToken,
+      confirmed: false,
+      created_timestamp: String(Date.now()),
     });
+
+    const account = await auth.getAccount(id);
+
+    if (!account) return;
+
+    await utils.sendAccountConfirmation(account);
 
     res.cookie(constants.COOKIE_NAME, connectionToken, {
       maxAge: 1000 * 60 * 60 * 24 * 7,
@@ -155,11 +163,19 @@ app.v2
         parseInt(process.env.SALT_ROUNDS as string)
       );
 
-      await auth.postAccount({
+      const id = await auth.postAccount({
         email,
         password: hash,
         is_admin,
+        confirmed: false,
+        created_timestamp: String(Date.now()),
       });
+
+      const account = await auth.getAccount(id);
+
+      if (!account) return;
+
+      await utils.sendAccountConfirmation(account);
 
       res.sendStatus(200);
     })
@@ -419,14 +435,7 @@ app.v2
     expressAsyncHandler(async (req, res) => {
       if (!utils.hasAccount(req)) return;
 
-      await utils.sendDigitCode(
-        req.account,
-        `
-        <h1> Confirm your account </h1>
-        <h2> Use the following digit code to confirm your account </h2>
-      `,
-        "Confirm your account"
-      );
+      await utils.sendAccountConfirmation(req.account);
 
       res.sendStatus(200);
     })
