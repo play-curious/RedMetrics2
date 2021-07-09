@@ -2,6 +2,8 @@ import React from "react";
 import * as Form from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 
+import "./CustomForm.scss";
+
 import Button from "./Button";
 
 export type CustomInput =
@@ -14,6 +16,7 @@ export type CustomInput =
 
 export interface CustomTextInput {
   is: "text" | "password" | "email";
+  regex?: RegExp;
   label?: string;
   value?: string;
   placeholder?: string;
@@ -21,6 +24,7 @@ export interface CustomTextInput {
   minLength?: number;
   maxLength?: number;
   style?: React.CSSProperties;
+  warns?: any;
 }
 
 export interface CustomSelectInput {
@@ -29,6 +33,7 @@ export interface CustomSelectInput {
   required?: boolean;
   options: CustomOption[];
   style?: React.CSSProperties;
+  warns?: any;
 }
 
 export interface CustomRadioInput {
@@ -37,6 +42,7 @@ export interface CustomRadioInput {
   required?: boolean;
   choices: CustomOption[];
   style?: React.CSSProperties;
+  warns?: any;
 }
 
 export interface CustomTextAreaInput {
@@ -47,6 +53,7 @@ export interface CustomTextAreaInput {
   code?: boolean;
   jsonValidation?: boolean;
   style?: React.CSSProperties;
+  warns?: any;
 }
 
 export interface CustomCheckboxInput {
@@ -63,6 +70,7 @@ export interface CustomCheckboxInputs {
   required?: boolean;
   checks: CustomOption[];
   style?: React.CSSProperties;
+  warns?: any;
 }
 
 export interface CustomOption {
@@ -77,6 +85,7 @@ export interface CustomFormOptions<T> {
   inputs: Record<Form.Path<T>, CustomInput | string>;
   style?: React.CSSProperties;
   submitText?: string;
+  otherButtons?: any;
 }
 
 export function is<T extends { is: string }>(
@@ -102,7 +111,7 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
     <>
       <form
         onSubmit={handleSubmit(options.onSubmit)}
-        className={options.className}
+        className={options.className + " custom-form"}
       >
         {inputEntries.map(([name, input]) => {
           if (typeof input === "undefined") {
@@ -115,26 +124,30 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
           } else if (is<CustomRadioInput>(input, "radio")) {
             return (
               <label>
-                {input.label ?? name} <hr />
-                {input.choices.map(({ label, value }) => {
-                  return (
-                    <label>
-                      {label}
-                      <input
-                        type="radio"
-                        value={value}
-                        {...register(name, { required: true })}
-                      />
-                    </label>
-                  );
-                })}
+                <span>{input.label ?? name}</span> <br />
+                {input.warns}
+                {input.choices
+                  .map(({ label, value }) => {
+                    return (
+                      <label>
+                        <input
+                          type="radio"
+                          value={value}
+                          {...register(name, { required: true })}
+                        />
+                        {label}
+                      </label>
+                    );
+                  })
+                  .join("<br/>")}
                 <ErrorMessage errors={errors} name={name as any} />
               </label>
             );
           } else if (is<CustomSelectInput>(input, "select")) {
             return (
               <label>
-                {input.label ?? name} <hr />
+                <span>{input.label ?? name}</span> <br />
+                {input.warns}
                 <select
                   {...register(name, { required: input.required })}
                   {...input}
@@ -149,7 +162,8 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
           } else if (is<CustomCheckboxInputs>(input, "checkboxes")) {
             return (
               <label>
-                {input.label ?? name} <hr />
+                <span>{input.label ?? name}</span> <br />
+                {input.warns}
                 {input.checks.map(({ value, label }, i) => {
                   return (
                     <label className="whitespace-nowrap">
@@ -171,7 +185,6 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
           } else if (is<CustomCheckboxInput>(input, "checkbox")) {
             return (
               <label>
-                <hr />
                 <input
                   type="checkbox"
                   {...register(name, { required: input.required ?? false })}
@@ -217,7 +230,8 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
 
             return (
               <label>
-                {input.label ?? name} <hr />
+                <span>{input.label ?? name}</span> <br />
+                {input.warns}
                 {output}
                 <ErrorMessage errors={errors} name={name as any} />
               </label>
@@ -225,13 +239,15 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
           } else {
             return (
               <label>
-                {input.label ?? name} <hr />
+                <span>{input.label ?? name}</span> <br />
+                {input.warns}
                 <input
                   type={input.is}
                   {...register(name, {
                     required: input.required ?? false,
                     minLength: input.minLength,
                     maxLength: input.maxLength,
+                    pattern: input.regex,
                   })}
                   {...input}
                 />
@@ -241,7 +257,10 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
           }
         })}
         {options.children}
-        <Button submit>{options.submitText ?? "Submit"}</Button>
+        <div className="button-group">
+          {options.otherButtons}
+          <Button submit>{options.submitText ?? "Submit"}</Button>
+        </div>
       </form>
     </>
   );

@@ -4,10 +4,13 @@
 
 @layer base {
   h1 {
-    @apply text-2xl;
+    @apply my-5;
+    @apply text-4xl;
+    @apply border-b-2;
   }
   h2 {
     @apply text-xl;
+    @apply my-5;
   }
 
   p a,

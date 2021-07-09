@@ -7,6 +7,8 @@ import axios from "axios";
 
 import CustomForm from "../nodes/CustomForm";
 import Button from "../nodes/Button";
+import Center from "../nodes/Center";
+import Warn from "../nodes/Warn";
 
 export default function ForgottenPassword() {
   const [sent, setSent] = React.useState<boolean>(false);
@@ -15,10 +17,57 @@ export default function ForgottenPassword() {
   return (
     <>
       <NotificationSystem ref={notificationSystem} />
-      <div className="min-h-full">
+      <Center>
         <h1> Forgotten password </h1>
-        <div className="p-5">
-          <h2>Please type your email</h2>
+        {sent ? (
+          <>
+            <h2>Enter the received digit code</h2>
+            <CustomForm
+              onSubmit={(data: types.api.LostPassword["Patch"]["Body"]) => {
+                axios
+                  .patch<types.api.LostPassword["Patch"]["Response"]>(
+                    "/lost-password",
+                    data
+                  )
+                  .then(() => {
+                    notificationSystem.current?.addNotification({
+                      message: "Successfully sent your new password",
+                      level: "success",
+                    });
+                  })
+                  .catch((error) => {
+                    notificationSystem.current?.addNotification({
+                      message: error.message,
+                      level: "error",
+                    });
+                  });
+              }}
+              inputs={{
+                code: {
+                  is: "text",
+                  required: true,
+                  placeholder: "Confirmation Digit Code",
+                  regex: /^\d{6}$/,
+                  warns: (
+                    <>
+                      <Warn type="warn">
+                        An email containing a digit code has been sent to you.
+                        Please enter the code received below.
+                      </Warn>
+                      <Warn type="info">
+                        The digit code must be a number of 6
+                      </Warn>
+                    </>
+                  ),
+                },
+              }}
+              otherButtons={
+                <Button callback={() => setSent(false)}>Send code again</Button>
+              }
+              submitText="Reset Password"
+            />
+          </>
+        ) : (
           <CustomForm
             onSubmit={(data: types.api.LostPassword["Post"]["Body"]) => {
               axios
@@ -40,7 +89,7 @@ export default function ForgottenPassword() {
                   });
                 });
             }}
-            submitText={sent ? "Send code again" : "Send code"}
+            submitText="Request a password reset"
             inputs={{
               email: {
                 is: "email",
@@ -48,51 +97,16 @@ export default function ForgottenPassword() {
                 required: true,
               },
             }}
+            otherButtons={
+              <Button callback={() => setSent(true)}>
+                Already have a code
+              </Button>
+            }
           >
             <Button to="/login">Back</Button>
           </CustomForm>
-        </div>
-        <div className="p-5">
-          <h2>Enter the received digit code</h2>
-          {sent && (
-            <>
-              <p className="p-2 shadow-inner rounded text-gray-500">
-                An email containing a digit code has been sent to you. Please
-                enter the code received below.
-              </p>
-              <CustomForm
-                onSubmit={(data: types.api.LostPassword["Patch"]["Body"]) => {
-                  axios
-                    .patch<types.api.LostPassword["Patch"]["Response"]>(
-                      "/lost-password",
-                      data
-                    )
-                    .then(() => {
-                      notificationSystem.current?.addNotification({
-                        message: "Successfully sent your new password",
-                        level: "success",
-                      });
-                    })
-                    .catch((error) => {
-                      notificationSystem.current?.addNotification({
-                        message: error.message,
-                        level: "error",
-                      });
-                    });
-                }}
-                inputs={{
-                  code: {
-                    is: "text",
-                    required: true,
-                    placeholder: "Confirmation Digit Code",
-                  },
-                }}
-                submitText="Reset Password"
-              />
-            </>
-          )}
-        </div>
-      </div>
+        )}
+      </Center>
     </>
   );
 }

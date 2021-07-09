@@ -41,7 +41,6 @@ export default function Login({ deleteUser }: { deleteUser: () => unknown }) {
                   });
                 });
             }}
-            className="flex flex-col"
             submitText="Login"
             inputs={{
               email: {
@@ -55,9 +54,10 @@ export default function Login({ deleteUser }: { deleteUser: () => unknown }) {
                 required: true,
               },
             }}
-          >
-            <Button to="/forgotten-password">Forgotten password</Button>
-          </CustomForm>
+            otherButtons={
+              <Button to="/forgotten-password">Forgotten password</Button>
+            }
+          />
         </Center>
       </div>
     </>

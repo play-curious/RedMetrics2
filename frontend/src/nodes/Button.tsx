@@ -17,7 +17,7 @@ export default function Button({
   customClassName?: string;
 }) {
   const classNameSet = new Set(
-    "bg-gray-500 rounded font-bold text-xs text-white text-center px-2 py-1 transition duration-300 ease-in-out hover:bg-red-900 mr-2 cursor-pointer".split(
+    "button rounded font-bold text-xs text-white text-center transition duration-300 ease-in-out mr-2 cursor-pointer".split(
       " "
     )
   );

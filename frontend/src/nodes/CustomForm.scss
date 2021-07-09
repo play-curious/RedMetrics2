@@ -1,0 +1,69 @@
+.custom-form {
+  display: flex;
+  flex-direction: column;
+  min-width: 500px;
+  max-width: 80vw;
+  margin: 20px;
+
+  label {
+    display: flex;
+    flex-direction: column;
+
+    > span {
+      font-size: 20px;
+      position: relative;
+      text-transform: capitalize;
+      transition: color 500ms ease-in-out, left 200ms ease-out;
+      color: #030918;
+      left: 0;
+    }
+
+    &:hover > span {
+      color: #387be5;
+      left: -9px;
+    }
+
+    .warn {
+    }
+  }
+
+  input[type="text"],
+  input[type="password"],
+  input[type="email"] {
+    transition: border-bottom-color 100ms ease-in-out,
+      border-left-color 300ms ease-in-out, border-top-color 200ms ease-in-out,
+      border-right-color 400ms ease-in-out;
+    border: 1px solid #898989;
+    border-bottom-color: rgba(0, 0, 0, 0);
+    border-left-color: rgba(0, 0, 0, 0);
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 10px;
+    box-sizing: content-box;
+    padding: 12px 20px;
+    margin: 10px 0;
+
+    &:hover {
+      border: #387be5 solid 1px;
+      border-top-color: rgba(0, 0, 0, 0);
+      border-right-color: rgba(0, 0, 0, 0);
+    }
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: center;
+
+    .button {
+      padding: 12px 20px;
+      background-color: #030918;
+
+      &:hover {
+        background-color: rgb(45, 55, 72);
+
+        &:last-child {
+          background-color: #387be5;
+        }
+      }
+    }
+  }
+}
