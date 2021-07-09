@@ -9,8 +9,13 @@
     @apply border-b-2;
   }
   h2 {
-    @apply text-xl;
+    @apply text-2xl;
     @apply my-5;
+
+    &:before {
+      content: "# ";
+      font-weight: bold;
+    }
   }
 
   p a,
