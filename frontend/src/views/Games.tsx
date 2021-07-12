@@ -8,9 +8,9 @@ import * as types from "rm2-typings";
 
 import GameCard from "../nodes/GameCard";
 import Wrapper from "../nodes/Wrapper";
-import SubMenu from "../nodes/SubMenu";
 import Button from "../nodes/Button";
 import ErrorPage from "./ErrorPage";
+import Warn from "../nodes/Warn";
 
 export default function Games({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
@@ -40,30 +40,37 @@ export default function Games({ user }: { user: types.tables.Account }) {
   return (
     <>
       <NotificationSystem ref={notificationSystem} />
-      <SubMenu>
-        <Button to="/game/add" children="New Game" />
-      </SubMenu>
-      <Wrapper>
-        {games?.map((game) => {
-          return <GameCard game={game} />;
-        }) ?? "No games found"}
-      </Wrapper>
-      <ReactPaginate
-        pageCount={
-          games?.length !== undefined
-            ? Math.ceil(games.length / gamePerPage)
-            : 1
-        }
-        onPageChange={({ selected }) => {
-          setOffset(Math.ceil(selected * gamePerPage));
-        }}
-        marginPagesDisplayed={2}
-        pageRangeDisplayed={5}
-        containerClassName="flex w-full justify-around mt-5"
-        pageLinkClassName="cursor-pointer hover:bg-gray-200 px-2 rounded-full"
-        activeClassName="border-2 bg-gray-200 rounded-full"
-        disabledClassName="opacity-50 no-underline"
-      />
+      <h1> Games </h1>
+      <h2> Actions </h2>
+      <Button to="/game/add" children="New Game" />
+      <h2> Game list </h2>
+      {games && games.length > 0 ? (
+        <>
+          <Wrapper>
+            {games.map((game) => {
+              return <GameCard game={game} />;
+            })}
+          </Wrapper>
+          <ReactPaginate
+            pageCount={
+              games?.length !== undefined
+                ? Math.ceil(games.length / gamePerPage)
+                : 1
+            }
+            onPageChange={({ selected }) => {
+              setOffset(Math.ceil(selected * gamePerPage));
+            }}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={5}
+            containerClassName="flex w-full justify-around mt-5"
+            pageLinkClassName="cursor-pointer hover:bg-gray-200 px-2 rounded-full"
+            activeClassName="border-2 bg-gray-200 rounded-full"
+            disabledClassName="opacity-50 no-underline"
+          />
+        </>
+      ) : (
+        <Warn type="warn"> No game found </Warn>
+      )}
     </>
   );
 }

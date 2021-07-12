@@ -51,30 +51,33 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
       {redirect && <Router.Redirect to={redirect} />}
       <h1> Account page </h1>
       {user.id === id && (
-        <Button
-          customClassName="hover:bg-red-600"
-          callback={() =>
-            axios
-              .get("/logout")
-              .catch((error) => {
-                notificationSystem.current?.addNotification({
-                  message: error.message,
-                  level: "error",
-                });
-              })
-              .then(() => {
-                notificationSystem.current?.addNotification({
-                  message: "Successful disconnected",
-                  level: "success",
-                });
-                removeCookie(constants.COOKIE_NAME);
-                setRedirect("/login");
-                window.location.reload(true);
-              })
-          }
-        >
-          Logout
-        </Button>
+        <>
+          <h2> Actions </h2>
+          <Button
+            customClassName="hover:bg-red-600"
+            callback={() =>
+              axios
+                .get("/logout")
+                .catch((error) => {
+                  notificationSystem.current?.addNotification({
+                    message: error.message,
+                    level: "error",
+                  });
+                })
+                .then(() => {
+                  notificationSystem.current?.addNotification({
+                    message: "Successful disconnected",
+                    level: "success",
+                  });
+                  removeCookie(constants.COOKIE_NAME);
+                  setRedirect("/login");
+                  window.location.reload(true);
+                })
+            }
+          >
+            Logout
+          </Button>
+        </>
       )}
       <h2> Edit account </h2>
       <CustomForm
