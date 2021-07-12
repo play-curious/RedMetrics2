@@ -183,16 +183,18 @@ app.v2
 
 app.v2
   .route("/account/:id")
-  .all(
-    utils.checkUser((context) => context.params.id === context.account.id, true)
-  )
   .delete(
+    utils.checkUser(
+      (context) => context.params.id === context.account.id,
+      true
+    ),
     expressAsyncHandler(async (req, res) => {
       await auth.deleteAccount(req.params.id);
       res.sendStatus(200);
     })
   )
   .get(
+    utils.checkUser((context) => context.params.id === context.account.id),
     expressAsyncHandler(async (req, res) => {
       //  Retrieves the AccountMeta for the given account.
       //  Only admins can access accounts other than their own
@@ -209,6 +211,10 @@ app.v2
     })
   )
   .put(
+    utils.checkUser(
+      (context) => context.params.id === context.account.id,
+      true
+    ),
     expressAsyncHandler(async (req, res) => {
       //  Update the given account.
       //  An AccountMeta object should be sent in the body.

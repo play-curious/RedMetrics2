@@ -61,6 +61,9 @@ export default function Routing({
           <Dom.Route exact path="/confirm-email">
             <ConfirmEmail />
           </Dom.Route>
+          <Dom.Route exact path="/profile">
+            <Router.Redirect to={"/account/show/" + user.id} />
+          </Dom.Route>
           {user.confirmed && (
             <>
               <Dom.Route exact path="/accounts">
@@ -74,9 +77,6 @@ export default function Routing({
               </Dom.Route>
               <Dom.Route exact path="/settings">
                 <Settings user={user} />
-              </Dom.Route>
-              <Dom.Route exact path="/profile">
-                <Router.Redirect to={"/account/show/" + user.id} />
               </Dom.Route>
               <Dom.Route exact path="/game/show/:id">
                 <GamePage />
@@ -101,7 +101,7 @@ export default function Routing({
         </>
       )}
 
-      <Dom.Route path="*" component={NotFound} />
+      <Dom.Route path="*" exact component={NotFound} />
     </Dom.Switch>
   );
 }

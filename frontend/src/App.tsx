@@ -15,6 +15,7 @@ import Warn from "./nodes/Warn";
 import Footer from "./nodes/Footer";
 
 import axios from "axios";
+import Wrapper from "./nodes/Wrapper";
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = constants.API_BASE_URL;
@@ -55,16 +56,18 @@ export default function App() {
                 ""
               ) : (
                 <div className="mt-2">
-                  <Warn type="danger">
-                    You need to
-                    <Dom.Link to="/confirm-email">
-                      <span className="text-red-900 hover:text-blue-600">
-                        {" "}
-                        confirm your email{" "}
-                      </span>
-                    </Dom.Link>
-                    to access some parts of website!
-                  </Warn>
+                  <Wrapper>
+                    <Warn type="danger">
+                      You need to
+                      <Dom.Link to="/confirm-email">
+                        <span className="text-red-900 hover:text-blue-600">
+                          {" "}
+                          confirm your email{" "}
+                        </span>
+                      </Dom.Link>
+                      to access some parts of website!
+                    </Warn>
+                  </Wrapper>
                 </div>
               ))}
             <Routing {...{ fetchUser, user }} />
