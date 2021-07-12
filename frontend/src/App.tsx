@@ -11,9 +11,10 @@ import Routing from "./Routing";
 
 import Header from "./nodes/Header";
 import Container from "./nodes/Container";
+import Warn from "./nodes/Warn";
+import Footer from "./nodes/Footer";
 
 import axios from "axios";
-import Warn from "./nodes/Warn";
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = constants.API_BASE_URL;
@@ -54,9 +55,7 @@ export default function App() {
             ) : (
               <Warn type="danger">
                 You need to
-                <a className="text-blue-700" href="/confirm-email">
-                  confirm your email
-                </a>
+                <Dom.Link to="/confirm-email">confirm your email</Dom.Link>
                 to access some parts of website!
               </Warn>
             ))}
@@ -66,6 +65,7 @@ export default function App() {
               <Routing {...{ fetchUser, user }} />
             </div>
           </Container>
+          <Footer />
         </div>
       </Dom.BrowserRouter>
     </>

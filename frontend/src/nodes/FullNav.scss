@@ -1,0 +1,17 @@
+ul,
+ol {
+  > li {
+    position: relative;
+    color: #c2c2c2;
+    left: 25px;
+
+    &:hover {
+      color: white;
+    }
+
+    > span,
+    > a {
+      text-decoration: none !important;
+    }
+  }
+}

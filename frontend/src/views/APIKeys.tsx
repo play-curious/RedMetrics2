@@ -49,8 +49,8 @@ export default function APIKeys() {
   return (
     <>
       <NotificationSystem ref={notificationSystem} />
-      <h1>Edit your API Keys</h1>
-      <h2>API Key list</h2>
+      <h1>API Keys Management</h1>
+      <h2 id="list">API Key list</h2>
       {apiKeys && apiKeys.length > 0 ? (
         <>
           <table>
@@ -118,7 +118,7 @@ export default function APIKeys() {
       ) : (
         <Warn type="warn">You don't have any API keys...</Warn>
       )}
-      <h2>Add API Key</h2>
+      <h2 id="add">Add API Key</h2>
       {ownGames && ownGames.length > 0 ? (
         <>
           <CustomForm
@@ -142,7 +142,7 @@ export default function APIKeys() {
             inputs={{
               name: {
                 is: "text",
-                placeholder: "Api Key Name",
+                placeholder: "API key name or reason",
                 required: true,
               },
               game_id: {

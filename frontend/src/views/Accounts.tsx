@@ -40,7 +40,7 @@ export default function Accounts({ user }: { user: types.tables.Account }) {
       <Wrapper>
         <Button to="/account/create"> Create </Button>
       </Wrapper>
-      <h2> Account list </h2>
+      <h2 id="list"> Account list </h2>
       <Wrapper>
         {accounts?.map((account) => {
           return (
