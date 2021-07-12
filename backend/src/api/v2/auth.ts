@@ -431,6 +431,7 @@ app.v2
             margin-top: 15px;
             box-shadow: inset grey 0 5px;
             font-size: 30px;
+            color: red;
           ">
             ${newPassword}
           </div>`
