@@ -49,21 +49,25 @@ export default function App() {
       <Dom.BrowserRouter>
         <div className="min-h-screen flex flex-col">
           <Header user={user} />
-          {user &&
-            (user.confirmed ? (
-              ""
-            ) : (
-              <Warn type="danger">
-                You need to
-                <Dom.Link to="/confirm-email">confirm your email</Dom.Link>
-                to access some parts of website!
-              </Warn>
-            ))}
           <Container>
-            <div className="">
-              {/*flex flex-col items-start*/}
-              <Routing {...{ fetchUser, user }} />
-            </div>
+            {user &&
+              (user.confirmed ? (
+                ""
+              ) : (
+                <div className="mt-2">
+                  <Warn type="danger">
+                    You need to
+                    <Dom.Link to="/confirm-email">
+                      <span className="text-red-900 hover:text-blue-600">
+                        {" "}
+                        confirm your email{" "}
+                      </span>
+                    </Dom.Link>
+                    to access some parts of website!
+                  </Warn>
+                </div>
+              ))}
+            <Routing {...{ fetchUser, user }} />
           </Container>
           <Footer />
         </div>

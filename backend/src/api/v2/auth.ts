@@ -130,7 +130,7 @@ app.v2
     if (utils.hasAccount(req)) res.json(req.account);
   })
   .post(
-    utils.checkUser("admin"),
+    utils.checkUser("admin", true),
     expressAsyncHandler(async (req, res) => {
       //  Registers a new account.
       //  An AccountMeta object should be sent in the body.
@@ -183,7 +183,9 @@ app.v2
 
 app.v2
   .route("/account/:id")
-  .all(utils.checkUser((context) => context.params.id === context.account.id))
+  .all(
+    utils.checkUser((context) => context.params.id === context.account.id, true)
+  )
   .delete(
     expressAsyncHandler(async (req, res) => {
       await auth.deleteAccount(req.params.id);
@@ -262,7 +264,7 @@ app.v2
 
 app.v2.get(
   "/accounts",
-  utils.checkUser("admin"),
+  utils.checkUser("admin", true),
   expressAsyncHandler(async (req, res) => {
     res.json(await auth.getAccounts());
   })
@@ -270,7 +272,7 @@ app.v2.get(
 
 app.v2.post(
   "/key",
-  utils.checkUser(),
+  utils.checkUser(undefined, true),
   expressAsyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
 
@@ -313,7 +315,7 @@ app.v2.delete(
   utils.checkUser(async (context) => {
     const apiKey = await auth.getApiKey(context.params.key);
     return apiKey?.account_id === context.account.id;
-  }),
+  }, true),
   expressAsyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
     await auth.removeApiKey(req.params.key);
@@ -323,15 +325,14 @@ app.v2.delete(
 
 app.v2
   .route("/keys")
+  .all(utils.checkUser(undefined, true))
   .get(
-    utils.checkUser(),
     expressAsyncHandler(async (req, res) => {
       if (!utils.hasAccount(req)) return;
       res.json(await auth.getUserApiKeys(req.account.id));
     })
   )
   .delete(
-    utils.checkUser(),
     expressAsyncHandler(async (req, res) => {
       if (!utils.hasAccount(req)) return;
       await auth.removeUserApiKeys(req.account.id);
@@ -414,6 +415,13 @@ app.v2
       await utils.sendMail({
         to: account.email,
         subject: "Reset your password",
+        text: `
+          Reset your password - Step 2/2
+          
+          Here is your temporary password
+          
+          >> ${newPassword} <<
+        `,
         html: utils.formatEmail(
           `<h1> Reset your password - Step 2/2 </h1>
           <h2> Here is your temporary password  </h2>`,

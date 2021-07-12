@@ -50,30 +50,31 @@ export default function ConfirmEmail() {
             },
           }}
           submitText="Confirm my email"
-        >
-          <Button
-            callback={() => {
-              axios
-                .post<types.api.ConfirmEmail["Post"]["Response"]>(
-                  "/confirm-email"
-                )
-                .then(() => {
-                  notificationSystem.current?.addNotification({
-                    message: "Successfully sent new digit code",
-                    level: "success",
+          otherButtons={
+            <Button
+              callback={() => {
+                axios
+                  .post<types.api.ConfirmEmail["Post"]["Response"]>(
+                    "/confirm-email"
+                  )
+                  .then(() => {
+                    notificationSystem.current?.addNotification({
+                      message: "Successfully sent new digit code",
+                      level: "success",
+                    });
+                  })
+                  .catch((error) => {
+                    notificationSystem.current?.addNotification({
+                      message: error.message,
+                      level: "error",
+                    });
                   });
-                })
-                .catch((error) => {
-                  notificationSystem.current?.addNotification({
-                    message: error.message,
-                    level: "error",
-                  });
-                });
-            }}
-          >
-            Send code again
-          </Button>
-        </CustomForm>
+              }}
+            >
+              Send code again
+            </Button>
+          }
+        />
       </div>
     </>
   );

@@ -9,8 +9,8 @@ import * as auth from "../../controllers/auth";
 
 app.v2
   .route("/game")
+  .all(utils.checkUser(undefined, true))
   .get(
-    utils.checkUser(),
     expressAsyncHandler(async (req, res) => {
       // Lists the games using the service as GameMeta objects (see section on Paging below)
 
@@ -41,7 +41,6 @@ app.v2
     })
   )
   .post(
-    utils.checkUser(),
     expressAsyncHandler(async (req, res) => {
       //  Creates a new game.
       //  A GameMeta object should be sent in the body.
@@ -79,7 +78,8 @@ app.v2
     utils.checkUser(
       async (context) =>
         (await game.getGame(context.params.id))?.publisher_id ===
-        context.account.id
+        context.account.id,
+      true
     )
   )
   .get(

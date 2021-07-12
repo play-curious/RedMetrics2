@@ -118,14 +118,10 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
             )
             .then(() => {
               notificationSystem.current?.addNotification({
-                message: "Successful registered",
+                message: "Successfully edited account",
                 level: "success",
               });
-              notificationSystem.current?.addNotification({
-                message:
-                  "The new user temporary password is copied in your clipboard",
-                level: "info",
-              });
+              if (user.id === id) window.location.reload(true);
             })
             .catch((error) => {
               notificationSystem.current?.addNotification({

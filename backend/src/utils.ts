@@ -144,7 +144,8 @@ export function checkUser(
         account: types.tables.Account;
         params: any;
         body: any;
-      }) => boolean | Promise<boolean>) = () => true
+      }) => boolean | Promise<boolean>) = () => true,
+  needToBeValidated?: true
 ): express.RequestHandler {
   if (condition === "admin") condition = () => false;
 
@@ -187,7 +188,7 @@ export function checkUser(
       });
     }
 
-    if (!account.confirmed)
+    if (needToBeValidated && !account.confirmed)
       return sendError(res, {
         code: 401,
         description: "You need to have validated your email",
@@ -232,6 +233,7 @@ export async function sendDigitCode(
 ) {
   const digit = () => String(Math.floor(Math.random() * 9.9999999));
   const code = digit() + digit() + digit() + digit() + digit() + digit();
+  const timeout = Number(process.env.TEMPORARY_CODE_TIMEOUT ?? 15) * 1000 * 60;
 
   await auth.confirmations().insert({
     account_id: account.id,
@@ -239,6 +241,13 @@ export async function sendDigitCode(
   });
 
   await sendMail({
+    text: `
+      ${title.replace(/<.+?>/g, "")}
+      
+      >> ${code} <<
+      
+      (You have ${timeout} minutes to enter the code from the site!)
+    `,
     html: formatEmail(
       title,
       `
@@ -247,11 +256,12 @@ export async function sendDigitCode(
         border-radius: 10px;
         margin-top: 15px;
         box-shadow: inset grey 0 5px;
-        font-size: 30px;
+        font-size: 40px;
+        color: red;
       ">
         ${code}
       </div>
-      <strong> You have 15 minutes to enter the code from the site! </strong>`
+      <strong> You have ${timeout} minutes to enter the code from the site! </strong>`
     ),
     to: account.email,
     subject,
@@ -266,7 +276,7 @@ export async function sendDigitCode(
         .then(() => true)
         .catch(console.error);
     },
-    1000 * 60 * 15,
+    timeout,
     account
   );
 }
@@ -281,6 +291,7 @@ export function formatEmail(title: string, content: string) {
 }
 
 export async function sendMail(options: {
+  text: string;
   html: string;
   to: string;
   subject: string;
@@ -295,7 +306,7 @@ export async function sendMail(options: {
   });
 
   await transporter.sendMail({
-    from: `"PlayCurious" <hello@playcurious.Games>`,
+    from: process.env.SMTP_FROM,
     ...options,
   });
 

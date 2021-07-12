@@ -98,6 +98,7 @@ cron.job("0 0 * * *", () => {
   database.raw(`
     delete from account
     where
+        not confirmed and
         now() > to_timestamp(
             to_number(
                 created_timestamp,
