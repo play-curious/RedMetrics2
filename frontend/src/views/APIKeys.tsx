@@ -1,22 +1,20 @@
 import axios from "axios";
 import React from "react";
+import * as Dom from "react-router-dom";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
 import * as constants from "../constants";
 
+import UUID from "../nodes/UUID";
 import Warn from "../nodes/Warn";
 import Button from "../nodes/Button";
 import CustomForm from "../nodes/CustomForm";
 
-import {
-  faTrashAlt,
-  faChessKnight,
-  faSyncAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faTrashAlt, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export default function ApiKeys({ user }: { user: types.tables.Account }) {
+export default function APIKeys() {
   const [apiKeys, setApiKeys] = React.useState<types.tables.ApiKey[]>();
   const [ownGames, setOwnGames] = React.useState<types.tables.Game[]>();
 
@@ -36,22 +34,10 @@ export default function ApiKeys({ user }: { user: types.tables.Account }) {
       });
   };
 
-  const notifyClipboard = () => {
-    notificationSystem.current?.addNotification({
-      message: "Copied to clipboard",
-      level: "success",
-    });
-  };
-
   if (apiKeys === undefined) fetchApiKeys();
   if (ownGames === undefined)
     axios
-      .get<types.api.Game["Get"]["Response"]>(`/game`, {
-        baseURL: constants.API_BASE_URL,
-        params: {
-          publisher_id: user.id,
-        },
-      })
+      .get<types.api.Game["Get"]["Response"]>(`/game`)
       .then((response) => setOwnGames(response.data))
       .catch((error) => {
         notificationSystem.current?.addNotification({
@@ -87,24 +73,19 @@ export default function ApiKeys({ user }: { user: types.tables.Account }) {
                       {apiKey.name}
                     </td>
                     <td className="p-1">
-                      {ownGames?.find((game) => game.id === apiKey.game_id)
-                        ?.name ?? ""}
+                      <Dom.Link to={"/game/show/" + apiKey.game_id}>
+                        <span className="underline hover:text-blue-600 transition duration-200">
+                          {ownGames?.find((game) => game.id === apiKey.game_id)
+                            ?.name ?? ""}
+                        </span>
+                      </Dom.Link>
                     </td>
                     <td className="p-1">
-                      <div
-                        data-clipboard-text={apiKey.key}
-                        onClick={notifyClipboard}
-                        className="clipboard flex items-center bg-gray-800 font-mono inline-block rounded-full text-gray-300 hover:text-white px-1.5 whitespace-nowrap overflow-hidden"
-                      >
-                        <span className="flex-grow">{apiKey.key}</span>
-                        <i
-                          className="pl-2 text-white far fa-copy cursor-pointer"
-                          title="Copy to clipboard"
-                        />
-                      </div>
+                      <UUID _key={apiKey.key} />
                     </td>
                     <td className="p-1 flex items-center h-full">
                       <Button
+                        customClassName="hover:bg-red-600 rounded-full"
                         callback={function (this: types.tables.ApiKey) {
                           axios
                             .delete(`/key/${this.key}`, {
@@ -112,7 +93,7 @@ export default function ApiKeys({ user }: { user: types.tables.Account }) {
                             })
                             .then(() => {
                               notificationSystem.current?.addNotification({
-                                message: "Successful deleted apiKey",
+                                message: "Successfully deleted API key",
                                 level: "success",
                               });
                               fetchApiKeys();
@@ -127,9 +108,6 @@ export default function ApiKeys({ user }: { user: types.tables.Account }) {
                       >
                         <FontAwesomeIcon icon={faTrashAlt} />
                       </Button>
-                      <Button to={"/game/show/" + apiKey.game_id}>
-                        <FontAwesomeIcon icon={faChessKnight} />
-                      </Button>
                     </td>
                   </tr>
                 );
@@ -138,7 +116,7 @@ export default function ApiKeys({ user }: { user: types.tables.Account }) {
           </table>
         </>
       ) : (
-        <Warn type="warn">You don't have any api key...</Warn>
+        <Warn type="warn">You don't have any API keys...</Warn>
       )}
       <h2>Add API Key</h2>
       {ownGames && ownGames.length > 0 ? (
@@ -149,7 +127,7 @@ export default function ApiKeys({ user }: { user: types.tables.Account }) {
                 .post<types.api.Key["Post"]["Response"]>("/key", session)
                 .then(() => {
                   notificationSystem.current?.addNotification({
-                    message: "Successful generated apiKey",
+                    message: "Successfully generated API key",
                     level: "success",
                   });
                   fetchApiKeys();
@@ -185,7 +163,7 @@ export default function ApiKeys({ user }: { user: types.tables.Account }) {
           />
         </>
       ) : (
-        <Warn type="warn">You don't have posted any game...</Warn>
+        <Warn type="warn">You haven't posted any games...</Warn>
       )}
     </>
   );

@@ -33,6 +33,13 @@ export default function Login({ deleteUser }: { deleteUser: () => unknown }) {
                 window.location.reload(true);
               })
               .catch((error) => {
+                if (/40[14]/.test(error?.message)) {
+                  return notificationSystem.current?.addNotification({
+                    message: "Incorrect email or password",
+                    level: "error",
+                  });
+                }
+
                 notificationSystem.current?.addNotification({
                   message: error.message,
                   level: "error",

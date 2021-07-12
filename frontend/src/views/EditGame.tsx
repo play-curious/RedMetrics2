@@ -44,21 +44,21 @@ export default function EditGame() {
           name: {
             is: "text",
             placeholder: "Game name",
-            //value: game?.name,
+            default: game?.name,
           },
           author: {
             is: "text",
             placeholder: "Author of game",
-            //value: game?.author,
+            default: game?.author,
           },
           description: {
             is: "area",
-            //value: game?.description,
+            default: game?.description,
           },
           custom_data: {
             is: "area",
             jsonValidation: true,
-            //value: game?.custom_data,
+            default: game?.custom_data,
           },
         }}
       />

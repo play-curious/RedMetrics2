@@ -36,7 +36,10 @@ export default function Accounts({ user }: { user: types.tables.Account }) {
     <>
       <NotificationSystem ref={notificationSystem} />
       <h1> Account management </h1>
-      <Button to="/account/create"> Create </Button>
+      <h2> Actions </h2>
+      <Wrapper>
+        <Button to="/account/create"> Create </Button>
+      </Wrapper>
       <h2> Account list </h2>
       <Wrapper>
         {accounts?.map((account) => {
@@ -44,49 +47,38 @@ export default function Accounts({ user }: { user: types.tables.Account }) {
             <Card
               title={account.email}
               url={"/account/show/" + account.id}
-              footer={
-                <div className="flex">
-                  <Button to={"/account/show/" + account.id}> Edit </Button>
-                  <Button
-                    to="/accounts"
-                    callback={() => {
-                      axios
-                        .delete<types.api.AccountById["Delete"]["Response"]>(
-                          `/account/${account.id}`
-                        )
-                        .then(() => {
-                          notificationSystem.current?.addNotification({
-                            message: "Account successfully deleted",
-                            level: "success",
-                          });
-                          setAccounts(
-                            accounts.filter((a) => a.id !== account.id)
-                          );
-                        })
-                        .catch((error) => {
-                          notificationSystem.current?.addNotification({
-                            message: error.message,
-                            level: "error",
-                          });
-                        });
-                    }}
-                    customClassName="hover:bg-red-500"
-                  >
-                    Delete
-                  </Button>
-                </div>
-              }
+              secondary={account.id}
             >
-              <table>
-                <tr>
-                  <th>Admin</th>
-                  <td>{String(account.is_admin)}</td>
-                </tr>
-                <tr>
-                  <th>ID</th>
-                  <td>{account.id}</td>
-                </tr>
-              </table>
+              <div className="flex">
+                <Button to={"/account/show/" + account.id}> Edit </Button>
+                <Button
+                  to="/accounts"
+                  callback={() => {
+                    axios
+                      .delete<types.api.AccountById["Delete"]["Response"]>(
+                        `/account/${account.id}`
+                      )
+                      .then(() => {
+                        notificationSystem.current?.addNotification({
+                          message: "Account successfully deleted",
+                          level: "success",
+                        });
+                        setAccounts(
+                          accounts.filter((a) => a.id !== account.id)
+                        );
+                      })
+                      .catch((error) => {
+                        notificationSystem.current?.addNotification({
+                          message: error.message,
+                          level: "error",
+                        });
+                      });
+                  }}
+                  customClassName="hover:bg-red-500"
+                >
+                  Delete
+                </Button>
+              </div>
             </Card>
           );
         })}

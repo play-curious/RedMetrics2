@@ -10,7 +10,7 @@ export default function Card({
 }: {
   title?: string;
   secondary?: string;
-  children: any;
+  children?: any;
   footer?: any;
   url?: string;
 }) {

@@ -7,6 +7,8 @@ import axios from "axios";
 import * as types from "rm2-typings";
 
 import Button from "../nodes/Button";
+import UUID from "../nodes/UUID";
+import Wrapper from "../nodes/Wrapper";
 
 export default function GamePage() {
   const { id } = Router.useParams<{ id: string }>();
@@ -31,12 +33,12 @@ export default function GamePage() {
     <>
       <NotificationSystem ref={notificationSystem} />
       {redirect && <Router.Redirect to={redirect} />}
-      <div className="flex items-baseline">
-        <h1> {game?.name ?? "No name"} </h1>
-        <code className="px-3 font-light text-gray-600">{game?.id}</code>
-      </div>
-      <p> {game?.description ?? "No description"} </p>
-      <div className="flex">
+      <h1> {game?.name ?? "No name"} </h1>
+      <Wrapper>
+        <UUID _key={game?.id ?? ""} />
+      </Wrapper>
+      <h2> Actions </h2>
+      <Wrapper>
         <Button to={"/game/edit/" + id}> Edit </Button>
         <Button
           callback={() => {
@@ -53,7 +55,9 @@ export default function GamePage() {
         >
           Remove
         </Button>
-      </div>
+      </Wrapper>
+      <h2> Description </h2>
+      <p> {game?.description ?? "No description"} </p>
     </>
   );
 }

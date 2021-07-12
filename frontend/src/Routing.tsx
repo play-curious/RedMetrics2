@@ -22,7 +22,7 @@ import GameSessionPage from "./views/GameSessionPage";
 import ForgottenPassword from "./views/ForgottenPassword";
 import ConfirmEmail from "./views/ConfirmEmail";
 
-import ApiKeys from "./views/ApiKeys";
+import APIKeys from "./views/APIKeys";
 import * as Router from "react-router";
 
 export default function Routing({
@@ -94,7 +94,7 @@ export default function Routing({
                 <GameSessionPage />
               </Dom.Route>
               <Dom.Route exact path="/api-keys">
-                <ApiKeys user={user} />
+                <APIKeys />
               </Dom.Route>
             </>
           )}

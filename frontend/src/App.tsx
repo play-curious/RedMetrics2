@@ -61,7 +61,10 @@ export default function App() {
               </Warn>
             ))}
           <Container>
-            <Routing {...{ fetchUser, user }} />
+            <div className="">
+              {/*flex flex-col items-start*/}
+              <Routing {...{ fetchUser, user }} />
+            </div>
           </Container>
         </div>
       </Dom.BrowserRouter>

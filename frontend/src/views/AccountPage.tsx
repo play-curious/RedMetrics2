@@ -10,6 +10,8 @@ import * as constants from "../constants";
 
 import CustomForm from "../nodes/CustomForm";
 import Button from "../nodes/Button";
+import Wrapper from "../nodes/Wrapper";
+import UUID from "../nodes/UUID";
 
 export default function AccountPage({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
@@ -49,34 +51,39 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
     <>
       <NotificationSystem ref={notificationSystem} />
       {redirect && <Router.Redirect to={redirect} />}
-      <h1> Account page </h1>
+      <h1> Account {account && user.id !== id && `of ${account.email}`}</h1>
+      <Wrapper>
+        <UUID _key={id} />
+      </Wrapper>
       {user.id === id && (
         <>
           <h2> Actions </h2>
-          <Button
-            customClassName="hover:bg-red-600"
-            callback={() =>
-              axios
-                .get("/logout")
-                .catch((error) => {
-                  notificationSystem.current?.addNotification({
-                    message: error.message,
-                    level: "error",
-                  });
-                })
-                .then(() => {
-                  notificationSystem.current?.addNotification({
-                    message: "Successful disconnected",
-                    level: "success",
-                  });
-                  removeCookie(constants.COOKIE_NAME);
-                  setRedirect("/login");
-                  window.location.reload(true);
-                })
-            }
-          >
-            Logout
-          </Button>
+          <Wrapper>
+            <Button
+              customClassName="hover:bg-red-600"
+              callback={() =>
+                axios
+                  .get("/logout")
+                  .catch((error) => {
+                    notificationSystem.current?.addNotification({
+                      message: error.message,
+                      level: "error",
+                    });
+                  })
+                  .then(() => {
+                    notificationSystem.current?.addNotification({
+                      message: "Successful disconnected",
+                      level: "success",
+                    });
+                    removeCookie(constants.COOKIE_NAME);
+                    setRedirect("/login");
+                    window.location.reload(true);
+                  })
+              }
+            >
+              Logout
+            </Button>
+          </Wrapper>
         </>
       )}
       <h2> Edit account </h2>
@@ -100,7 +107,7 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
           is_admin: {
             is: "checkbox",
             default: user.is_admin,
-            label: "as admin?",
+            label: "is administrator",
           },
         }}
         onSubmit={(data: types.api.AccountById["Put"]["Body"]) => {

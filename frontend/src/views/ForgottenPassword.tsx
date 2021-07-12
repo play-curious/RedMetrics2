@@ -19,7 +19,7 @@ export default function ForgottenPassword() {
       <h1> Forgotten password </h1>
       {sent ? (
         <>
-          <h2>Enter the received digit code</h2>
+          <h2>Enter the code you received by email</h2>
           <CustomForm
             onSubmit={(data: types.api.LostPassword["Patch"]["Body"]) => {
               axios
@@ -44,16 +44,13 @@ export default function ForgottenPassword() {
               code: {
                 is: "text",
                 required: true,
-                placeholder: "Confirmation Digit Code",
+                placeholder: "Confirmation digital code",
                 regex: /^\d{6}$/,
                 warns: (
                   <>
-                    <Warn type="warn">
-                      An email containing a digit code has been sent to you.
-                      Please enter the code received below.
-                    </Warn>
                     <Warn type="info">
-                      The digit code must be a number of 6
+                      An email containing a 6-digit code has been sent to you.
+                      Please enter the code received below.
                     </Warn>
                   </>
                 ),
@@ -87,7 +84,7 @@ export default function ForgottenPassword() {
                 });
               });
           }}
-          submitText="Request a password reset"
+          submitText="Reset my password"
           inputs={{
             email: {
               is: "email",
@@ -96,11 +93,17 @@ export default function ForgottenPassword() {
             },
           }}
           otherButtons={
-            <Button callback={() => setSent(true)}>Already have a code</Button>
+            <>
+              <Button to="/login">Back</Button>
+              <Button
+                callback={() => setSent(true)}
+                customClassName="whitespace-no-wrap"
+              >
+                I already have a code
+              </Button>
+            </>
           }
-        >
-          <Button to="/login">Back</Button>
-        </CustomForm>
+        />
       )}
     </>
   );

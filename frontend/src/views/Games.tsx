@@ -42,7 +42,9 @@ export default function Games({ user }: { user: types.tables.Account }) {
       <NotificationSystem ref={notificationSystem} />
       <h1> Games </h1>
       <h2> Actions </h2>
-      <Button to="/game/add" children="New Game" />
+      <Wrapper>
+        <Button to="/game/add" children="New Game" />
+      </Wrapper>
       <h2> Game list </h2>
       {games && games.length > 0 ? (
         <>
@@ -69,7 +71,7 @@ export default function Games({ user }: { user: types.tables.Account }) {
           />
         </>
       ) : (
-        <Warn type="warn"> No game found </Warn>
+        <Warn type="warn"> No games found </Warn>
       )}
     </>
   );
