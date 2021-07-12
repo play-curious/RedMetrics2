@@ -75,7 +75,7 @@ export default function CreateAccount({
               is_admin: {
                 is: "checkbox",
                 label: "as admin?",
-                checked: false,
+                default: false,
               },
             }}
           />

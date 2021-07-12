@@ -18,7 +18,7 @@ export interface CustomTextInput {
   is: "text" | "password" | "email";
   regex?: RegExp;
   label?: string;
-  value?: string;
+  default?: string;
   placeholder?: string;
   required?: boolean;
   minLength?: number;
@@ -30,6 +30,7 @@ export interface CustomTextInput {
 export interface CustomSelectInput {
   is: "select";
   label?: string;
+  default?: CustomOption;
   required?: boolean;
   options: CustomOption[];
   style?: React.CSSProperties;
@@ -39,6 +40,7 @@ export interface CustomSelectInput {
 export interface CustomRadioInput {
   is: "radio";
   label?: string;
+  default?: CustomOption;
   required?: boolean;
   choices: CustomOption[];
   style?: React.CSSProperties;
@@ -47,8 +49,8 @@ export interface CustomRadioInput {
 
 export interface CustomTextAreaInput {
   is: "area";
-  value?: string;
   label?: string;
+  default?: string;
   required?: boolean;
   code?: boolean;
   jsonValidation?: boolean;
@@ -60,7 +62,7 @@ export interface CustomCheckboxInput {
   is: "checkbox";
   label?: string;
   required?: boolean;
-  checked: boolean;
+  default?: boolean;
   style?: React.CSSProperties;
 }
 
@@ -97,10 +99,37 @@ export function is<T extends { is: string }>(
 
 export default function CustomForm<T>(options: CustomFormOptions<T>) {
   const {
+    reset,
     register,
     handleSubmit,
     formState: { errors },
   } = Form.useForm<T>();
+
+  const defaultValues = Object.fromEntries(
+    Object.entries(options.inputs)
+      .filter(
+        // @ts-ignore
+        ([, input]: [string, CustomInput]) => {
+          return (
+            typeof input !== "string" &&
+            "default" in input &&
+            input.default !== undefined
+          );
+        }
+      )
+      .map(
+        // @ts-ignore
+        ([key, input]: [string, CustomInput]) => {
+          // @ts-ignore
+          return [key, input.default];
+        }
+      )
+  );
+
+  React.useEffect(() => {
+    // @ts-ignore
+    reset(defaultValues);
+  }, [reset]);
 
   const inputEntries = Object.entries(options.inputs) as [
     name: Form.Path<T>,
@@ -111,7 +140,7 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
     <>
       <form
         onSubmit={handleSubmit(options.onSubmit)}
-        className={options.className + " custom-form"}
+        className={options.className + " custom-form w-4/5 sm:w-1/2 md:w-1/3"}
       >
         {inputEntries.map(([name, input]) => {
           if (typeof input === "undefined") {
@@ -220,7 +249,7 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
                 {...input}
                 defaultValue={input.jsonValidation ? "{}" : ""}
               >
-                {input.value}
+                {input.default}
               </textarea>
             );
 

@@ -1,8 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@tailwind screens;
 
 @layer base {
+  * {
+    box-sizing: content-box;
+  }
+
   h1 {
     @apply my-5;
     @apply text-4xl;

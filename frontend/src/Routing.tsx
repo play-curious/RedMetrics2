@@ -25,6 +25,7 @@ import ForgottenPassword from "./views/ForgottenPassword";
 import ConfirmEmail from "./views/ConfirmEmail";
 
 import Debug from "./nodes/Debug";
+import ApiKeys from "./views/ApiKeys";
 
 export default function Routing({
   user,
@@ -97,6 +98,9 @@ export default function Routing({
               </Dom.Route>
               <Dom.Route exact path="/game/session/show/:id">
                 <GameSessionPage />
+              </Dom.Route>
+              <Dom.Route exact path="/api-keys">
+                <ApiKeys user={user} />
               </Dom.Route>
             </>
           )}

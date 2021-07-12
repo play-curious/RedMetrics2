@@ -52,7 +52,7 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
           inputs={{
             email: {
               is: "email",
-              value: user.email,
+              default: user.email,
               required: true,
               label: "Email",
               placeholder: "Email",
@@ -65,7 +65,7 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
             },
             is_admin: {
               is: "checkbox",
-              checked: user.is_admin,
+              default: user.is_admin,
               label: "as admin?",
             },
           }}
