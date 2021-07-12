@@ -144,7 +144,6 @@ export default function ApiKeys({ user }: { user: types.tables.Account }) {
       {ownGames && ownGames.length > 0 ? (
         <>
           <CustomForm
-            className="flex items-center"
             onSubmit={(session: types.api.Key["Post"]["Body"]) => {
               axios
                 .post<types.api.Key["Post"]["Response"]>("/key", session)
@@ -178,11 +177,12 @@ export default function ApiKeys({ user }: { user: types.tables.Account }) {
               },
             }}
             submitText="Add"
-          >
-            <Button callback={() => setOwnGames(undefined)}>
-              <FontAwesomeIcon icon={faSyncAlt} />
-            </Button>
-          </CustomForm>
+            otherButtons={
+              <Button callback={() => setOwnGames(undefined)}>
+                <FontAwesomeIcon icon={faSyncAlt} />
+              </Button>
+            }
+          />
         </>
       ) : (
         <Warn type="warn">You don't have posted any game...</Warn>
