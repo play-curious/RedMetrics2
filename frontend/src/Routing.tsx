@@ -1,5 +1,4 @@
 import React from "react";
-import env from "react-dotenv";
 import * as Dom from "react-router-dom";
 
 import * as types from "rm2-typings";
@@ -23,7 +22,6 @@ import GameSessionPage from "./views/GameSessionPage";
 import ForgottenPassword from "./views/ForgottenPassword";
 import ConfirmEmail from "./views/ConfirmEmail";
 
-import Debug from "./nodes/Debug";
 import ApiKeys from "./views/ApiKeys";
 import * as Router from "react-router";
 
@@ -36,10 +34,6 @@ export default function Routing({
 }) {
   return (
     <Dom.Switch>
-      <Dom.Route exact path="/debug">
-        <Debug {...{ ...user, ...env }} />
-      </Dom.Route>
-
       <Dom.Route exact path={["/", "/home"]}>
         <Home />
       </Dom.Route>

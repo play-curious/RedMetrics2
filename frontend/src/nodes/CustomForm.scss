@@ -8,7 +8,6 @@
 
   label {
     display: flex;
-    flex-direction: column;
 
     > span {
       font-size: 20px;
@@ -17,11 +16,22 @@
       transition: color 500ms ease-in-out, left 200ms ease-out;
       color: #030918;
       left: 0;
+
+      &.reverse-animation {
+        left: 5px;
+      }
     }
 
     &:hover > span {
       color: #387be5;
-      left: -9px;
+
+      &:not(.reverse-animation) {
+        left: -9px;
+      }
+
+      &.reverse-animation {
+        left: 14px;
+      }
     }
   }
 

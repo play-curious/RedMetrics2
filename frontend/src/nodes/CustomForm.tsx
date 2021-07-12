@@ -129,7 +129,7 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
   React.useEffect(() => {
     // @ts-ignore
     reset(defaultValues);
-  }, [reset]);
+  }, [reset]); // eslint-disable-line
 
   const inputEntries = Object.entries(options.inputs) as [
     name: Form.Path<T>,
@@ -152,7 +152,7 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
             );
           } else if (is<CustomRadioInput>(input, "radio")) {
             return (
-              <label>
+              <label className="flex-col">
                 <span>{input.label ?? name}</span> <br />
                 {input.warns}
                 {input.choices
@@ -174,7 +174,7 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
             );
           } else if (is<CustomSelectInput>(input, "select")) {
             return (
-              <label>
+              <label className="flex-col">
                 <span>{input.label ?? name}</span> <br />
                 {input.warns}
                 <select
@@ -190,12 +190,12 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
             );
           } else if (is<CustomCheckboxInputs>(input, "checkboxes")) {
             return (
-              <label>
+              <label className="flex-col">
                 <span>{input.label ?? name}</span> <br />
                 {input.warns}
                 {input.checks.map(({ value, label }, i) => {
                   return (
-                    <label className="whitespace-nowrap">
+                    <label className="whitespace-nowrap select-none">
                       <input
                         type="checkbox"
                         value={value}
@@ -213,15 +213,19 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
             );
           } else if (is<CustomCheckboxInput>(input, "checkbox")) {
             return (
-              <label>
-                <input
-                  type="checkbox"
-                  {...register(name, { required: input.required ?? false })}
-                  {...input}
-                />
-                {input.label ?? name}
-                <ErrorMessage errors={errors} name={name as any} />
-              </label>
+              <>
+                <label className="flex items-center cursor-pointer select-none flex-row whitespace-no-wrap">
+                  <input
+                    type="checkbox"
+                    {...register(name, { required: input.required ?? false })}
+                    {...input}
+                  />
+                  <span className="reverse-animation">
+                    {input.label ?? name}
+                  </span>
+                  <ErrorMessage errors={errors} name={name as any} />
+                </label>
+              </>
             );
           } else if (is<CustomTextAreaInput>(input, "area")) {
             let output = (
@@ -258,7 +262,7 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
             }
 
             return (
-              <label>
+              <label className="flex-col">
                 <span>{input.label ?? name}</span> <br />
                 {input.warns}
                 {output}
@@ -267,7 +271,7 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
             );
           } else {
             return (
-              <label>
+              <label className="flex-col">
                 <span>{input.label ?? name}</span> <br />
                 {input.warns}
                 <input
