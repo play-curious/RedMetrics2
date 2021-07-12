@@ -52,69 +52,65 @@ export default function APIKeys() {
       <h1>API Keys Management</h1>
       <h2 id="list">API Key list</h2>
       {apiKeys && apiKeys.length > 0 ? (
-        <>
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Game</th>
-                <th>Key</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {apiKeys.map((apiKey) => {
-                return (
-                  <tr>
-                    <td
-                      className="p-1 text-red-900 whitespace-nowrap overflow-hidden"
-                      title={apiKey.name}
-                    >
-                      {apiKey.name}
-                    </td>
-                    <td className="p-1">
-                      <Dom.Link to={"/game/show/" + apiKey.game_id}>
-                        <span className="underline hover:text-blue-600 transition duration-200">
-                          {ownGames?.find((game) => game.id === apiKey.game_id)
-                            ?.name ?? ""}
-                        </span>
-                      </Dom.Link>
-                    </td>
-                    <td className="p-1">
-                      <UUID _key={apiKey.key} />
-                    </td>
-                    <td className="p-1 flex items-center h-full">
-                      <Button
-                        customClassName="hover:bg-red-600 rounded-full"
-                        callback={function (this: types.tables.ApiKey) {
-                          axios
-                            .delete(`/key/${this.key}`, {
-                              baseURL: constants.API_BASE_URL,
-                            })
-                            .then(() => {
-                              notificationSystem.current?.addNotification({
-                                message: "Successfully deleted API key",
-                                level: "success",
-                              });
-                              fetchApiKeys();
-                            })
-                            .catch((error) => {
-                              notificationSystem.current?.addNotification({
-                                message: error.message,
-                                level: "error",
-                              });
+        <div className="table">
+          <div className="table-row-group shadow">
+            <div className="table-row">
+              <div className="table-cell font-bold px-5">Name</div>
+              <div className="table-cell font-bold px-5">Game</div>
+              <div className="table-cell font-bold px-5">Key</div>
+              <div className="table-cell" />
+            </div>
+            {apiKeys.map((apiKey) => {
+              return (
+                <div className="table-row border-2">
+                  <div
+                    className="table-cell p-1 text-red-900 whitespace-nowrap overflow-hidden"
+                    title={apiKey.name}
+                  >
+                    {apiKey.name}
+                  </div>
+                  <div className="table-cell p-1">
+                    <Dom.Link to={"/game/show/" + apiKey.game_id}>
+                      <span className="underline hover:text-blue-600 transition duration-200">
+                        {ownGames?.find((game) => game.id === apiKey.game_id)
+                          ?.name ?? ""}
+                      </span>
+                    </Dom.Link>
+                  </div>
+                  <div className="table-cell p-1">
+                    <UUID _key={apiKey.key} />
+                  </div>
+                  <div className="table-cell p-1 flex items-center h-full">
+                    <Button
+                      customClassName="hover:bg-red-600 rounded-full"
+                      callback={function (this: types.tables.ApiKey) {
+                        axios
+                          .delete(`/key/${this.key}`, {
+                            baseURL: constants.API_BASE_URL,
+                          })
+                          .then(() => {
+                            notificationSystem.current?.addNotification({
+                              message: "Successfully deleted API key",
+                              level: "success",
                             });
-                        }.bind(apiKey)}
-                      >
-                        <FontAwesomeIcon icon={faTrashAlt} />
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              }) || "No apiKey"}
-            </tbody>
-          </table>
-        </>
+                            fetchApiKeys();
+                          })
+                          .catch((error) => {
+                            notificationSystem.current?.addNotification({
+                              message: error.message,
+                              level: "error",
+                            });
+                          });
+                      }.bind(apiKey)}
+                    >
+                      <FontAwesomeIcon icon={faTrashAlt} />
+                    </Button>
+                  </div>
+                </div>
+              );
+            }) || "No apiKey"}
+          </div>
+        </div>
       ) : (
         <Warn type="warn">You don't have any API keys...</Warn>
       )}

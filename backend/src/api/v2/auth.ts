@@ -249,6 +249,11 @@ app.v2
         email,
         password: hash,
         is_admin,
+        confirmed: account.confirmed
+          ? account.email === email
+            ? account.confirmed
+            : false
+          : false,
       });
 
       res.json({ id });
