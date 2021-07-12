@@ -1,17 +1,21 @@
 import React from "react";
 import * as Router from "react-router";
+import * as Cookies from "react-cookie";
 
 import axios from "axios";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
+import * as constants from "../constants";
 
-import Center from "../nodes/Center";
 import CustomForm from "../nodes/CustomForm";
+import Button from "../nodes/Button";
 
 export default function AccountPage({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
+  const [, , removeCookie] = Cookies.useCookies([constants.COOKIE_NAME]);
   const [account, setAccount] = React.useState<types.tables.Account>();
+  const [redirect, setRedirect] = React.useState<string>();
   const { id } = Router.useParams<{ id: string }>();
 
   if (!account)
@@ -44,57 +48,83 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
   return (
     <>
       <NotificationSystem ref={notificationSystem} />
-      <Center>
-        <h1> Edit account </h1>
-        <CustomForm
-          className="flex flex-col"
-          submitText="Edit"
-          inputs={{
-            email: {
-              is: "email",
-              default: user.email,
-              required: true,
-              label: "Email",
-              placeholder: "Email",
-            },
-            password: {
-              is: "password",
-              required: true,
-              label: "Password",
-              placeholder: "Password",
-            },
-            is_admin: {
-              is: "checkbox",
-              default: user.is_admin,
-              label: "as admin?",
-            },
-          }}
-          onSubmit={(data: types.api.AccountById["Put"]["Body"]) => {
+      {redirect && <Router.Redirect to={redirect} />}
+      <h1> Account page </h1>
+      {user.id === id && (
+        <Button
+          customClassName="hover:bg-red-600"
+          callback={() =>
             axios
-              .put<types.api.AccountById["Put"]["Response"]>(
-                "/account/" + id,
-                data
-              )
-              .then(() => {
-                notificationSystem.current?.addNotification({
-                  message: "Successful registered",
-                  level: "success",
-                });
-                notificationSystem.current?.addNotification({
-                  message:
-                    "The new user temporary password is copied in your clipboard",
-                  level: "info",
-                });
-              })
+              .get("/logout")
               .catch((error) => {
                 notificationSystem.current?.addNotification({
                   message: error.message,
                   level: "error",
                 });
+              })
+              .then(() => {
+                notificationSystem.current?.addNotification({
+                  message: "Successful disconnected",
+                  level: "success",
+                });
+                removeCookie(constants.COOKIE_NAME);
+                setRedirect("/login");
+                window.location.reload(true);
+              })
+          }
+        >
+          Logout
+        </Button>
+      )}
+      <h2> Edit account </h2>
+      <CustomForm
+        className="flex flex-col"
+        submitText="Edit"
+        inputs={{
+          email: {
+            is: "email",
+            default: user.email,
+            required: true,
+            label: "Email",
+            placeholder: "Email",
+          },
+          password: {
+            is: "password",
+            required: true,
+            label: "Password",
+            placeholder: "Password",
+          },
+          is_admin: {
+            is: "checkbox",
+            default: user.is_admin,
+            label: "as admin?",
+          },
+        }}
+        onSubmit={(data: types.api.AccountById["Put"]["Body"]) => {
+          axios
+            .put<types.api.AccountById["Put"]["Response"]>(
+              "/account/" + id,
+              data
+            )
+            .then(() => {
+              notificationSystem.current?.addNotification({
+                message: "Successful registered",
+                level: "success",
               });
-          }}
-        />
-      </Center>
+              notificationSystem.current?.addNotification({
+                message:
+                  "The new user temporary password is copied in your clipboard",
+                level: "info",
+              });
+            })
+            .catch((error) => {
+              notificationSystem.current?.addNotification({
+                message: error.message,
+                level: "error",
+              });
+            });
+        }}
+      />
     </>
   );
 }

@@ -9,11 +9,11 @@ import * as constants from "./constants";
 
 import Routing from "./Routing";
 
-import Body from "./nodes/Body";
 import Header from "./nodes/Header";
 import Container from "./nodes/Container";
 
 import axios from "axios";
+import Warn from "./nodes/Warn";
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = constants.API_BASE_URL;
@@ -46,21 +46,24 @@ export default function App() {
     <>
       <NotificationSystem ref={notificationSystem} />
       <Dom.BrowserRouter>
-        <Header {...{ fetchUser, user }} />
-        {user &&
-          (user.confirmed ? (
-            ""
-          ) : (
-            <div className="p-2 text-grey-400">
-              You need to <a href="/confirm-email"> confirm your email </a> to
-              access some parts of website!
-            </div>
-          ))}
-        <Body>
+        <div className="min-h-screen flex flex-col">
+          <Header user={user} />
+          {user &&
+            (user.confirmed ? (
+              ""
+            ) : (
+              <Warn type="danger">
+                You need to
+                <a className="text-blue-700" href="/confirm-email">
+                  confirm your email
+                </a>
+                to access some parts of website!
+              </Warn>
+            ))}
           <Container>
             <Routing {...{ fetchUser, user }} />
           </Container>
-        </Body>
+        </div>
       </Dom.BrowserRouter>
     </>
   );

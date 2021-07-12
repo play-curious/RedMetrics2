@@ -7,7 +7,6 @@ import NotificationSystem from "react-notification-system";
 
 import { api as types } from "rm2-typings";
 
-import Center from "../nodes/Center";
 import CustomForm from "../nodes/CustomForm";
 
 export default function Register() {
@@ -20,48 +19,46 @@ export default function Register() {
         {redirect && <Router.Redirect to={redirect} />}
         <NotificationSystem ref={notificationSystem} />
         <div className="register">
-          <Center>
-            <h1> Register </h1>
-            <CustomForm
-              className="flex flex-col"
-              submitText="Submit"
-              inputs={{
-                email: {
-                  is: "email",
-                  placeholder: "Email",
-                  label: "Email",
-                  required: true,
-                },
-                password: {
-                  is: "password",
-                  placeholder: "Password",
-                  label: "Password",
-                  required: true,
-                },
-              }}
-              onSubmit={(data: types.Register["Post"]["Body"]) => {
-                axios
-                  .post<types.Register["Post"]["Response"]>("/register", data)
-                  .then((response) => {
-                    notificationSystem.current?.addNotification({
-                      message: "Successful registered",
-                      level: "success",
-                    });
-                    setRedirect("/home");
-                  })
-                  .catch((error) => {
-                    notificationSystem.current?.addNotification({
-                      message: error.message,
-                      level: "error",
-                    });
+          <h1> Register </h1>
+          <CustomForm
+            className="flex flex-col"
+            submitText="Submit"
+            inputs={{
+              email: {
+                is: "email",
+                placeholder: "Email",
+                label: "Email",
+                required: true,
+              },
+              password: {
+                is: "password",
+                placeholder: "Password",
+                label: "Password",
+                required: true,
+              },
+            }}
+            onSubmit={(data: types.Register["Post"]["Body"]) => {
+              axios
+                .post<types.Register["Post"]["Response"]>("/register", data)
+                .then((response) => {
+                  notificationSystem.current?.addNotification({
+                    message: "Successful registered",
+                    level: "success",
                   });
-              }}
-            >
-              <Dom.Link className="button" to={{ pathname: "/login" }}>
-                Login
-              </Dom.Link>
-            </CustomForm>
-          </Center>
+                  setRedirect("/home");
+                })
+                .catch((error) => {
+                  notificationSystem.current?.addNotification({
+                    message: error.message,
+                    level: "error",
+                  });
+                });
+            }}
+          >
+            <Dom.Link className="button" to={{ pathname: "/login" }}>
+              Login
+            </Dom.Link>
+          </CustomForm>
         </div>
       </>
     )

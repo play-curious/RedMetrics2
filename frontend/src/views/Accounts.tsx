@@ -37,6 +37,7 @@ export default function Accounts({ user }: { user: types.tables.Account }) {
       <NotificationSystem ref={notificationSystem} />
       <h1> Account management </h1>
       <Button to="/account/create"> Create </Button>
+      <h2> Account list </h2>
       <Wrapper>
         {accounts?.map((account) => {
           return (
@@ -69,7 +70,7 @@ export default function Accounts({ user }: { user: types.tables.Account }) {
                           });
                         });
                     }}
-                    customClassName="bg-red-500"
+                    customClassName="hover:bg-red-500"
                   >
                     Delete
                   </Button>

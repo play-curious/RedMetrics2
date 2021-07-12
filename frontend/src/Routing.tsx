@@ -11,7 +11,6 @@ import Tutorial from "./views/Tutorial";
 import Accounts from "./views/Accounts";
 import Settings from "./views/Settings";
 import Home from "./views/Home";
-import Profile from "./views/Profile";
 import GamePage from "./views/GamePage";
 import AddGame from "./views/AddGame";
 import NotFound from "./views/NotFound";
@@ -26,6 +25,7 @@ import ConfirmEmail from "./views/ConfirmEmail";
 
 import Debug from "./nodes/Debug";
 import ApiKeys from "./views/ApiKeys";
+import * as Router from "react-router";
 
 export default function Routing({
   user,
@@ -82,7 +82,7 @@ export default function Routing({
                 <Settings user={user} />
               </Dom.Route>
               <Dom.Route exact path="/profile">
-                <Profile user={user} />
+                <Router.Redirect to={"/account/show/" + user.id} />
               </Dom.Route>
               <Dom.Route exact path="/game/show/:id">
                 <GamePage />
