@@ -187,6 +187,12 @@ export function checkUser(
       });
     }
 
+    if (!account.confirmed)
+      return sendError(res, {
+        code: 401,
+        description: "You need to have validated your email",
+      });
+
     // @ts-ignore
     req.account = account;
 
