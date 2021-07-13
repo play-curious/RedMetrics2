@@ -6,7 +6,7 @@ import "./FullNav.scss";
 export default function FullNav() {
   return (
     <>
-      <nav>
+      <nav className="plan hidden md:block">
         <ul className="flex items-start justify-around">
           <li>
             <Dom.Link to="/docs">

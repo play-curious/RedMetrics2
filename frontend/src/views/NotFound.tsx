@@ -1,6 +1,7 @@
 import React from "react";
 
 import Button from "../nodes/Button";
+import Wrapper from "../nodes/Wrapper";
 
 export default function NotFound() {
   return (
@@ -8,7 +9,9 @@ export default function NotFound() {
       <h1>
         <span className="text-red-500"> 404 </span> Not Found!
       </h1>
-      <Button to="/">Go Home</Button>
+      <Wrapper>
+        <Button to="/">Go Home</Button>
+      </Wrapper>
     </>
   );
 }

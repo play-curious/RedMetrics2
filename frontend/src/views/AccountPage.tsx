@@ -98,12 +98,21 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
             label: "Email",
             placeholder: "Email",
           },
-          password: {
+          new_password: {
             is: "password",
             required: true,
-            label: "Password",
-            placeholder: "Password",
+            label: "New password",
+            placeholder: "New password",
           },
+          old_password:
+            user.id === id
+              ? {
+                  is: "password",
+                  required: true,
+                  label: "Current password",
+                  placeholder: "Current password",
+                }
+              : "",
           is_admin: {
             is: "checkbox",
             default: user.is_admin,

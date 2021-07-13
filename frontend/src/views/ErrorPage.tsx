@@ -1,6 +1,7 @@
 import React from "react";
 
 import Button from "../nodes/Button";
+import Wrapper from "../nodes/Wrapper";
 
 export default function ErrorPage({
   text,
@@ -12,7 +13,9 @@ export default function ErrorPage({
       <h1>
         <span className="text-red-500"> Error! </span> {text}
       </h1>
-      <Button to="/">Go Home</Button>
+      <Wrapper>
+        <Button to="/">Go Home</Button>
+      </Wrapper>
     </>
   );
 }

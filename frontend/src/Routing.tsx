@@ -21,8 +21,8 @@ import AccountPage from "./views/AccountPage";
 import GameSessionPage from "./views/GameSessionPage";
 import ForgottenPassword from "./views/ForgottenPassword";
 import ConfirmEmail from "./views/ConfirmEmail";
-
 import APIKeys from "./views/APIKeys";
+
 import * as Router from "react-router";
 
 export default function Routing({
@@ -64,6 +64,9 @@ export default function Routing({
           <Dom.Route exact path="/profile">
             <Router.Redirect to={"/account/show/" + user.id} />
           </Dom.Route>
+          <Dom.Route exact path="/account/show/:id">
+            <AccountPage user={user} />
+          </Dom.Route>
           {user.confirmed && (
             <>
               <Dom.Route exact path="/accounts">
@@ -71,9 +74,6 @@ export default function Routing({
               </Dom.Route>
               <Dom.Route exact path="/account/create">
                 <CreateAccount user={user} />
-              </Dom.Route>
-              <Dom.Route exact path="/account/show/:id">
-                <AccountPage user={user} />
               </Dom.Route>
               <Dom.Route exact path="/settings">
                 <Settings user={user} />
