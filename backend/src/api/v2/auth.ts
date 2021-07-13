@@ -250,22 +250,20 @@ app.v2
             description: "Missing old_password",
           });
 
-        if (!(await bcrypt.compare(body.old_password, account.password))) {
+        if (!(await bcrypt.compare(body.old_password, account.password)))
           return utils.sendError(res, {
             code: 401,
             description: "Incorrect password",
           });
-        }
       }
 
       let hash: string | undefined;
 
-      if (body.new_password) {
+      if (body.new_password)
         hash = await bcrypt.hash(
           body.new_password,
           parseInt(process.env.SALT_ROUNDS as string)
         );
-      }
 
       await auth.updateAccount(id, {
         email: body.email,
