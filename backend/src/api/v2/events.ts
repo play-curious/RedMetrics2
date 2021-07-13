@@ -1,52 +1,52 @@
 import expressAsyncHandler from "express-async-handler";
+import * as types from "rm2-typings";
 import * as uuid from "uuid";
 import * as app from "../../app";
-import * as types from "rm2-typings";
 import * as utils from "../../utils";
 import * as events from "../../controllers/events";
 import * as game from "../../controllers/game";
+import express from "express";
 
-app.v2.post(
-  "/session",
-  utils.checkGame(),
-  expressAsyncHandler(async (req, res) => {
-    //  Creates a new session.
-    //  A SessionMeta object should be sent in the body.
-    //  The Location response header will contain the URL for the new session.
-    //  Only accessible to dev and admin.
+app.v2
+  .route("/session")
+  .all(utils.checkGame())
+  .post(
+    expressAsyncHandler(async (req, res) => {
+      //  Creates a new session.
+      //  A SessionMeta object should be sent in the body.
+      //  The Location response header will contain the URL for the new session.
+      //  Only accessible to dev and admin.
 
-    if (!utils.hasAccount(req)) return;
+      const external_id = req.body.external_id,
+        platform = req.body.platform,
+        screen_size = req.body.screen_size,
+        software = req.body.software,
+        version = req.body.version,
+        custom_data = JSON.stringify(req.body.custom_data ?? {}),
+        game_id = req.body.game_id;
 
-    const external_id = req.body.external_id,
-      platform = req.body.platform,
-      screen_size = req.body.screen_size,
-      software = req.body.software,
-      version = req.body.version,
-      custom_data = JSON.stringify(req.body.custom_data ?? {}),
-      game_id = req.body.game_id;
+      if (!game_id || !(await game.getGame(game_id))) {
+        return utils.sendError(res, {
+          code: 401,
+          description: "Invalid game uuid",
+        });
+      }
 
-    if (!game_id || !(await game.getGame(game_id))) {
-      return utils.sendError(res, {
-        code: 401,
-        description: "Invalid game uuid",
-      });
-    }
+      const session: types.api.Session["Post"]["Body"] = {
+        external_id,
+        platform,
+        screen_size,
+        software,
+        version,
+        custom_data,
+        game_id,
+      };
 
-    const session: types.api.Session["Post"]["Body"] = {
-      external_id,
-      platform,
-      screen_size,
-      software,
-      version,
-      custom_data,
-      game_id,
-    };
+      const id = await events.postGameSession(session);
 
-    const id = await events.postGameSession(session);
-
-    res.json({ id, ...session });
-  })
-);
+      res.json({ id, ...session });
+    })
+  );
 
 app.v2
   .route("/session/:id")
