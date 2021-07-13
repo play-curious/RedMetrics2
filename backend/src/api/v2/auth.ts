@@ -222,13 +222,13 @@ app.v2
 
       if (!utils.hasAccount(req)) return;
 
-      const id = req.params.id,
-        email = req.body?.email,
-        password = req.body?.password;
+      const body = req.body as types.api.AccountById["Put"]["Body"];
+
+      const id = req.params.id;
 
       const is_admin = req.account.is_admin ? req.body?.is_admin : undefined;
 
-      if (email && !utils.isValidEmail(email)) {
+      if (body.email && !utils.isValidEmail(body.email)) {
         return utils.sendError(res, {
           code: 401,
           description: "Invalid email",
@@ -237,28 +237,42 @@ app.v2
 
       const account = await auth.getAccount(id);
 
-      if (!account) {
+      if (!account)
         return utils.sendError(res, {
           code: 404,
           description: "Account not found",
         });
+
+      if (account.id === id) {
+        if (!body.old_password)
+          return utils.sendError(res, {
+            code: 401,
+            description: "Missing old_password",
+          });
+
+        if (!(await bcrypt.compare(body.old_password, account.password))) {
+          return utils.sendError(res, {
+            code: 401,
+            description: "Incorrect password",
+          });
+        }
       }
 
       let hash: string | undefined;
 
-      if (password) {
+      if (body.new_password) {
         hash = await bcrypt.hash(
-          password,
+          body.new_password,
           parseInt(process.env.SALT_ROUNDS as string)
         );
       }
 
       await auth.updateAccount(id, {
-        email,
+        email: body.email,
         password: hash,
         is_admin,
         confirmed: account.confirmed
-          ? account.email === email
+          ? account.email === body.email
             ? account.confirmed
             : false
           : false,
@@ -372,7 +386,7 @@ app.v2
         account,
         `<h1> Reset your password - Step 1/2 </h1>
         <h2> To reset your password, use the following code. </h2>`,
-        "Reset your password"
+        "RedMetrics2 - Reset your password"
       );
 
       res.sendStatus(200);

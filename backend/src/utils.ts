@@ -233,7 +233,8 @@ export async function sendDigitCode(
 ) {
   const digit = () => String(Math.floor(Math.random() * 9.9999999));
   const code = digit() + digit() + digit() + digit() + digit() + digit();
-  const timeout = Number(process.env.TEMPORARY_CODE_TIMEOUT ?? 15) * 1000 * 60;
+  const minutes = Number(process.env.TEMPORARY_CODE_TIMEOUT ?? 15);
+  const timeout = minutes * 1000 * 60;
 
   await auth.confirmations().insert({
     account_id: account.id,
@@ -246,7 +247,7 @@ export async function sendDigitCode(
       
       >> ${code} <<
       
-      (You have ${timeout} minutes to enter the code from the site!)
+      (You have ${minutes} minutes to enter the code from the site!)
     `,
     html: formatEmail(
       title,
@@ -261,7 +262,7 @@ export async function sendDigitCode(
       ">
         ${code}
       </div>
-      <strong> You have ${timeout} minutes to enter the code from the site! </strong>`
+      <strong> You have ${minutes} minutes to enter the code from the site! </strong>`
     ),
     to: account.email,
     subject,
@@ -320,6 +321,6 @@ export async function sendAccountConfirmation(account: types.tables.Account) {
         <h1> Confirm your account </h1>
         <h2> Use the following digit code to confirm your account </h2>
       `,
-    "Confirm your account"
+    "RedMetrics2 - Confirm your account"
   );
 }
