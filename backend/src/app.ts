@@ -40,7 +40,9 @@ export const database = knex({
 // Express
 
 export const server = express();
-export const v2 = express.Router();
+
+// Set the default JSON formatting to pretty-print
+server.set("json spaces", 2);
 
 server.use(
   bodyParser.urlencoded({ extended: false }),
@@ -49,6 +51,7 @@ server.use(
   cors({ credentials: true, origin: process.env.FRONTEND_ORIGIN })
 );
 
+export const v2 = express.Router();
 server.use("/v2", v2);
 
 // GraphQL

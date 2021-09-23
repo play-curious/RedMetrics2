@@ -4,17 +4,26 @@ import expressAsyncHandler from "express-async-handler";
 
 const project = require("../../../package.json");
 
-const deploymentDate = new Date();
+const startedAt = new Date();
 
+const statusHandler = expressAsyncHandler(async (req, res) => {
+  res.json({
+    apiVersion: project.version,
+    startedAt,
+    uptime: Date.now() - startedAt.getTime(),
+  });
+});
+
+// Full (versioned) route
 app.v2.get(
   "/status",
-  expressAsyncHandler(async (req, res) => {
-    res.json({
-      deployedAt: deploymentDate,
-      uptime: Date.now() - deploymentDate.getTime(),
-      version: project.version,
-      license: project.license,
-      locale: utils.extractLocale(req),
-    });
-  })
+  statusHandler
 );
+
+// Shortcuts
+app.v2.get(
+  "/",
+  statusHandler
+);
+app.server.get("/", statusHandler);
+app.server.get("/status", statusHandler);
