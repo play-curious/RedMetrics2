@@ -8,13 +8,22 @@ export default function FullNav() {
     <>
       <nav className="plan hidden md:block">
         <ul className="flex items-start justify-around">
-          <li>
-            <Dom.Link to="/docs">
-              <span>Documentation</span>
+        <li>
+            <Dom.Link to="/games">
+              <span>Games</span>
+              <ul>
+                <li>
+                  <Dom.Link to="/game/add">
+                    <span>Add game</span>
+                  </Dom.Link>
+                </li>
+                <li>
+                  <Dom.Link to="/games#list">
+                    <span>Game list</span>
+                  </Dom.Link>
+                </li>
+              </ul>
             </Dom.Link>
-          </li>
-          <li>
-            <Dom.Link to="/about">About</Dom.Link>
           </li>
           <li>
             <Dom.Link to="/api-keys">
@@ -34,23 +43,6 @@ export default function FullNav() {
             </ul>
           </li>
           <li>
-            <Dom.Link to="/games">
-              <span>Games</span>
-              <ul>
-                <li>
-                  <Dom.Link to="/game/add">
-                    <span>Add game</span>
-                  </Dom.Link>
-                </li>
-                <li>
-                  <Dom.Link to="/games#list">
-                    <span>Game list</span>
-                  </Dom.Link>
-                </li>
-              </ul>
-            </Dom.Link>
-          </li>
-          <li>
             <Dom.Link to="/accounts">
               <span>Account management</span>
             </Dom.Link>
@@ -66,6 +58,14 @@ export default function FullNav() {
                 </Dom.Link>
               </li>
             </ul>
+          </li>
+          <li>
+            <Dom.Link to="/docs">
+              <span>Documentation</span>
+            </Dom.Link>
+          </li>
+          <li>
+            <Dom.Link to="/about">About</Dom.Link>
           </li>
         </ul>
       </nav>

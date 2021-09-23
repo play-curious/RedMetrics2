@@ -21,11 +21,11 @@ export default function Header({ user }: { user?: types.Account }) {
               <Logo />
             </div>
             <Menu>
+              {user?.is_admin && <MenuItem to="/games"> Games </MenuItem>}
+              {user && <MenuItem to="/api-keys"> Api Keys </MenuItem>}
+              {user?.is_admin && <MenuItem to="/accounts"> Accounts </MenuItem>}
               <MenuItem to="/docs"> Docs </MenuItem>
               <MenuItem to="/about"> About </MenuItem>
-              {user && <MenuItem to="/api-keys"> Api Keys </MenuItem>}
-              {user?.is_admin && <MenuItem to="/games"> Games </MenuItem>}
-              {user?.is_admin && <MenuItem to="/accounts"> Accounts </MenuItem>}
             </Menu>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">

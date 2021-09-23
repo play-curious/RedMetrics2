@@ -7,6 +7,7 @@ export default function Documentation() {
       <p className="mt-4">
         Documentation is coming soon. In the meantime, check out the
         documentation for
+        {' '}
         <a href="https://github.com/CyberCRI/RedMetrics">
           RedMetrics version 1
         </a>

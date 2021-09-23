@@ -24,7 +24,8 @@
   }
 
   p a,
-  ul a {
+  ul a,
+  .warn a {
     @apply underline;
   }
 }

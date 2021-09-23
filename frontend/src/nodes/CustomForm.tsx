@@ -292,7 +292,7 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
         {options.children}
         <div className="button-group">
           {options.otherButtons}
-          <Button submit>{options.submitText ?? "Submit"}</Button>
+          <Button submit>{options.submitText ?? "Save"}</Button>
         </div>
       </form>
     </>

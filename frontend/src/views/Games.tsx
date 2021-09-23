@@ -45,7 +45,7 @@ export default function Games({ user }: { user: types.tables.Account }) {
       <Wrapper>
         <Button to="/game/add" children="New Game" />
       </Wrapper>
-      <h2 id="list"> Game list </h2>
+      <h2 id="list"> Game List </h2>
       {games && games.length > 0 ? (
         <>
           <Wrapper>

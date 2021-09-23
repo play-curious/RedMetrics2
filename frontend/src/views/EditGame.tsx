@@ -12,6 +12,7 @@ export default function EditGame() {
   const notificationSystem = React.createRef<NotificationSystem.System>();
   const { id } = Router.useParams<{ id: string }>();
   const [game, setGame] = React.useState<types.tables.Game>();
+  const [redirect, setRedirect] = React.useState<null | string>(null);
 
   if (!game)
     axios
@@ -22,11 +23,16 @@ export default function EditGame() {
   return (
     <>
       <NotificationSystem ref={notificationSystem} />
+      {redirect && <Router.Redirect to={redirect} />}
+
       <h1> Edit Game </h1>
       <CustomForm
         onSubmit={(data: types.api.GameById["Put"]["Body"]) => {
           axios
             .put<types.api.GameById["Put"]["Response"]>("/game/" + id, data)
+            .then((response) => {
+              setRedirect("/game/show/" + id);
+            })
             .then(() => {
               notificationSystem.current?.addNotification({
                 message: "Successful edited",
@@ -57,6 +63,7 @@ export default function EditGame() {
           },
           custom_data: {
             is: "area",
+            label: "Custom data",
             jsonValidation: true,
             default: game?.custom_data,
           },
