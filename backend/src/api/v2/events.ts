@@ -120,7 +120,8 @@ app.v2.get(
 app.v2
   .route("/event")
   .get(
-    utils.checkGame(),
+    utils.checkGameOrUser(async (context) =>
+      (await game.getGame(context.params.id))?.publisher_id === context.account.id),
     expressAsyncHandler(async (req, res) => {
       //  Lists Event objects (see section on Paging below).
       //  Admin and dev accounts can see the game events they have access to.
