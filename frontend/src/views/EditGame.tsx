@@ -50,23 +50,25 @@ export default function EditGame() {
           name: {
             is: "text",
             placeholder: "Game name",
-            default: game?.name,
           },
           author: {
             is: "text",
             placeholder: "Author of game",
-            default: game?.author,
           },
           description: {
             is: "area",
-            default: game?.description,
           },
           custom_data: {
             is: "area",
             label: "Custom data",
             jsonValidation: true,
-            default: game?.custom_data,
           },
+        }}
+        defaultValues={{
+          name: game?.name,
+          author: game?.author,
+          description: game?.description,
+          custom_data: game?.custom_data,
         }}
       />
     </>

@@ -90,10 +90,15 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
       <CustomForm
         className="flex flex-col"
         submitText="Edit"
+        defaultValues={{
+          email: user.email,
+          new_password: "",
+          old_password: "",
+          is_admin: false,
+        }}
         inputs={{
           email: {
             is: "email",
-            default: user.email,
             required: true,
             label: "Email",
             placeholder: "Email",
@@ -115,7 +120,6 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
               : "",
           is_admin: {
             is: "checkbox",
-            default: user.is_admin,
             label: "is administrator",
           },
         }}
