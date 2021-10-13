@@ -91,10 +91,10 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
         className="flex flex-col"
         submitText="Edit"
         defaultValues={{
-          email: user.email,
+          email: account?.email ?? user.email,
           new_password: "",
           old_password: "",
-          is_admin: false,
+          is_admin: account?.is_admin ?? user.is_admin,
         }}
         inputs={{
           email: {
@@ -102,12 +102,6 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
             required: true,
             label: "Email",
             placeholder: "Email",
-          },
-          new_password: {
-            is: "password",
-            required: true,
-            label: "New password",
-            placeholder: "New password",
           },
           old_password:
             user.id === id
@@ -118,6 +112,12 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
                   placeholder: "Current password",
                 }
               : "",
+          new_password: {
+            is: "password",
+            required: true,
+            label: "New password",
+            placeholder: "New password",
+          },
           is_admin: {
             is: "checkbox",
             label: "is administrator",

@@ -212,7 +212,8 @@ app.v2
   )
   .put(
     utils.checkUser(
-      (context) => context.params.id === context.account.id,
+      async (context) =>
+        context.params.id === context.account.id || context.account.is_admin,
       true
     ),
     expressAsyncHandler(async (req, res) => {
@@ -243,7 +244,10 @@ app.v2
           description: "Account not found",
         });
 
-      if (account.id === id) {
+      if (
+        (account.id === id && !req.account.is_admin) ||
+        !req.account.is_admin
+      ) {
         if (!body.old_password)
           return utils.sendError(res, {
             code: 401,
