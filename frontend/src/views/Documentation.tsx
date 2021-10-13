@@ -6,8 +6,7 @@ export default function Documentation() {
       <h1>Documentation</h1>
       <p className="mt-4">
         Documentation is coming soon. In the meantime, check out the
-        documentation for
-        {' '}
+        documentation for{" "}
         <a href="https://github.com/CyberCRI/RedMetrics">
           RedMetrics version 1
         </a>

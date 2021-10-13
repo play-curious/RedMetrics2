@@ -60,6 +60,7 @@ export default function EditGame() {
           },
           custom_data: {
             is: "area",
+            code: true,
             label: "Custom data",
             jsonValidation: true,
           },

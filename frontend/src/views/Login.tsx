@@ -30,7 +30,7 @@ export default function Login({ deleteUser }: { deleteUser: () => unknown }) {
                 });
                 deleteUser();
                 setRedirect("/home");
-                window.location.reload(true);
+                window.location.reload();
               })
               .catch((error) => {
                 if (/40[14]/.test(error?.message)) {

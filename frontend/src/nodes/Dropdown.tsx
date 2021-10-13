@@ -42,7 +42,7 @@ export default function Dropdown({
         removeCookie(constants.COOKIE_NAME);
         deleteUser();
         setRedirect("/login");
-        window.location.reload(true);
+        window.location.reload();
       });
 
   return (

@@ -77,7 +77,7 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
                     });
                     removeCookie(constants.COOKIE_NAME);
                     setRedirect("/login");
-                    window.location.reload(true);
+                    window.location.reload();
                   })
               }
             >
@@ -134,7 +134,7 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
                 message: "Successfully edited account",
                 level: "success",
               });
-              if (user.id === id) window.location.reload(true);
+              if (user.id === id) window.location.reload();
             })
             .catch((error) => {
               notificationSystem.current?.addNotification({

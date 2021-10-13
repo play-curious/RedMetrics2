@@ -8,22 +8,22 @@ export default function FullNav() {
     <>
       <nav className="plan hidden md:block">
         <ul className="flex items-start justify-around">
-        <li>
+          <li>
             <Dom.Link to="/games">
               <span>Games</span>
-              <ul>
-                <li>
-                  <Dom.Link to="/game/add">
-                    <span>Add game</span>
-                  </Dom.Link>
-                </li>
-                <li>
-                  <Dom.Link to="/games#list">
-                    <span>Game list</span>
-                  </Dom.Link>
-                </li>
-              </ul>
             </Dom.Link>
+            <ul>
+              <li>
+                <Dom.Link to="/game/add">
+                  <span>Add game</span>
+                </Dom.Link>
+              </li>
+              <li>
+                <Dom.Link to="/games#list">
+                  <span>Game list</span>
+                </Dom.Link>
+              </li>
+            </ul>
           </li>
           <li>
             <Dom.Link to="/api-keys">

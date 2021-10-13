@@ -159,7 +159,10 @@ export default function APIKeys() {
           />
         </>
       ) : (
-        <Warn type="warn"><Dom.Link to={"/game/add"}>First create a game</Dom.Link>, and then create an API key for it</Warn>
+        <Warn type="warn">
+          <Dom.Link to={"/game/add"}>First create a game</Dom.Link>, and then
+          create an API key for it
+        </Warn>
       )}
     </>
   );

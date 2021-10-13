@@ -129,7 +129,7 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
         onSubmit={handleSubmit(options.onSubmit)}
         className={options.className + " custom-form w-4/5 sm:w-1/2 md:w-1/3"}
       >
-        {inputEntries.map(([name, input]) => {
+        {inputEntries.map(([name, input], key) => {
           if (typeof input === "undefined") {
             console.error("Form input is undefined for", name);
             return <div>{name + " is undefined"}</div>;
@@ -139,13 +139,13 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
             );
           } else if (is<CustomRadioInput>(input, "radio")) {
             return (
-              <label className="flex-col">
+              <label key={key} className="flex-col">
                 <span>{input.label ?? name}</span> <br />
                 {input.warns}
                 {input.choices
-                  .map(({ label, value }) => {
+                  .map(({ label, value }, subKey) => {
                     return (
-                      <label>
+                      <label key={"sub-" + subKey}>
                         <input
                           type="radio"
                           value={value}
@@ -156,12 +156,12 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
                     );
                   })
                   .join("<br/>")}
-                <ErrorMessage errors={errors} name={name as any} />
+                <ErrorMessage key={key} errors={errors} name={name as any} />
               </label>
             );
           } else if (is<CustomSelectInput>(input, "select")) {
             return (
-              <label className="flex-col">
+              <label key={key} className="flex-col">
                 <span>{input.label ?? name}</span> <br />
                 {input.warns}
                 <select
@@ -172,22 +172,25 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
                     return <option value={option.value}>{option.label}</option>;
                   })}
                 </select>
-                <ErrorMessage errors={errors} name={name as any} />
+                <ErrorMessage key={key} errors={errors} name={name as any} />
               </label>
             );
           } else if (is<CustomCheckboxInputs>(input, "checkboxes")) {
             return (
-              <label className="flex-col">
+              <label key={key} className="flex-col">
                 <span>{input.label ?? name}</span> <br />
                 {input.warns}
-                {input.checks.map(({ value, label }, i) => {
+                {input.checks.map(({ value, label }, subKey) => {
                   return (
-                    <label className="whitespace-nowrap select-none">
+                    <label
+                      key={"sub-2-" + subKey}
+                      className="whitespace-nowrap select-none"
+                    >
                       <input
                         type="checkbox"
                         value={value}
                         {...input}
-                        {...register(`${name}.${i}` as typeof name, {
+                        {...register(`${name}.${subKey}` as typeof name, {
                           required: input.required,
                         })}
                       />
@@ -195,13 +198,16 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
                     </label>
                   );
                 })}
-                <ErrorMessage errors={errors} name={name as any} />
+                <ErrorMessage key={key} errors={errors} name={name as any} />
               </label>
             );
           } else if (is<CustomCheckboxInput>(input, "checkbox")) {
             return (
               <>
-                <label className="flex items-center cursor-pointer select-none flex-row whitespace-no-wrap">
+                <label
+                  key={key}
+                  className="flex items-center cursor-pointer select-none flex-row whitespace-no-wrap"
+                >
                   <input
                     type="checkbox"
                     {...register(name, { required: input.required ?? false })}
@@ -210,53 +216,53 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
                   <span className="reverse-animation">
                     {input.label ?? name}
                   </span>
-                  <ErrorMessage errors={errors} name={name as any} />
+                  <ErrorMessage key={key} errors={errors} name={name as any} />
                 </label>
               </>
             );
           } else if (is<CustomTextAreaInput>(input, "area")) {
+            const registered = register(name, {
+              required: input.required ?? false,
+              validate: input.jsonValidation
+                ? (value) => {
+                    const stringValue = String(value);
+                    try {
+                      JSON.parse(stringValue);
+                      //const custom_data = JSON.parse(stringValue);
+                      // value = JSON.stringify(
+                      //   custom_data,
+                      //   null,
+                      //   2
+                      // );
+                      return true;
+                    } catch (error) {
+                      return String(error);
+                    }
+                  }
+                : undefined,
+            });
+
             let output = (
               <textarea
-                {...register(name, {
-                  required: input.required ?? false,
-                  validate: input.jsonValidation
-                    ? (value) => {
-                        const stringValue = String(value);
-                        try {
-                          JSON.parse(stringValue);
-                          //const custom_data = JSON.parse(stringValue);
-                          // value = JSON.stringify(
-                          //   custom_data,
-                          //   null,
-                          //   2
-                          // );
-                          return true;
-                        } catch (error) {
-                          return error.message;
-                        }
-                      }
-                    : undefined,
-                })}
+                {...registered}
                 {...input}
                 defaultValue={input.jsonValidation ? "{}" : ""}
               />
             );
 
-            if (input.code) {
-              output = <code>{output}</code>;
-            }
+            if (input.code) output = <code>{output}</code>;
 
             return (
-              <label className="flex-col">
+              <label key={key} className="flex-col">
                 <span>{input.label ?? name}</span> <br />
                 {input.warns}
                 {output}
-                <ErrorMessage errors={errors} name={name as any} />
+                <ErrorMessage key={key} errors={errors} name={name as any} />
               </label>
             );
           } else {
             return (
-              <label className="flex-col">
+              <label key={key} className="flex-col">
                 <span>{input.label ?? name}</span> <br />
                 {input.warns}
                 <input
@@ -269,7 +275,7 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
                   })}
                   {...input}
                 />
-                <ErrorMessage errors={errors} name={name as any} />
+                <ErrorMessage key={key} errors={errors} name={name as any} />
               </label>
             );
           }

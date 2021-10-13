@@ -33,7 +33,7 @@ export default function ConfirmEmail() {
                   message: "Successfully confirm your email!",
                   level: "success",
                 });
-                window.location.reload(true);
+                window.location.reload();
               })
               .catch((error) => {
                 notificationSystem.current?.addNotification({
