@@ -49,6 +49,7 @@ export default function EditGame() {
         inputs={{
           name: {
             is: "text",
+            minLength: 2,
             placeholder: "Game name",
           },
           author: {

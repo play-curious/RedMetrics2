@@ -15,15 +15,9 @@ const statusHandler = expressAsyncHandler(async (req, res) => {
 });
 
 // Full (versioned) route
-app.v2.get(
-  "/status",
-  statusHandler
-);
+app.v2.get("/status", statusHandler);
 
 // Shortcuts
-app.v2.get(
-  "/",
-  statusHandler
-);
+app.v2.get("/", statusHandler);
 app.server.get("/", statusHandler);
 app.server.get("/status", statusHandler);

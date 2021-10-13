@@ -113,10 +113,20 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = Form.useForm<T>({
-    defaultValues: options.defaultValues,
-  });
+  } = Form.useForm<T>({ mode: "onBlur" });
+
+  React.useEffect(() => {
+    if (options.defaultValues) {
+      for (const key of Object.keys(
+        options.defaultValues
+      ) as (keyof typeof options.defaultValues)[]) {
+        //@ts-ignore
+        setValue(key, options.defaultValues[key]);
+      }
+    }
+  }, [options.defaultValues]);
 
   const inputEntries = Object.entries(options.inputs) as [
     name: Form.Path<T>,
