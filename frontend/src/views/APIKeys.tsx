@@ -65,9 +65,9 @@ export default function APIKeys() {
                 <div className="table-row border-2">
                   <div
                     className="table-cell p-1 text-red-900 whitespace-nowrap overflow-hidden"
-                    title={apiKey.name}
+                    title={apiKey.description}
                   >
-                    {apiKey.name}
+                    {apiKey.description}
                   </div>
                   <div className="table-cell p-1">
                     <Dom.Link to={"/game/show/" + apiKey.game_id}>
@@ -136,16 +136,16 @@ export default function APIKeys() {
                 });
             }}
             inputs={{
-              name: {
+              description: {
                 is: "text",
                 placeholder: "API key name or reason",
-                required: true,
               },
               game_id: {
                 is: "select",
                 label: "game",
+                required: true,
                 options:
-                  ownGames?.map((game) => {
+                  ownGames.map((game) => {
                     return { value: game.id as string, label: game.name };
                   }) ?? [],
               },

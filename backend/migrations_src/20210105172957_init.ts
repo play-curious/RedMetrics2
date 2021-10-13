@@ -54,7 +54,7 @@ export async function up(knex: Knex): Promise<void> {
       .primary()
       .defaultTo(knex.raw("uuid_generate_v4()"));
     table.timestamp("start_at").notNullable();
-    table.string("name").notNullable();
+    table.string("description");
     table
       .uuid("game_id")
       .references("id")

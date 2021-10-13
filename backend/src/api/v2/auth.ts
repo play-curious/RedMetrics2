@@ -294,12 +294,6 @@ app.v2.post(
   expressAsyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
 
-    if (!req.body.name)
-      return utils.sendError(res, {
-        code: 400,
-        description: "Missing 'name' property in body",
-      });
-
     if (!req.body.game_id)
       return utils.sendError(res, {
         code: 400,
@@ -315,9 +309,9 @@ app.v2.post(
       });
 
     const apiKey: types.tables.ApiKey = {
+      description: req.body.description,
       start_at: new Date().toISOString(),
       account_id: req.account.id,
-      name: req.body.name,
       key: uuid.v4(),
       game_id: req.body.game_id,
     };
