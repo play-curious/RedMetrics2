@@ -111,9 +111,13 @@ app.v2.get(
 
 app.v2.get(
   "/sessions/:game_id",
-  utils.checkGame((context) => context.game.id === context.params.game_id),
+  utils.checkUser(
+    async (context) =>
+      (await game.getGame(context.params.game_id))?.publisher_id ===
+        context.account.id || context.account.is_admin
+  ),
   expressAsyncHandler(async (req, res) => {
-    res.json(await events.getGameSessions(req.params.version_id));
+    res.json(await events.getGameSessions(req.params.game_id));
   })
 );
 
