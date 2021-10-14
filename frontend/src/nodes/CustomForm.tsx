@@ -126,7 +126,7 @@ export default function CustomForm<T>(options: CustomFormOptions<T>) {
         setValue(key, options.defaultValues[key]);
       }
     }
-  }, [options.defaultValues]);
+  }, [options, setValue]);
 
   const inputEntries = Object.entries(options.inputs) as [
     name: Form.Path<T>,

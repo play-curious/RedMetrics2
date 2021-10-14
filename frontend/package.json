@@ -19,7 +19,7 @@
     "dotenv": "^10.0.0",
     "node-sass": "^6.0.0",
     "prismjs": "^1.25.0",
-    "querystring": "^0.2.1",
+    "query-string": "^7.0.1",
     "react": "^17.0.2",
     "react-cookie": "^4.0.3",
     "react-dom": "^17.0.2",
@@ -37,7 +37,7 @@
     "web-vitals": "^2.0.1"
   },
   "scripts": {
-    "start": "npm run types && react-dotenv && craco start",
+    "start": "react-dotenv && craco start",
     "build": "react-dotenv && craco build",
     "eject": "react-dotenv && craco eject",
     "format": "prettier --write src",
@@ -67,12 +67,12 @@
     ]
   },
   "devDependencies": {
-    "@types/prismjs": "^1.16.6",
     "@craco/craco": "^6.1.2",
     "@tailwindcss/postcss7-compat": "^2.1.4",
     "@tailwindcss/ui": "^0.7.2",
     "@types/clipboard": "^2.0.1",
     "@types/dotenv": "^8.2.0",
+    "@types/prismjs": "^1.16.6",
     "@types/react-notification-system": "^0.2.40",
     "@types/react-paginate": "^7.1.0",
     "@types/react-router-dom": "^5.1.7",

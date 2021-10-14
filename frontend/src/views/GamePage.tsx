@@ -5,6 +5,7 @@ import NotificationSystem from "react-notification-system";
 import axios from "axios";
 
 import * as types from "rm2-typings";
+import * as utils from "../utils";
 
 import Button from "../nodes/Button";
 import UUID from "../nodes/UUID";
@@ -28,6 +29,8 @@ export default function GamePage() {
           level: "error",
         });
       });
+
+  utils.checkNotificationParams(notificationSystem).catch();
 
   return (
     <>

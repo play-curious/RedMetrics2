@@ -13,9 +13,9 @@ import Header from "./nodes/Header";
 import Container from "./nodes/Container";
 import Warn from "./nodes/Warn";
 import Footer from "./nodes/Footer";
+import Wrapper from "./nodes/Wrapper";
 
 import axios from "axios";
-import Wrapper from "./nodes/Wrapper";
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = constants.API_BASE_URL;

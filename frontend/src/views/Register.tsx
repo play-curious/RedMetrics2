@@ -8,10 +8,13 @@ import NotificationSystem from "react-notification-system";
 import { api as types } from "rm2-typings";
 
 import CustomForm from "../nodes/CustomForm";
+import * as utils from "../utils";
 
 export default function Register() {
   const [redirect, setRedirect] = React.useState<null | string>(null);
   const notificationSystem = React.createRef<NotificationSystem.System>();
+
+  utils.checkNotificationParams(notificationSystem).catch();
 
   return (
     <> WIP </> || (

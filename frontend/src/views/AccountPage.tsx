@@ -12,6 +12,7 @@ import CustomForm from "../nodes/CustomForm";
 import Button from "../nodes/Button";
 import Wrapper from "../nodes/Wrapper";
 import UUID from "../nodes/UUID";
+import * as utils from "../utils";
 
 export default function AccountPage({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
@@ -46,6 +47,8 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
     } else {
       setAccount(user);
     }
+
+  utils.checkNotificationParams(notificationSystem).catch();
 
   return (
     <>

@@ -8,10 +8,13 @@ import axios from "axios";
 
 import CustomForm from "../nodes/CustomForm";
 import Button from "../nodes/Button";
+import * as utils from "../utils";
 
 export default function Login({ deleteUser }: { deleteUser: () => unknown }) {
   const [redirect, setRedirect] = React.useState<null | string>(null);
   const notificationSystem = React.createRef<NotificationSystem.System>();
+
+  utils.checkNotificationParams(notificationSystem).catch();
 
   return (
     <>

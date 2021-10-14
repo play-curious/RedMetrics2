@@ -5,6 +5,7 @@ import NotificationSystem from "react-notification-system";
 import * as types from "rm2-typings";
 
 import axios from "axios";
+import querystring from "query-string";
 
 import CustomForm from "../nodes/CustomForm";
 
@@ -30,14 +31,12 @@ export default function EditGame() {
         onSubmit={(data: types.api.GameById["Put"]["Body"]) => {
           axios
             .put<types.api.GameById["Put"]["Response"]>("/game/" + id, data)
-            .then((response) => {
-              setRedirect("/game/show/" + id);
-            })
             .then(() => {
-              notificationSystem.current?.addNotification({
-                message: "Successful edited",
-                level: "success",
-              });
+              setRedirect(
+                `/game/show/${id}?${querystring.stringify({
+                  success: "Game successfully edited",
+                })}`
+              );
             })
             .catch((error) => {
               notificationSystem.current?.addNotification({

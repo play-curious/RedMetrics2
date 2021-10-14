@@ -10,6 +10,7 @@ import NotificationSystem from "react-notification-system";
 import Button from "../nodes/Button";
 import Wrapper from "../nodes/Wrapper";
 import Card from "../nodes/Card";
+import * as utils from "../utils";
 
 export default function GameSessionPage() {
   const { id } = Router.useParams<{ id: string }>();
@@ -57,6 +58,8 @@ export default function GameSessionPage() {
           level: "error",
         });
       });
+
+  utils.checkNotificationParams(notificationSystem).catch();
 
   return (
     <>
