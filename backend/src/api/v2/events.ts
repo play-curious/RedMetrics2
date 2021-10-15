@@ -5,13 +5,13 @@ import * as app from "../../app";
 import * as utils from "../../utils";
 import * as events from "../../controllers/events";
 import * as game from "../../controllers/game";
-import express from "express";
 
 app.v2
   .route("/session")
   .all(utils.checkGame())
   .post(
     expressAsyncHandler(async (req, res) => {
+      if (!utils.hasGame(req)) return;
       //  Creates a new session.
       //  A SessionMeta object should be sent in the body.
       //  The Location response header will contain the URL for the new session.
@@ -22,15 +22,7 @@ app.v2
         screen_size = req.body.screen_size,
         software = req.body.software,
         version = req.body.version,
-        custom_data = JSON.stringify(req.body.custom_data ?? {}),
-        game_id = req.body.game_id;
-
-      if (!game_id || !(await game.getGame(game_id))) {
-        return utils.sendError(res, {
-          code: 401,
-          description: "Invalid game uuid",
-        });
-      }
+        custom_data = JSON.stringify(req.body.custom_data ?? {});
 
       const session: types.api.Session["Post"]["Body"] = {
         external_id,
@@ -39,10 +31,12 @@ app.v2
         software,
         version,
         custom_data,
-        game_id,
       };
 
-      const id = await events.postGameSession(session);
+      const id = await events.postGameSession({
+        ...session,
+        game_id: req.game.id,
+      });
 
       res.json({ id, ...session });
     })
