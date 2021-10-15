@@ -75,6 +75,7 @@ export async function up(knex: Knex): Promise<void> {
       .notNullable()
       .primary()
       .defaultTo(knex.raw("uuid_generate_v4()"));
+    table.boolean("closed");
     table.string("platform");
     table.string("screen_size");
     table.string("software");
@@ -87,6 +88,8 @@ export async function up(knex: Knex): Promise<void> {
       .inTable("game")
       .onDelete("CASCADE")
       .notNullable();
+    table.string("updated_timestamp").notNullable();
+    table.string("created_timestamp").notNullable();
   });
 
   await knex.schema.createTable("event", (table) => {
@@ -107,9 +110,10 @@ export async function up(knex: Knex): Promise<void> {
 }
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.schema.dropTable("event");
-  await knex.schema.dropTable("session");
-  await knex.schema.dropTable("api_key");
-  await knex.schema.dropTable("game");
   await knex.schema.dropTable("account");
+  await knex.schema.dropTable("confirmation");
+  await knex.schema.dropTable("game");
+  await knex.schema.dropTable("api_key");
+  await knex.schema.dropTable("session");
+  await knex.schema.dropTable("event");
 }

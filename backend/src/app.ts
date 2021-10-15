@@ -109,4 +109,16 @@ cron.job("0 0 * * *", () => {
             ) / 1000
         ) + '7 days'::interval
   `);
+
+  database.raw(`
+    update session set closed = 1
+    where
+        not closed and
+        now() > to_timestamp(
+            to_number(
+                updated_timestamp,
+                '9999999999999999'
+            ) / 1000
+        ) + '1 hour'::interval
+  `);
 });
