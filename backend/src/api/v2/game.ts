@@ -6,6 +6,7 @@ import * as types from "rm2-typings";
 
 import * as game from "../../controllers/game";
 import * as auth from "../../controllers/auth";
+import * as event from "../../controllers/events";
 
 app.v2
   .route("/game")
@@ -140,3 +141,40 @@ app.v2
       res.sendStatus(200);
     })
   );
+
+app.v2.get(
+  "/game/:id/data",
+  utils.checkUser(
+    async (context) =>
+      (await game.getGame(context.params.id))?.publisher_id ===
+      context.account.id,
+    true
+  ),
+  expressAsyncHandler(async (req, res) => {
+    if (!utils.hasAccount(req)) return;
+
+    const targetGame = await game.getGame(req.params.id);
+
+    if (!targetGame)
+      return utils.sendError(res, {
+        code: 404,
+        description: "Game not found",
+      });
+
+    const sessions = await event.getGameSessions(targetGame.id);
+
+    const returned: types.api.GameById_Data["Get"]["Response"] = {
+      ...targetGame,
+      sessions: await Promise.all(
+        sessions.map(async (session) => {
+          return {
+            ...session,
+            events: await event.getEvents(session.id),
+          };
+        })
+      ),
+    };
+
+    res.json(returned);
+  })
+);

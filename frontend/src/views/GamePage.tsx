@@ -56,10 +56,16 @@ export default function GamePage() {
         <span className="float-right text-2xl"> {game?.author} </span>
       </div>
       <Wrapper>
-        <UUID _key={game?.id ?? ""} />
+        <UUID _key={id} />
       </Wrapper>
       <h2> Actions </h2>
       <Wrapper>
+        <Button
+          href={axios.defaults.baseURL + `game/${id}/data`}
+          download={(game?.name ?? "game") + ".json"}
+        >
+          Download data
+        </Button>
         <Button to={"/game/edit/" + id}> Edit </Button>
         <Button
           callback={() => {

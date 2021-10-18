@@ -36,6 +36,9 @@ app.v2
       const id = await events.postGameSession({
         ...session,
         game_id: req.game.id,
+        closed: false,
+        created_timestamp: String(Date.now()),
+        updated_timestamp: String(Date.now()),
       });
 
       res.json({ id, ...session });
@@ -75,6 +78,7 @@ app.v2
         screen_size: req.body.screen_size,
         platform: req.body.platform,
         external_id: req.body.external_id,
+        closed: req.body.closed,
       };
 
       const id = req.params.id;

@@ -3,16 +3,20 @@ import * as Dom from "react-router-dom";
 
 export default function Button({
   to,
+  href,
   submit,
   children,
+  download,
   clipboard,
   callback,
   customClassName,
 }: {
   to?: string;
+  href?: string;
   callback?: () => unknown;
   submit?: boolean;
   children: any;
+  download?: any;
   clipboard?: string;
   customClassName?: string;
 }) {
@@ -45,11 +49,22 @@ export default function Button({
     <Dom.Link
       className={className}
       to={to}
+      download={download}
       onClick={callback}
       data-clipboard-text={clipboard}
     >
       {children}
     </Dom.Link>
+  ) : href ? (
+    <a
+      href={href}
+      className={className}
+      download={download}
+      onClick={callback}
+      data-clipboard-text={clipboard}
+    >
+      {children}
+    </a>
   ) : (
     <div
       className={className}
