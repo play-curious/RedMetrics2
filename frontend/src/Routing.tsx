@@ -18,7 +18,7 @@ import Games from "./views/Games";
 import EditGame from "./views/EditGame";
 import CreateAccount from "./views/CreateAccount";
 import AccountPage from "./views/AccountPage";
-import GameSessionPage from "./views/GameSessionPage";
+import SessionPage from "./views/SessionPage";
 import ForgottenPassword from "./views/ForgottenPassword";
 import ConfirmEmail from "./views/ConfirmEmail";
 import APIKeys from "./views/APIKeys";
@@ -91,7 +91,7 @@ export default function Routing({
                 <EditGame />
               </Dom.Route>
               <Dom.Route exact path="/game/session/show/:id">
-                <GameSessionPage />
+                <SessionPage />
               </Dom.Route>
               <Dom.Route exact path="/api-keys">
                 <APIKeys />

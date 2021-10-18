@@ -4,7 +4,7 @@ import * as types from "rm2-typings";
 export const sessions = () => app.database<types.tables.Session>("session");
 export const events = () => app.database<types.tables.Event>("event");
 
-export function getGameSession(
+export function getSession(
   id: types.tables.Session["id"]
 ): Promise<types.tables.Session | undefined> {
   return sessions().where("id", id).first();

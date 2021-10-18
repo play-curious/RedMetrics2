@@ -12,7 +12,7 @@ import Wrapper from "../nodes/Wrapper";
 import Card from "../nodes/Card";
 import * as utils from "../utils";
 
-export default function GameSessionPage() {
+export default function SessionPage() {
   const { id } = Router.useParams<{ id: string }>();
 
   const notificationSystem = React.createRef<NotificationSystem.System>();
@@ -65,9 +65,20 @@ export default function GameSessionPage() {
     <>
       <NotificationSystem ref={notificationSystem} />
       <h1> {session?.id ?? "No id"} </h1>
-      <div className="flex">
+      <Wrapper>
+        <Button
+          href={axios.defaults.baseURL + `session/${id}/data`}
+          download={
+            (game?.name ?? "game") +
+            " " +
+            (session?.id ? session?.id : "session") +
+            ".json"
+          }
+        >
+          Download data
+        </Button>
         <Button to={"/game/show/" + game?.id}> Game </Button>
-      </div>
+      </Wrapper>
       <Wrapper>
         {events?.map((event) => {
           return (

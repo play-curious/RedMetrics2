@@ -56,7 +56,7 @@ app.v2
     expressAsyncHandler(async (req, res) => {
       // Retrieves the SessionMeta for the identified session
 
-      const session = await events.getGameSession(req.params.id ?? uuid.v4());
+      const session = await events.getSession(req.params.id ?? uuid.v4());
 
       if (!session)
         return utils.sendError(res, {
@@ -83,7 +83,7 @@ app.v2
 
       const id = req.params.id;
 
-      const updated = await events.getGameSession(id);
+      const updated = await events.getSession(id);
 
       if (!updated)
         return utils.sendError(res, {
@@ -96,6 +96,33 @@ app.v2
       res.sendStatus(200);
     })
   );
+
+app.v2.get(
+  "/session/:id/data",
+  utils.checkUser(async (context) => {
+    const session = await events.getSession(context.params.id);
+    if (!session) return false;
+
+    const sessionGame = await game.getGame(session.game_id);
+    if (!sessionGame) return false;
+
+    return sessionGame.publisher_id === context.account.id;
+  }),
+  expressAsyncHandler(async (req, res) => {
+    if (!utils.hasAccount(req)) return;
+
+    const session = (await events.getSession(
+      req.params.id
+    )) as types.tables.Session;
+
+    const fullSession: types.full.FullSession = {
+      ...session,
+      events: await events.getEvents(session.id),
+    };
+
+    res.json(fullSession);
+  })
+);
 
 app.v2.get(
   "/session/:id/events",

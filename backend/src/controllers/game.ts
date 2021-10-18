@@ -47,7 +47,7 @@ export async function gameHasSession(
 ) {
   const session =
     typeof session_id === "string"
-      ? await events.getGameSession(session_id)
+      ? await events.getSession(session_id)
       : session_id;
 
   if (!session) return false;
