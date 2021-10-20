@@ -11,44 +11,35 @@ const data = {
     admin: {
       email: "admin@example.com",
       password: "$2b$10$9yj3GlOCSngBxZ19LkKRf.k9eBDqVYGOnDa4zRrEW8YyJKXfyRqti",
-      role: "admin",
-    },
-    dev: {
-      email: "dev@example.com",
-      password: "$2b$10$9yj3GlOCSngBxZ19LkKRf.k9eBDqVYGOnDa4zRrEW8YyJKXfyRqti",
-      role: "dev",
+      is_admin: true,
     },
     user: {
       email: "user@example.com",
       password: "$2b$10$9yj3GlOCSngBxZ19LkKRf.k9eBDqVYGOnDa4zRrEW8YyJKXfyRqti",
-      role: "user",
+      is_admin: false,
     },
   },
-  games: {
-    tetris: {
+  games: [
+    {
       name: "Tetris",
       description: "Just the best retro game ever",
-    },
-  },
-  versions: {
-    tetris: {
-      beta: {
-        name: "Beta v0.5",
-      },
-    },
-  },
-  sessions: {
-    tetris: {
-      beta: {
-        external_id: "id",
-        platform: "Microsoft Windows",
-        software: "Firefox",
-        custom_data: {
-          test: true,
+      versions: [
+        {
+          name: "Beta v0.5",
+          sessions: [
+            {
+              external_id: "id",
+              platform: "Microsoft Windows",
+              software: "Firefox",
+              custom_data: {
+                test: true,
+              },
+            },
+          ],
         },
-      },
+      ],
     },
-  },
+  ],
 };
 
 beforeAll(async () => {
@@ -70,10 +61,8 @@ beforeAll(async () => {
   }
 
   // create games
-  for (const key in data.games) {
-    const game = data.games[key];
-
-    game.publisher_id = data.users.dev.id;
+  for (const game of data.games) {
+    game.publisher_id = data.users.user.id;
     game.id = await app
       .database("game")
       .insert(game)

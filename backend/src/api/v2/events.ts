@@ -208,7 +208,7 @@ app.v2
         });
 
       const event: types.api.Event["Post"]["Body"] = {
-        session_id: req.body.game_session_id,
+        session_id: req.body.session_id,
         coordinates: JSON.stringify(req.body.coordinates ?? {}),
         custom_data: JSON.stringify(req.body.custom_data ?? {}),
         section: req.body.section,
