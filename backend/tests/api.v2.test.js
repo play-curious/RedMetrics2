@@ -12,11 +12,15 @@ const data = {
       email: "admin@example.com",
       password: "$2b$10$9yj3GlOCSngBxZ19LkKRf.k9eBDqVYGOnDa4zRrEW8YyJKXfyRqti",
       is_admin: true,
+      confirmed: true,
+      created_timestamp: String(Date.now()),
     },
     user: {
       email: "user@example.com",
       password: "$2b$10$9yj3GlOCSngBxZ19LkKRf.k9eBDqVYGOnDa4zRrEW8YyJKXfyRqti",
       is_admin: false,
+      confirmed: true,
+      created_timestamp: String(Date.now()),
     },
   },
   games: [
@@ -65,7 +69,11 @@ beforeAll(async () => {
     game.publisher_id = data.users.user.id;
     game.id = await app
       .database("game")
-      .insert(game)
+      .insert({
+        name: game.name,
+        description: game.description,
+        publisher_id: game.publisher_id,
+      })
       .returning("id")
       .then((result) => result[0]);
   }
@@ -217,7 +225,7 @@ describe("🔒 Auth", () => {
 
     beforeAll(async () => {
       for (const key in data.users) {
-        data.users[key].apiKey = await new Promise((resolve, reject) => {
+        data.users[key].token = await new Promise((resolve, reject) => {
           request(app.server)
             .post(route)
             .send({
@@ -227,18 +235,18 @@ describe("🔒 Auth", () => {
             .expect(200)
             .end((err, res) => {
               if (err) return reject(err);
-              resolve(res.body.apiKey);
+              resolve(res.body.token);
             });
         });
       }
     });
 
     describe("/account/:id", () => {
-      const route = (id, apiKey) =>
-        `/v2/account/${id}${apiKey ? "?apikey=" + apiKey : ""}`;
+      const route = (id, token) =>
+        `/v2/account/${id}${token ? "?token=" + token : ""}`;
 
       describe("GET", () => {
-        test("missing apikey", (done) => {
+        test("missing token", (done) => {
           request(app.server)
             .get(route(data.users.user.id))
             .expect(401)
@@ -246,36 +254,37 @@ describe("🔒 Auth", () => {
         });
 
         test("account not found", (done) => {
+          console.log(data.users.admin.token);
           request(app.server)
-            .get(route(uuid.v4(), data.users.admin.apiKey))
+            .get(route(uuid.v4(), data.users.admin.token))
             .expect(404)
             .end(done);
         });
 
         test("admin only (but it's own account)", (done) => {
           request(app.server)
-            .get(route(data.users.user.id, data.users.user.apiKey))
+            .get(route(data.users.user.id, data.users.user.token))
             .expect(200)
             .end(done);
         });
 
         test("admin only", (done) => {
           request(app.server)
-            .get(route(data.users.dev.id, data.users.user.apiKey))
+            .get(route(data.users.admin.id, data.users.user.token))
             .expect(401)
             .end(done);
         });
 
         test("success", (done) => {
           request(app.server)
-            .get(route(data.users.user.id, data.users.admin.apiKey))
+            .get(route(data.users.user.id, data.users.admin.token))
             .expect(200)
             .end(done);
         });
       });
 
       describe("PUT", () => {
-        test("missing apikey", (done) => {
+        test("missing token", (done) => {
           request(app.server)
             .put(route(data.users.user.id))
             .expect(401)
@@ -284,7 +293,7 @@ describe("🔒 Auth", () => {
 
         test("account not found", (done) => {
           request(app.server)
-            .put(route(uuid.v4(), data.users.admin.apiKey))
+            .put(route(uuid.v4(), data.users.admin.token))
             .send({
               email: "email@user.user",
             })
@@ -292,19 +301,20 @@ describe("🔒 Auth", () => {
             .end(done);
         });
 
-        test("admin only (but it's own account)", (done) => {
+        test("owner only", (done) => {
           request(app.server)
-            .put(route(data.users.user.id, data.users.user.apiKey))
+            .put(route(data.users.admin.id, data.users.user.token))
             .send({
               email: "email@user.user",
+              old_password: data.cleanPassword,
             })
-            .expect(200)
+            .expect(401)
             .end(done);
         });
 
         test("admin only", (done) => {
           request(app.server)
-            .put(route(data.users.dev.id, data.users.user.apiKey))
+            .put(route(data.users.admin.id, data.users.user.token))
             .send({
               email: "email@user.user",
             })
@@ -314,7 +324,7 @@ describe("🔒 Auth", () => {
 
         test("invalid email", (done) => {
           request(app.server)
-            .put(route(data.users.user.id, data.users.admin.apiKey))
+            .put(route(data.users.user.id, data.users.admin.token))
             .send({
               email: "test",
             })
@@ -324,11 +334,10 @@ describe("🔒 Auth", () => {
 
         test("success", (done) => {
           request(app.server)
-            .put(route(data.users.user.id, data.users.admin.apiKey))
+            .put(route(data.users.user.id, data.users.admin.token))
             .send({
               email: "email@uer.user",
-              password: "password",
-              role: "dev",
+              is_admin: false,
             })
             .expect(200)
             .end(done);

@@ -150,7 +150,11 @@ export function checkUser(
   if (condition === "admin") condition = () => false;
 
   return expressAsyncHandler(async (req, res, next) => {
-    const token = req.cookies[constants.COOKIE_NAME];
+    const token =
+      req.cookies[constants.COOKIE_NAME] ??
+      req.query.token ??
+      req.body.token ??
+      req.params.token;
 
     if (!token)
       return sendError(res, {

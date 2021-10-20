@@ -2,6 +2,7 @@
 // import { buildSchema } from "graphql";
 import relative from "dayjs/plugin/relativeTime";
 import cookieParser from "cookie-parser";
+import querystring from "querystring";
 import bodyParser from "body-parser";
 import express from "express";
 import dotenv from "dotenv";
@@ -18,7 +19,7 @@ dayjs.extend(relative);
 
 // Global
 
-dotenv.config(); // { path: path.join(process.cwd(), "..", ".env") }
+dotenv.config({ path: path.join(process.cwd(), "..", ".env") });
 
 // Database
 
