@@ -18,7 +18,7 @@ dayjs.extend(relative);
 
 // Global
 
-dotenv.config();
+dotenv.config(); // { path: path.join(process.cwd(), "..", ".env") }
 
 // Database
 
@@ -29,11 +29,11 @@ export const database = knex({
     max: +(process.env.PG_MAX_POOL ?? 10),
   },
   connection: {
-    host: process.env.PGHOST,
-    user: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-    database: process.env.PGDATABASE,
-    port: +(process.env.PGPORT ?? 9090),
+    host: process.env.PG_HOST,
+    user: process.env.PG_USER,
+    password: process.env.PG_PASSWORD,
+    database: process.env.PG_DATABASE,
+    port: +(process.env.PG_PORT ?? 9090),
   },
 });
 

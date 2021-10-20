@@ -21,7 +21,7 @@ services:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     env_file: .env
     environment:
-      PGHOST: db
+      PG_HOST: db
     volumes:
       - ./backend/src:/usr/src/app/src:ro
       - ./backend/tests:/usr/src/app/tests:ro
@@ -32,11 +32,11 @@ services:
     image: postgres
     restart: always
     ports:
-      - "5432:5432"
+      - "${PG_PORT}:${PG_PORT}"
     environment:
-      POSTGRES_USER: "${PGUSER}"
-      POSTGRES_DB: "${PGDATABASE}"
-      POSTGRES_PASSWORD: "${PGPASSWORD}"
+      POSTGRES_USER: "${PG_USER}"
+      POSTGRES_DB: "${PG_DATABASE}"
+      POSTGRES_PASSWORD: "${PG_PASSWORD}"
 
   adminer:
     image: adminer
@@ -44,4 +44,4 @@ services:
     depends_on:
       - db
     ports:
-      - 9091:8080
+      - "9091:8080"
