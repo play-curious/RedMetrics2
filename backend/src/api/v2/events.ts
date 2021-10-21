@@ -48,23 +48,31 @@ app.v2
 app.v2
   .route("/session/:id")
   .all(
-    utils.checkGame((context) =>
-      game.gameHasSession(context.game.id, context.params.id)
-    )
-  )
-  .get(
-    expressAsyncHandler(async (req, res) => {
-      // Retrieves the SessionMeta for the identified session
+    utils.checkGame(),
+    expressAsyncHandler(async (req, res, next) => {
+      if (!utils.hasGame(req)) return;
 
       const session = await events.getSession(req.params.id ?? uuid.v4());
 
       if (!session)
         return utils.sendError(res, {
           code: 404,
-          description: "Unknown session uuid",
+          description: "Session not found",
         });
 
-      res.json(session);
+      if (!(await game.gameHasSession(req.game.id, session)))
+        return utils.sendError(res, {
+          code: 401,
+          description: `This API key deny access to this session.`,
+        });
+
+      next();
+    })
+  )
+  .get(
+    expressAsyncHandler(async (req, res) => {
+      // Retrieves the SessionMeta for the identified session
+      res.json(await events.getSession(req.params.id));
     })
   )
   .put(
@@ -81,17 +89,7 @@ app.v2
         closed: req.body.closed,
       };
 
-      const id = req.params.id;
-
-      const updated = await events.getSession(id);
-
-      if (!updated)
-        return utils.sendError(res, {
-          code: 404,
-          description: "Unknown session uuid",
-        });
-
-      await events.updateGameSession(id, values);
+      await events.updateGameSession(req.params.id, values);
 
       res.sendStatus(200);
     })

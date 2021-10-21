@@ -459,7 +459,7 @@ describe("🔒 Auth", () => {
           test("missing session", (done) => {
             request(app.server)
               .get(route(uuid.v4(), data.api_key.key))
-              .expect(401)
+              .expect(404)
               .end(done);
           });
 
@@ -496,7 +496,7 @@ describe("🔒 Auth", () => {
                   test: false,
                 },
               })
-              .expect(401)
+              .expect(404)
               .end(done);
           });
 
