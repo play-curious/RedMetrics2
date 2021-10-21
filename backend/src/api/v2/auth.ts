@@ -292,56 +292,40 @@ app.v2.get(
   })
 );
 
-app.v2.post(
-  "/key",
-  utils.checkUser(undefined, true),
-  expressAsyncHandler(async (req, res) => {
-    if (!utils.hasAccount(req)) return;
-
-    if (!req.body.game_id)
-      return utils.sendError(res, {
-        code: 400,
-        description: "Missing 'game_id' property in body",
-      });
-
-    const currentGame = await game.getGame(req.body.game_id);
-
-    if (!currentGame)
-      return utils.sendError(res, {
-        code: 404,
-        description: "Game not found",
-      });
-
-    const apiKey: types.tables.ApiKey = {
-      description: req.body.description,
-      start_at: new Date().toISOString(),
-      account_id: req.account.id,
-      key: uuid.v4(),
-      game_id: req.body.game_id,
-    };
-
-    await auth.apiKeys().insert(apiKey);
-
-    res.json(apiKey);
-  })
-);
-
-app.v2.delete(
-  "/key/:key",
-  utils.checkUser(async (context) => {
-    const apiKey = await auth.getApiKey(context.params.key);
-    return apiKey?.account_id === context.account.id;
-  }, true),
-  expressAsyncHandler(async (req, res) => {
-    if (!utils.hasAccount(req)) return;
-    await auth.removeApiKey(req.params.key);
-    res.sendStatus(200);
-  })
-);
-
 app.v2
-  .route("/keys")
+  .route("/key")
   .all(utils.checkUser(undefined, true))
+  .post(
+    expressAsyncHandler(async (req, res) => {
+      if (!utils.hasAccount(req)) return;
+
+      if (!req.body.game_id)
+        return utils.sendError(res, {
+          code: 400,
+          description: "Missing 'game_id' property in body",
+        });
+
+      const currentGame = await game.getGame(req.body.game_id);
+
+      if (!currentGame)
+        return utils.sendError(res, {
+          code: 404,
+          description: "Game not found",
+        });
+
+      const apiKey: types.tables.ApiKey = {
+        description: req.body.description,
+        start_at: new Date().toISOString(),
+        account_id: req.account.id,
+        key: uuid.v4(),
+        game_id: req.body.game_id,
+      };
+
+      await auth.apiKeys().insert(apiKey);
+
+      res.json(apiKey);
+    })
+  )
   .get(
     expressAsyncHandler(async (req, res) => {
       if (!utils.hasAccount(req)) return;
@@ -355,6 +339,19 @@ app.v2
       res.sendStatus(200);
     })
   );
+
+app.v2.delete(
+  "/key/:key",
+  utils.checkUser(async (context) => {
+    const apiKey = await auth.getApiKey(context.params.key);
+    return apiKey?.account_id === context.account.id;
+  }, true),
+  expressAsyncHandler(async (req, res) => {
+    if (!utils.hasAccount(req)) return;
+    await auth.removeApiKey(req.params.key);
+    res.sendStatus(200);
+  })
+);
 
 app.v2
   .route("/lost-password")

@@ -22,7 +22,7 @@ export default function APIKeys() {
 
   const fetchApiKeys = () => {
     axios
-      .get<types.api.Keys["Get"]["Response"]>("/keys")
+      .get<types.api.Key["Get"]["Response"]>("/keys")
       .then(({ data }) => {
         setApiKeys(data);
       })
