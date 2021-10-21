@@ -201,7 +201,7 @@ app.v2
       //  If no session is given, a new session will be created and returned.
       //  Since the progress object cannot be addressed by itself, no Location header will be returned.
 
-      if (!req.body.game_session_id)
+      if (!req.body.session_id)
         return utils.sendError(res, {
           code: 401,
           description: "Missing game session id",

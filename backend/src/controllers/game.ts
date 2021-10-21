@@ -38,7 +38,11 @@ export function updateGame(
   id: types.tables.Game["id"],
   values: types.utils.Update<types.tables.Game>
 ): Promise<string> {
-  return games().where("id", id).update(values).returning("id");
+  return games()
+    .where("id", id)
+    .update(values)
+    .returning("id")
+    .then((values) => values[0]);
 }
 
 export async function gameHasSession(

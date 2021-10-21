@@ -3,47 +3,42 @@ const request = require("supertest");
 const uuid = require("uuid");
 const app = require("../dist/app");
 
-require("dotenv/config");
-
 const data = {
   cleanPassword: "13e17ea1ee037",
-  users: {
-    admin: {
-      email: "admin@example.com",
-      password: "$2b$10$9yj3GlOCSngBxZ19LkKRf.k9eBDqVYGOnDa4zRrEW8YyJKXfyRqti",
-      is_admin: true,
-      confirmed: true,
-      created_timestamp: String(Date.now()),
-    },
-    user: {
-      email: "user@example.com",
-      password: "$2b$10$9yj3GlOCSngBxZ19LkKRf.k9eBDqVYGOnDa4zRrEW8YyJKXfyRqti",
-      is_admin: false,
-      confirmed: true,
-      created_timestamp: String(Date.now()),
-    },
+  admin: {
+    email: "admin@example.com",
+    password: "$2b$10$9yj3GlOCSngBxZ19LkKRf.k9eBDqVYGOnDa4zRrEW8YyJKXfyRqti",
+    is_admin: true,
+    confirmed: true,
+    created_timestamp: String(Date.now()),
   },
-  games: [
-    {
-      name: "Tetris",
-      description: "Just the best retro game ever",
-      versions: [
-        {
-          name: "Beta v0.5",
-          sessions: [
-            {
-              external_id: "id",
-              platform: "Microsoft Windows",
-              software: "Firefox",
-              custom_data: {
-                test: true,
-              },
-            },
-          ],
-        },
-      ],
-    },
-  ],
+  user: {
+    email: "user@example.com",
+    password: "$2b$10$9yj3GlOCSngBxZ19LkKRf.k9eBDqVYGOnDa4zRrEW8YyJKXfyRqti",
+    is_admin: false,
+    confirmed: true,
+    created_timestamp: String(Date.now()),
+  },
+  game: {
+    name: "Tetris",
+    description: "Just the best retro game ever",
+  },
+  session: {
+    version: "Beta v0.5",
+    external_id: "1234",
+    platform: "Microsoft Windows",
+    software: "Firefox",
+    custom_data: JSON.stringify({
+      test: true,
+    }),
+    updated_timestamp: String(Date.now()),
+    created_timestamp: String(Date.now()),
+  },
+  api_key: {
+    key: uuid.v4(),
+    start_at: new Date(),
+    description: "Basic connexion key",
+  },
 };
 
 beforeAll(async () => {
@@ -54,8 +49,8 @@ beforeAll(async () => {
   await app.loadRoutes(false);
 
   // create users
-  for (const key in data.users) {
-    const user = data.users[key];
+  for (const key of ["user", "admin"]) {
+    const user = data[key];
 
     user.id = await app
       .database("account")
@@ -64,47 +59,26 @@ beforeAll(async () => {
       .then((result) => result[0]);
   }
 
-  // create games
-  for (const game of data.games) {
-    game.publisher_id = data.users.user.id;
-    game.id = await app
-      .database("game")
-      .insert({
-        name: game.name,
-        description: game.description,
-        publisher_id: game.publisher_id,
-      })
-      .returning("id")
-      .then((result) => result[0]);
-  }
+  // create game
+  data.game.publisher_id = data.user.id;
+  data.game.id = await app
+    .database("game")
+    .insert(data.game)
+    .returning("id")
+    .then((result) => result[0]);
 
-  // create versions
-  for (const gameKey in data.versions) {
-    for (const key in data.versions[gameKey]) {
-      const version = data.versions[gameKey][key];
+  // create session
+  data.session.game_id = data.game.id;
+  data.session.id = await app
+    .database("session")
+    .insert(data.session)
+    .returning("id")
+    .then((result) => result[0]);
 
-      version.game_id = data.games[gameKey].id;
-      version.id = await app
-        .database("game_version")
-        .insert(version)
-        .returning("id")
-        .then((result) => result[0]);
-    }
-  }
-
-  // create sessions
-  for (const gameKey in data.sessions) {
-    for (const versionKey in data.sessions[gameKey]) {
-      const session = data.sessions[gameKey][versionKey];
-
-      session.game_version_id = data.versions[gameKey][versionKey].id;
-      session.id = await app
-        .database("game_session")
-        .insert(session)
-        .returning("id")
-        .then((result) => result[0]);
-    }
-  }
+  // create API key
+  data.api_key.game_id = data.game.id;
+  data.api_key.account_id = data.user.id;
+  await app.database("api_key").insert(data.api_key);
 });
 
 afterAll(async () => {
@@ -124,7 +98,7 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            ...data.users.user,
+            ...data.user,
             email: null,
           })
           .expect(401)
@@ -135,7 +109,7 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            ...data.users.user,
+            ...data.user,
             password: null,
           })
           .expect(401)
@@ -146,7 +120,7 @@ describe("🔒 Auth", () => {
         request(app.server)
           .post(route)
           .send({
-            ...data.users.user,
+            ...data.user,
             email: "invalid",
           })
           .expect(401)
@@ -154,11 +128,7 @@ describe("🔒 Auth", () => {
       });
 
       test("register is already registered user", (done) => {
-        request(app.server)
-          .post(route)
-          .send(data.users.user)
-          .expect(401)
-          .end(done);
+        request(app.server).post(route).send(data.user).expect(401).end(done);
       });
     });
   });
@@ -212,7 +182,7 @@ describe("🔒 Auth", () => {
       request(app.server)
         .post(route)
         .send({
-          email: data.users.user.email,
+          email: data.user.email,
           password: "incorrect",
         })
         .expect(401)
@@ -224,12 +194,12 @@ describe("🔒 Auth", () => {
     const route = "/v2/login";
 
     beforeAll(async () => {
-      for (const key in data.users) {
-        data.users[key].token = await new Promise((resolve, reject) => {
+      for (const key of ["user", "admin"]) {
+        data[key].token = await new Promise((resolve, reject) => {
           request(app.server)
             .post(route)
             .send({
-              email: data.users[key].email,
+              email: data[key].email,
               password: data.cleanPassword,
             })
             .expect(200)
@@ -247,37 +217,33 @@ describe("🔒 Auth", () => {
 
       describe("GET", () => {
         test("missing token", (done) => {
-          request(app.server)
-            .get(route(data.users.user.id))
-            .expect(401)
-            .end(done);
+          request(app.server).get(route(data.user.id)).expect(401).end(done);
         });
 
         test("account not found", (done) => {
-          console.log(data.users.admin.token);
           request(app.server)
-            .get(route(uuid.v4(), data.users.admin.token))
+            .get(route(uuid.v4(), data.admin.token))
             .expect(404)
             .end(done);
         });
 
         test("admin only (but it's own account)", (done) => {
           request(app.server)
-            .get(route(data.users.user.id, data.users.user.token))
+            .get(route(data.user.id, data.user.token))
             .expect(200)
             .end(done);
         });
 
         test("admin only", (done) => {
           request(app.server)
-            .get(route(data.users.admin.id, data.users.user.token))
+            .get(route(data.admin.id, data.user.token))
             .expect(401)
             .end(done);
         });
 
         test("success", (done) => {
           request(app.server)
-            .get(route(data.users.user.id, data.users.admin.token))
+            .get(route(data.user.id, data.admin.token))
             .expect(200)
             .end(done);
         });
@@ -285,15 +251,12 @@ describe("🔒 Auth", () => {
 
       describe("PUT", () => {
         test("missing token", (done) => {
-          request(app.server)
-            .put(route(data.users.user.id))
-            .expect(401)
-            .end(done);
+          request(app.server).put(route(data.user.id)).expect(401).end(done);
         });
 
         test("account not found", (done) => {
           request(app.server)
-            .put(route(uuid.v4(), data.users.admin.token))
+            .put(route(uuid.v4(), data.admin.token))
             .send({
               email: "email@user.user",
             })
@@ -303,7 +266,7 @@ describe("🔒 Auth", () => {
 
         test("owner only", (done) => {
           request(app.server)
-            .put(route(data.users.admin.id, data.users.user.token))
+            .put(route(data.admin.id, data.user.token))
             .send({
               email: "email@user.user",
               old_password: data.cleanPassword,
@@ -314,7 +277,7 @@ describe("🔒 Auth", () => {
 
         test("admin only", (done) => {
           request(app.server)
-            .put(route(data.users.admin.id, data.users.user.token))
+            .put(route(data.admin.id, data.user.token))
             .send({
               email: "email@user.user",
             })
@@ -324,7 +287,7 @@ describe("🔒 Auth", () => {
 
         test("invalid email", (done) => {
           request(app.server)
-            .put(route(data.users.user.id, data.users.admin.token))
+            .put(route(data.user.id, data.admin.token))
             .send({
               email: "test",
             })
@@ -334,7 +297,7 @@ describe("🔒 Auth", () => {
 
         test("success", (done) => {
           request(app.server)
-            .put(route(data.users.user.id, data.users.admin.token))
+            .put(route(data.user.id, data.admin.token))
             .send({
               email: "email@uer.user",
               is_admin: false,
@@ -347,8 +310,7 @@ describe("🔒 Auth", () => {
 
     describe("🎮 Games", () => {
       describe("/game", () => {
-        const route = (apikey) =>
-          "/v2/game" + (apikey ? "?apikey=" + apikey : "");
+        const route = (token) => "/v2/game" + (token ? "?token=" + token : "");
 
         describe("GET", () => {
           test("missing apikey", (done) => {
@@ -357,14 +319,14 @@ describe("🔒 Auth", () => {
 
           test("success", (done) => {
             request(app.server)
-              .get(route(data.users.admin.apiKey))
+              .get(route(data.admin.token))
               .expect(200)
               .end(done);
           });
         });
 
         describe("POST", () => {
-          test("missing apikey", (done) => {
+          test("missing token", (done) => {
             request(app.server)
               .post(route())
               .send({
@@ -376,18 +338,18 @@ describe("🔒 Auth", () => {
 
           test("missing name", (done) => {
             request(app.server)
-              .post(route(data.users.admin.apiKey))
+              .post(route(data.admin.token))
               .expect(301)
               .end(done);
           });
 
           test("success", (done) => {
             request(app.server)
-              .post(route(data.users.admin.apiKey))
-              .send(data.games.tetris)
+              .post(route(data.admin.token))
+              .send(data.game)
               .expect(200)
               .end((err, res) => {
-                data.games.tetris.id = res.body.game_id;
+                data.game.id = res.body.id;
                 done(err);
               });
           });
@@ -395,36 +357,33 @@ describe("🔒 Auth", () => {
       });
 
       describe("/game/:id", () => {
-        const route = (id, apikey) =>
-          "/v2/game/" + id + (apikey ? "?apikey=" + apikey : "");
+        const route = (id, token) =>
+          "/v2/game/" + id + (token ? "?token=" + token : "");
 
         describe("GET", () => {
           test("missing apikey", (done) => {
-            request(app.server)
-              .get(route(data.games.tetris.id))
-              .expect(401)
-              .end(done);
+            request(app.server).get(route(data.game.id)).expect(401).end(done);
           });
 
           test("game not found", (done) => {
             request(app.server)
-              .get(route(uuid.v4(), data.users.admin.apiKey))
+              .get(route(uuid.v4(), data.admin.token))
               .expect(404)
               .end(done);
           });
 
           test("success", (done) => {
             request(app.server)
-              .get(route(data.games.tetris.id, data.users.admin.apiKey))
+              .get(route(data.game.id, data.admin.token))
               .expect(200)
               .end(done);
           });
         });
 
         describe("PUT", () => {
-          test("missing apikey", (done) => {
+          test("missing token", (done) => {
             request(app.server)
-              .put(route(data.games.tetris.id))
+              .put(route(data.game.id))
               .send({
                 name: "New Name",
                 description: "New Description",
@@ -435,7 +394,7 @@ describe("🔒 Auth", () => {
 
           test("game not found", (done) => {
             request(app.server)
-              .put(route(uuid.v4(), data.users.admin.apiKey))
+              .put(route(uuid.v4(), data.admin.token))
               .send({
                 name: "New Name",
                 description: "New Description",
@@ -446,120 +405,7 @@ describe("🔒 Auth", () => {
 
           test("success", (done) => {
             request(app.server)
-              .put(route(data.games.tetris.id, data.users.admin.apiKey))
-              .send({
-                name: "New Name",
-                description: "New Description",
-              })
-              .expect(200)
-              .end(done);
-          });
-        });
-      });
-
-      describe("/game/:id/version", () => {
-        const route = (id, apikey) =>
-          `/v2/game/${id}/version${apikey ? "?apikey=" + apikey : ""}`;
-
-        describe("GET", () => {
-          test("missing apikey", (done) => {
-            request(app.server)
-              .get(route(data.games.tetris.id))
-              .expect(401)
-              .end(done);
-          });
-
-          test("game not found", (done) => {
-            request(app.server)
-              .get(route(uuid.v4(), data.users.admin.apiKey))
-              .expect(404)
-              .end(done);
-          });
-
-          test("success", (done) => {
-            request(app.server)
-              .get(route(data.games.tetris.id, data.users.admin.apiKey))
-              .expect(200)
-              .end(done);
-          });
-        });
-
-        describe("POST", () => {
-          test("missing apikey", (done) => {
-            request(app.server)
-              .post(route(data.games.tetris.id))
-              .send({
-                name: "Version 1",
-              })
-              .expect(401)
-              .end(done);
-          });
-
-          test("game not found", (done) => {
-            request(app.server)
-              .post(route(uuid.v4(), data.users.admin.apiKey))
-              .send({
-                name: "Version 1",
-              })
-              .expect(404)
-              .end(done);
-          });
-
-          test("missing name", (done) => {
-            request(app.server)
-              .post(route(data.games.tetris.id, data.users.admin.apiKey))
-              .expect(400)
-              .end(done);
-          });
-        });
-      });
-
-      describe("/version/:id", () => {
-        const route = (id, apikey) =>
-          "/v2/version/" + id + (apikey ? "?apikey=" + apikey : "");
-
-        describe("GET", () => {
-          test("missing apikey", (done) => {
-            request(app.server)
-              .get(route(data.versions.tetris.beta.id))
-              .expect(401)
-              .end(done);
-          });
-
-          test("version not found", (done) => {
-            request(app.server)
-              .get(route(uuid.v4(), data.users.admin.apiKey))
-              .expect(404)
-              .end(done);
-          });
-        });
-
-        describe("PUT", () => {
-          test("missing apikey", (done) => {
-            request(app.server)
-              .put(route(data.versions.tetris.beta.id))
-              .send({
-                name: "New Name",
-                description: "New Description",
-              })
-              .expect(401)
-              .end(done);
-          });
-
-          test("version not found", (done) => {
-            request(app.server)
-              .put(route(uuid.v4(), data.users.admin.apiKey))
-              .send({
-                name: "New Name",
-                description: "New Description",
-              })
-              .expect(404)
-              .end(done);
-          });
-
-          test("success", (done) => {
-            request(app.server)
-              .put(route(data.versions.tetris.beta.id, data.users.admin.apiKey))
+              .put(route(data.game.id, data.admin.token))
               .send({
                 name: "New Name",
                 description: "New Description",
@@ -573,18 +419,17 @@ describe("🔒 Auth", () => {
 
     describe("🔔 Events", () => {
       describe("/session", () => {
-        const route = (apikey) =>
-          "/v2/game-session" + (apikey ? "?apikey=" + apikey : "");
+        const route = (token) =>
+          "/v2/session" + (token ? "?token=" + token : "");
 
         describe("POST", () => {
-          test("missing apikey", (done) => {
+          test("missing token", (done) => {
             request(app.server).post(route()).expect(401).end(done);
           });
 
-          // TODO: currently returns a 400 and not 401
           test("missing game version", (done) => {
             request(app.server)
-              .post(route(data.users.user.apiKey))
+              .post(route(data.user.token))
               .send({
                 external_id: "id",
                 platform: "Microsoft Windows",
@@ -600,36 +445,36 @@ describe("🔒 Auth", () => {
       });
 
       describe("/session/:id", () => {
-        const route = (id, apikey) =>
-          `/v2/game-session/${id}${apikey ? "?apikey=" + apikey : ""}`;
+        const route = (id, api_key) =>
+          `/v2/session/${id}${api_key ? "?apikey=" + api_key : ""}`;
 
         describe("GET", () => {
-          test("missing apikey", (done) => {
+          test("missing API key", (done) => {
             request(app.server)
-              .get(route(data.sessions.tetris.beta.id))
+              .get(route(data.session.id))
               .expect(401)
               .end(done);
           });
 
           test("missing session", (done) => {
             request(app.server)
-              .get(route(uuid.v4(), data.users.admin.apiKey))
-              .expect(404)
+              .get(route(uuid.v4(), data.api_key.key))
+              .expect(401)
               .end(done);
           });
 
           test("success", (done) => {
             request(app.server)
-              .get(route(data.sessions.tetris.beta.id, data.users.admin.apiKey))
+              .get(route(data.session.id, data.api_key.key))
               .expect(200)
               .end(done);
           });
         });
 
         describe("PUT", () => {
-          test("missing apikey", (done) => {
+          test("missing API key", (done) => {
             request(app.server)
-              .put(route(data.sessions.tetris.beta.id))
+              .put(route(data.session.id))
               .send({
                 platform: "Mac OSX",
                 software: "Safari",
@@ -643,7 +488,7 @@ describe("🔒 Auth", () => {
 
           test("missing session", (done) => {
             request(app.server)
-              .put(route(uuid.v4(), data.users.admin.apiKey))
+              .put(route(uuid.v4(), data.api_key.key))
               .send({
                 platform: "Mac OSX",
                 software: "Safari",
@@ -651,13 +496,13 @@ describe("🔒 Auth", () => {
                   test: false,
                 },
               })
-              .expect(404)
+              .expect(401)
               .end(done);
           });
 
           test("success", (done) => {
             request(app.server)
-              .put(route(data.sessions.tetris.beta.id, data.users.admin.apiKey))
+              .put(route(data.session.id, data.api_key.key))
               .send({
                 platform: "Mac OSX",
                 software: "Safari",
@@ -672,11 +517,11 @@ describe("🔒 Auth", () => {
       });
 
       describe("/event", () => {
-        const route = (apikey) =>
-          "/v2/event" + (apikey ? "?apikey=" + apikey : "");
+        const route = (api_key) =>
+          "/v2/event" + (api_key ? "?apikey=" + api_key : "");
 
         describe("GET", () => {
-          test("missing apikey", (done) => {
+          test("missing API key", (done) => {
             request(app.server)
               .get(route())
               .send({
@@ -688,7 +533,7 @@ describe("🔒 Auth", () => {
 
           test("success", (done) => {
             request(app.server)
-              .get(route(data.users.admin.apiKey))
+              .get(route(data.api_key.key))
               .send({
                 // filtres
               })
@@ -698,12 +543,11 @@ describe("🔒 Auth", () => {
         });
 
         describe("POST", () => {
-          test("missing apikey", (done) => {
+          test("missing API key", (done) => {
             request(app.server)
               .post(route())
               .send({
-                game_session_id: data.sessions.tetris.beta.id,
-                game_version_id: data.versions.tetris.beta.id,
+                game_session_id: data.session.id,
               })
               .expect(401)
               .end(done);
@@ -711,20 +555,17 @@ describe("🔒 Auth", () => {
 
           test("missing session", (done) => {
             request(app.server)
-              .post(route())
-              .send({
-                game_version_id: data.versions.tetris.beta.id,
-              })
+              .post(route(data.api_key.key))
+              .send()
               .expect(401)
               .end(done);
           });
 
           test("success", (done) => {
             request(app.server)
-              .post(route(data.users.admin.apiKey))
+              .post(route(data.api_key.key))
               .send({
-                game_version_id: data.versions.tetris.beta.id,
-                game_session_id: data.sessions.tetris.beta.id,
+                session_id: data.session.id,
               })
               .expect(200)
               .end(done);
