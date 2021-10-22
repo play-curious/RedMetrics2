@@ -205,29 +205,6 @@ export function checkUser(
   });
 }
 
-export function checkGameOrUser(
-  userCondition:
-    | "admin"
-    | ((context: {
-        account: types.tables.Account;
-        params: any;
-        body: any;
-      }) => boolean | Promise<boolean>)
-) {
-  return expressAsyncHandler(async (req, res, next) => {
-    const key =
-      req.query.apikey ??
-      req.query.apiKey ??
-      req.body.apikey ??
-      req.body.apiKey ??
-      req.params.apikey ??
-      req.params.apiKey;
-
-    if (key) return checkGame()(req, res, next);
-    else return checkUser(userCondition)(req, res, next);
-  });
-}
-
 export function sendError(res: express.Response, error: types.api.Error) {
   console.error("Error:", error);
   return res.status(error.code).json(error);

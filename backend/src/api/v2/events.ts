@@ -147,11 +147,7 @@ app.v2.get(
 app.v2
   .route("/event")
   .get(
-    utils.checkGameOrUser(
-      async (context) =>
-        (await game.getGame(context.params.id))?.publisher_id ===
-        context.account.id
-    ),
+    utils.checkGame("own"),
     expressAsyncHandler(async (req, res) => {
       //  Lists Event objects (see section on Paging below).
       //  Admin and dev accounts can see the game events they have access to.
@@ -166,6 +162,15 @@ app.v2
       //  - before - Date
       //  - afterUserTime - Date
       //  - beforeUserTime - Date
+
+      if (!utils.hasGame(req) || !utils.hasAccount(req)) return;
+
+      if (req.game.id !== req.body.game_id)
+        return utils.sendError(res, {
+          code: 400,
+          description:
+            "You request events of a game that's not linked with your API key!",
+        });
 
       let query = events.events();
 
