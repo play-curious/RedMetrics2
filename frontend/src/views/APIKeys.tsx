@@ -108,7 +108,7 @@ export default function APIKeys() {
                   </div>
                 </div>
               );
-            }) || "No apiKey"}
+            }) || "No API key found"}
           </div>
         </div>
       ) : (

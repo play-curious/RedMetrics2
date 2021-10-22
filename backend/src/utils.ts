@@ -80,7 +80,7 @@ export function checkGame(
     if (!key)
       return sendError(res, {
         code: 401,
-        description: "Missing apiKey",
+        description: "Missing API key",
       });
 
     if (typeof key !== "string" || !uuid.validate(key))
@@ -94,7 +94,7 @@ export function checkGame(
     if (!apiKey)
       return sendError(res, {
         code: 404,
-        description: "ApiKey not found",
+        description: "API key not found",
       });
 
     const currentGame = await game.getGame(apiKey.game_id);
