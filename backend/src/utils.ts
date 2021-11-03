@@ -53,20 +53,18 @@ export async function forFiles(
   }
 }
 
-export function checkGame(
+export function authentication(
   condition:
-    | "own"
     | "admin"
     | ((context: {
-        game: types.tables.Game;
+        game?: types.tables.Game;
         account: types.tables.Account;
         params: any;
         body: any;
-      }) => boolean | Promise<boolean>) = () => true
+      }) => boolean | Promise<boolean>) = () => true,
+  needToBeValidated?: true
 ): express.RequestHandler {
-  if (condition === "own")
-    condition = (context) => context.game.publisher_id === context.account.id;
-  else if (condition === "admin") condition = () => false;
+  if (condition === "admin") condition = () => false;
 
   return expressAsyncHandler(async (req, res, next) => {
     const key =
@@ -77,44 +75,75 @@ export function checkGame(
       req.params.apikey ??
       req.params.apiKey;
 
-    if (!key)
+    const token =
+      req.cookies[constants.COOKIE_NAME] ??
+      req.query.token ??
+      req.body.token ??
+      req.params.token;
+
+    if (!token && !key)
       return sendError(res, {
         code: 401,
-        description: "Missing API key",
+        description: "Missing authentication token or API key",
       });
 
-    if (typeof key !== "string" || !uuid.validate(key))
-      return sendError(res, {
-        code: 400,
-        description: "Invalid token",
-      });
+    let account: types.tables.Account;
+    let currentGame: types.tables.Game | undefined;
 
-    const apiKey = await auth.getApiKey(key);
+    if (token) {
+      // use token
+      if (typeof token !== "string" || !uuid.validate(token)) {
+        return sendError(res, {
+          code: 400,
+          description: "Invalid token",
+        });
+      }
 
-    if (!apiKey)
-      return sendError(res, {
-        code: 404,
-        description: "API key not found",
-      });
+      account = (await auth.getAccountFromToken(token)) as types.tables.Account;
+      currentGame = undefined;
 
-    const currentGame = await game.getGame(apiKey.game_id);
-    const account = await auth.getAccount(apiKey.account_id);
+      if (!account)
+        return sendError(res, {
+          code: 404,
+          description: "Account not found",
+        });
+    } else {
+      // use API key
+      if (typeof key !== "string" || !uuid.validate(key))
+        return sendError(res, {
+          code: 400,
+          description: "Invalid token",
+        });
 
-    if (!account)
-      return sendError(res, {
-        code: 404,
-        description: "Account not found",
-      });
+      const apiKey = await auth.getApiKey(key);
 
-    if (!currentGame)
-      return sendError(res, {
-        code: 404,
-        description: "Game not found",
-      });
+      if (!apiKey)
+        return sendError(res, {
+          code: 404,
+          description: "API key not found",
+        });
+
+      currentGame = (await game.getGame(apiKey.game_id)) as types.tables.Game;
+      account = (await auth.getAccount(
+        apiKey.account_id
+      )) as types.tables.Account;
+
+      if (!account)
+        return sendError(res, {
+          code: 404,
+          description: "Account not found",
+        });
+
+      if (!currentGame)
+        return sendError(res, {
+          code: 404,
+          description: "Game not found",
+        });
+    }
 
     if (
       !account.is_admin &&
-      typeof condition !== "string" &&
+      condition !== "admin" &&
       !(await condition({
         game: currentGame,
         params: req.params,
@@ -128,76 +157,14 @@ export function checkGame(
       });
     }
 
-    // @ts-ignore
-    req.game = currentGame;
-    // @ts-ignore
-    req.account = account;
-
-    next();
-  });
-}
-
-export function checkUser(
-  condition:
-    | "admin"
-    | ((context: {
-        account: types.tables.Account;
-        params: any;
-        body: any;
-      }) => boolean | Promise<boolean>) = () => true,
-  needToBeValidated?: true
-): express.RequestHandler {
-  if (condition === "admin") condition = () => false;
-
-  return expressAsyncHandler(async (req, res, next) => {
-    const token =
-      req.cookies[constants.COOKIE_NAME] ??
-      req.query.token ??
-      req.body.token ??
-      req.params.token;
-
-    if (!token)
-      return sendError(res, {
-        code: 401,
-        description: "Missing cookie token (please login again)",
-      });
-
-    if (typeof token !== "string" || !uuid.validate(token)) {
-      return sendError(res, {
-        code: 400,
-        description: "Invalid token",
-      });
-    }
-
-    const account = await auth.getAccountFromToken(token);
-
-    if (!account)
-      return sendError(res, {
-        code: 404,
-        description: "Account not found",
-      });
-
-    if (
-      !account.is_admin &&
-      typeof condition !== "string" &&
-      !(await condition({
-        account,
-        params: req.params,
-        body: req.body,
-      }))
-    ) {
-      return sendError(res, {
-        code: 401,
-        description: "Access denied (bad token given, please login again)",
-      });
-    }
-
     if (needToBeValidated && !account.confirmed)
       return sendError(res, {
         code: 401,
         description: "You need to have validated your email",
       });
 
+    // @ts-ignore
+    req.game = currentGame;
     // @ts-ignore
     req.account = account;
 

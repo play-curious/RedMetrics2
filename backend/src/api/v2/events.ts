@@ -8,7 +8,7 @@ import * as game from "../../controllers/game";
 
 app.v2
   .route("/session")
-  .all(utils.checkGame())
+  .all(utils.authentication())
   .post(
     expressAsyncHandler(async (req, res) => {
       if (!utils.hasGame(req)) return;
@@ -48,7 +48,7 @@ app.v2
 app.v2
   .route("/session/:id")
   .all(
-    utils.checkGame(),
+    utils.authentication(),
     expressAsyncHandler(async (req, res, next) => {
       if (!utils.hasGame(req)) return;
 
@@ -76,7 +76,7 @@ app.v2
     })
   )
   .put(
-    utils.checkGame(),
+    utils.authentication(),
     expressAsyncHandler(async (req, res) => {
       // Updates the SessionMeta. Only accessible to dev and admin.
 
@@ -97,7 +97,7 @@ app.v2
 
 app.v2.get(
   "/session/:id/data",
-  utils.checkUser(async (context) => {
+  utils.authentication(async (context) => {
     const session = await events.getSession(context.params.id);
     if (!session) return false;
 
@@ -124,8 +124,10 @@ app.v2.get(
 
 app.v2.get(
   "/session/:id/events",
-  utils.checkGame((context) =>
-    game.gameHasSession(context.game.id, context.params.id)
+  utils.authentication(
+    (context) =>
+      !!context.game &&
+      game.gameHasSession(context.game.id as string, context.params.id)
   ),
   expressAsyncHandler(async (req, res) => {
     res.json(await events.getEvents(req.params.id));
@@ -134,7 +136,7 @@ app.v2.get(
 
 app.v2.get(
   "/sessions/:game_id",
-  utils.checkUser(
+  utils.authentication(
     async (context) =>
       (await game.getGame(context.params.game_id))?.publisher_id ===
         context.account.id || context.account.is_admin
@@ -147,7 +149,8 @@ app.v2.get(
 app.v2
   .route("/event")
   .get(
-    utils.checkGame("own"),
+    // todo: replace all "own" by real test
+    utils.authentication("own"),
     expressAsyncHandler(async (req, res) => {
       //  Lists Event objects (see section on Paging below).
       //  Admin and dev accounts can see the game events they have access to.
@@ -197,7 +200,7 @@ app.v2
     })
   )
   .post(
-    utils.checkGame(),
+    utils.authentication(),
     expressAsyncHandler(async (req, res) => {
       //  Adds more event information sent with the Event object, or array or Event objects.
       //  The gameVersionId query parameters is required.

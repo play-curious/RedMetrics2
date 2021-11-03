@@ -11,7 +11,7 @@ import * as types from "rm2-typings";
 
 app.v2.get(
   "/logout",
-  utils.checkUser(),
+  utils.authentication(),
   expressAsyncHandler(async (req, res) => {
     if (utils.hasAccount(req)) await auth.logout(req.account.id);
     res.sendStatus(200);
@@ -126,11 +126,11 @@ app.v2.post(
 
 app.v2
   .route("/account")
-  .get(utils.checkUser(), (req, res) => {
+  .get(utils.authentication(), (req, res) => {
     if (utils.hasAccount(req)) res.json(req.account);
   })
   .post(
-    utils.checkUser("admin", true),
+    utils.authentication("admin", true),
     expressAsyncHandler(async (req, res) => {
       //  Registers a new account.
       //  An AccountMeta object should be sent in the body.
@@ -184,7 +184,7 @@ app.v2
 app.v2
   .route("/account/:id")
   .delete(
-    utils.checkUser(
+    utils.authentication(
       (context) => context.params.id === context.account.id,
       true
     ),
@@ -194,7 +194,7 @@ app.v2
     })
   )
   .get(
-    utils.checkUser((context) => context.params.id === context.account.id),
+    utils.authentication((context) => context.params.id === context.account.id),
     expressAsyncHandler(async (req, res) => {
       //  Retrieves the AccountMeta for the given account.
       //  Only admins can access accounts other than their own
@@ -211,7 +211,7 @@ app.v2
     })
   )
   .put(
-    utils.checkUser(
+    utils.authentication(
       async (context) =>
         context.params.id === context.account.id || context.account.is_admin,
       true
@@ -286,7 +286,7 @@ app.v2
 
 app.v2.get(
   "/accounts",
-  utils.checkUser("admin", true),
+  utils.authentication("admin", true),
   expressAsyncHandler(async (req, res) => {
     res.json(await auth.getAccounts());
   })
@@ -294,7 +294,7 @@ app.v2.get(
 
 app.v2
   .route("/key")
-  .all(utils.checkUser(undefined, true))
+  .all(utils.authentication(undefined, true))
   .post(
     expressAsyncHandler(async (req, res) => {
       if (!utils.hasAccount(req)) return;
@@ -342,7 +342,7 @@ app.v2
 
 app.v2.delete(
   "/key/:key",
-  utils.checkUser(async (context) => {
+  utils.authentication(async (context) => {
     const apiKey = await auth.getApiKey(context.params.key);
     return apiKey?.account_id === context.account.id;
   }, true),
@@ -457,7 +457,7 @@ app.v2
 
 app.v2
   .route("/confirm-email")
-  .all(utils.checkUser())
+  .all(utils.authentication())
   .post(
     expressAsyncHandler(async (req, res) => {
       if (!utils.hasAccount(req)) return;

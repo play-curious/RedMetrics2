@@ -10,7 +10,7 @@ import * as event from "../../controllers/events";
 
 app.v2
   .route("/game")
-  .all(utils.checkUser(undefined, true))
+  .all(utils.authentication(undefined, true))
   .get(
     expressAsyncHandler(async (req, res) => {
       // Lists the games using the service as GameMeta objects (see section on Paging below)
@@ -76,7 +76,7 @@ app.v2
 app.v2
   .route("/game/:id")
   .all(
-    utils.checkUser(
+    utils.authentication(
       async (context) =>
         (await game.getGame(context.params.id))?.publisher_id ===
         context.account.id,
@@ -144,7 +144,7 @@ app.v2
 
 app.v2.get(
   "/game/:id/data",
-  utils.checkUser(
+  utils.authentication(
     async (context) =>
       (await game.getGame(context.params.id))?.publisher_id ===
       context.account.id,
