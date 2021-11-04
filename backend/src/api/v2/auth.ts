@@ -328,7 +328,20 @@ app.v2
   )
   .get(
     expressAsyncHandler(async (req, res) => {
+      if (utils.hasGame(req)) {
+        const apiKey = await auth.getApiKey(req.apiKey);
+
+        if (!apiKey)
+          return utils.sendError(res, {
+            code: 404,
+            description: "API key not found",
+          });
+
+        return res.json(apiKey);
+      }
+
       if (!utils.hasAccount(req)) return;
+
       res.json(await auth.getUserApiKeys(req.account.id));
     })
   )

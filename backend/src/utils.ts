@@ -167,6 +167,8 @@ export function authentication(
     // @ts-ignore
     req.account = account;
 
+    if (hasGame(req)) req.apiKey = key;
+
     next();
   });
 }
@@ -184,7 +186,7 @@ export function hasAccount<R = express.Request>(
 
 export function hasGame<R = express.Request>(
   req: R & { game?: types.tables.Game }
-): req is R & { game: types.tables.Game } {
+): req is R & { game: types.tables.Game; apiKey: types.tables.ApiKey["key"] } {
   return "game" in req && !!req.game;
 }
 
