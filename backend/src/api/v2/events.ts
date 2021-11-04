@@ -28,7 +28,7 @@ app.v2
         version = req.body.version,
         custom_data = JSON.stringify(req.body.custom_data ?? {});
 
-      const session: types.api.Session["Post"]["Body"] = {
+      const sessionData: types.api.Session["Post"]["Body"] = {
         external_id,
         platform,
         screen_size,
@@ -37,13 +37,15 @@ app.v2
         custom_data,
       };
 
-      const id = await events.postGameSession({
-        ...session,
+      const session: Omit<types.tables.Session, "id"> = {
+        ...sessionData,
         game_id: req.game.id,
         closed: false,
         created_timestamp: String(Date.now()),
         updated_timestamp: String(Date.now()),
-      });
+      };
+
+      const id = await events.postGameSession(session);
 
       res.json({ id, ...session });
     })
