@@ -11,7 +11,11 @@ app.v2
   .all(utils.authentication())
   .post(
     expressAsyncHandler(async (req, res) => {
-      if (!utils.hasGame(req)) return;
+      if (!utils.hasGame(req))
+        return utils.sendError(res, {
+          code: 401,
+          description: "You must be auth by API key.",
+        });
       //  Creates a new session.
       //  A SessionMeta object should be sent in the body.
       //  The Location response header will contain the URL for the new session.
@@ -151,7 +155,8 @@ app.v2
   .get(
     utils.authentication(
       (context) =>
-        !!context.game && context.game.publisher_id === context.account.id
+        utils.hasGame(context) &&
+        context.game.publisher_id === context.account.id
     ),
     expressAsyncHandler(async (req, res) => {
       //  Lists Event objects (see section on Paging below).
@@ -170,18 +175,21 @@ app.v2
 
       if (!utils.hasGame(req) || !utils.hasAccount(req)) return;
 
-      if (req.game.id !== req.body.game_id)
+      if (req.game.id !== req.body.game_id && !req.account.is_admin)
         return utils.sendError(res, {
           code: 400,
           description:
-            "You request events of a game that's not linked with your API key!",
+            "Requesting events from unauthorized game.\n" +
+            `targeted game id: ${req.body.game_id}\n` +
+            `authorized game id: ${req.game.id}`,
         });
 
       let query = events.events();
 
       if (req.body.game_id)
         query = query
-          .leftJoin("game", "game.id", "game_id")
+          .leftJoin("session", "session.id", "session_id")
+          .leftJoin("game", "game.id", "session.game_id")
           .where("game.id", req.body.game_id);
 
       if (req.body.session_id)

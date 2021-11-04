@@ -348,10 +348,7 @@ describe("🔒 Auth", () => {
               .post(route(data.admin.token))
               .send(data.game)
               .expect(200)
-              .end((err, res) => {
-                data.game.id = res.body.id;
-                done(err);
-              });
+              .end(done);
           });
         });
       });
@@ -535,7 +532,7 @@ describe("🔒 Auth", () => {
             request(app.server)
               .get(route(data.api_key.key))
               .send({
-                // filtres
+                game_id: data.game.id,
               })
               .expect(200)
               .end(done);

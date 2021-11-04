@@ -64,9 +64,9 @@ export function authentication(
       }) => boolean | Promise<boolean>) = () => true,
   needToBeValidated?: true
 ): express.RequestHandler {
-  if (condition === "admin") condition = () => false;
-
   return expressAsyncHandler(async (req, res, next) => {
+    if (condition === "admin") condition = () => false;
+
     const key =
       req.query.apikey ??
       req.query.apiKey ??
@@ -143,7 +143,6 @@ export function authentication(
 
     if (
       !account.is_admin &&
-      condition !== "admin" &&
       !(await condition({
         game: currentGame,
         params: req.params,
@@ -177,15 +176,15 @@ export function sendError(res: express.Response, error: types.api.Error) {
   return res.status(error.code).json(error);
 }
 
-export function hasAccount(
-  req: express.Request & { account?: types.tables.Account }
-): req is express.Request & { account: types.tables.Account } {
+export function hasAccount<R = express.Request>(
+  req: R & { account?: types.tables.Account }
+): req is R & { account: types.tables.Account } {
   return "account" in req && !!req.account;
 }
 
-export function hasGame(
-  req: express.Request & { game?: types.tables.Game }
-): req is express.Request & { game: types.tables.Game } {
+export function hasGame<R = express.Request>(
+  req: R & { game?: types.tables.Game }
+): req is R & { game: types.tables.Game } {
   return "game" in req && !!req.game;
 }
 
