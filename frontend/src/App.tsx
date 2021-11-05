@@ -19,6 +19,9 @@ import axios from "axios";
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = constants.API_BASE_URL;
+axios.defaults.headers = {
+  "Access-Control-Allow-Origin": constants.API_BASE_URL,
+};
 
 export default function App() {
   new Clipboard(".clipboard");
