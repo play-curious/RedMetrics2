@@ -49,7 +49,9 @@ export function getEvent(
 }
 
 export function postEvent(
-  event: types.utils.Insert<types.tables.Event>
+  event:
+    | types.utils.Insert<types.tables.Event>
+    | types.utils.Insert<types.tables.Event>[]
 ): Promise<number> {
   return events()
     .insert(event)
