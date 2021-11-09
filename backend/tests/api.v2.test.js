@@ -308,6 +308,27 @@ describe("🔒 Auth", () => {
       });
     });
 
+    describe("/account/:id/keys", () => {
+      const route = (id, token) =>
+        `/v2/account/${id}/keys${token ? "?token=" + token : ""}`;
+
+      describe("GET", () => {
+        test("bad account", (done) => {
+          request(app.server)
+            .get(route(data.admin.id, data.user.token))
+            .expect(401)
+            .end(done);
+        });
+
+        test("success", (done) => {
+          request(app.server)
+            .get(route(data.user.id, data.user.token))
+            .expect(200)
+            .end(done);
+        });
+      });
+    });
+
     describe("🎮 Games", () => {
       describe("/game", () => {
         const route = (token) => "/v2/game" + (token ? "?token=" + token : "");
