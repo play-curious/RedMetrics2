@@ -284,6 +284,16 @@ app.v2
     })
   );
 
+app.v2
+  .route("/account/:id/keys")
+  .all(utils.authentication((ctx) => ctx.params.id === ctx.account.id))
+  .get(
+    expressAsyncHandler(async (req, res) => {
+      if (utils.hasAccount(req))
+        res.json(await auth.getUserApiKeys(req.account.id));
+    })
+  );
+
 app.v2.get(
   "/accounts",
   utils.authentication("admin", true),
@@ -328,21 +338,21 @@ app.v2
   )
   .get(
     expressAsyncHandler(async (req, res) => {
-      if (utils.hasGame(req)) {
-        const apiKey = await auth.getApiKey(req.apiKey);
+      if (!utils.hasGame(req))
+        return utils.sendError(res, {
+          code: 400,
+          description: "You need to access this route via API key.",
+        });
 
-        if (!apiKey)
-          return utils.sendError(res, {
-            code: 404,
-            description: "API key not found",
-          });
+      const apiKey = await auth.getApiKey(req.apiKey);
 
-        return res.json(apiKey);
-      }
+      if (!apiKey)
+        return utils.sendError(res, {
+          code: 404,
+          description: "API key not found",
+        });
 
-      if (!utils.hasAccount(req)) return;
-
-      res.json(await auth.getUserApiKeys(req.account.id));
+      return res.json(apiKey);
     })
   )
   .delete(
