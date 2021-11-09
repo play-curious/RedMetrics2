@@ -225,28 +225,28 @@ app.v2
           description: "Missing game session id",
         });
 
-      const event: types.api.Event["Post"]["Body"] = Array.isArray(req.body)
-        ? req.body.map((body) => ({
-            session_id: body.session_id,
-            coordinates: JSON.stringify(body.coordinates ?? {}),
-            custom_data: JSON.stringify(body.custom_data ?? {}),
-            section: body.section,
-            server_time: new Date().toISOString(),
-            type: body.type,
-            user_time: body.user_time,
-          }))
-        : {
-            session_id: req.body.session_id,
-            coordinates: JSON.stringify(req.body.coordinates ?? {}),
-            custom_data: JSON.stringify(req.body.custom_data ?? {}),
-            section: req.body.section,
-            server_time: new Date().toISOString(),
-            type: req.body.type,
-            user_time: req.body.user_time,
-          };
+      await events.postEvent(
+        Array.isArray(req.body)
+          ? req.body.map((body) => ({
+              session_id: body.session_id,
+              coordinates: JSON.stringify(body.coordinates ?? {}),
+              custom_data: JSON.stringify(body.custom_data ?? {}),
+              section: body.section,
+              server_time: new Date().toISOString(),
+              type: body.type,
+              user_time: body.user_time,
+            }))
+          : {
+              session_id: req.body.session_id,
+              coordinates: JSON.stringify(req.body.coordinates ?? {}),
+              custom_data: JSON.stringify(req.body.custom_data ?? {}),
+              section: req.body.section,
+              server_time: new Date().toISOString(),
+              type: req.body.type,
+              user_time: req.body.user_time,
+            }
+      );
 
-      const id = await events.postEvent(event);
-
-      res.json({ id, ...event });
+      res.sendStatus(200);
     })
   );

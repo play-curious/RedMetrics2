@@ -48,13 +48,10 @@ export function getEvent(
   return events().where("id", id).first();
 }
 
-export function postEvent(
+export async function postEvent(
   event:
     | types.utils.Insert<types.tables.Event>
     | types.utils.Insert<types.tables.Event>[]
-): Promise<number> {
-  return events()
-    .insert(event)
-    .returning("id")
-    .then((ids) => ids[0]);
+): Promise<void> {
+  await events().insert(event);
 }

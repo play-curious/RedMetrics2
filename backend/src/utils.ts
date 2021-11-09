@@ -1,15 +1,15 @@
+import fsp from "fs/promises";
 import path from "path";
 import express from "express";
-import fsp from "fs/promises";
-import Cookies from "js-cookie";
+import nodemailer from "nodemailer";
 import expressAsyncHandler from "express-async-handler";
 
 import * as uuid from "uuid";
 import * as types from "rm2-typings";
+
 import * as auth from "./controllers/auth";
 import * as game from "./controllers/game";
 import * as constants from "./constants";
-import nodemailer from "nodemailer";
 
 interface ForFilesOptions {
   recursive?: boolean;
