@@ -14,15 +14,17 @@ import CustomForm from "../nodes/CustomForm";
 import { faTrashAlt, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-export default function APIKeys() {
+export default function APIKeys({ user }: { user: types.tables.Account }) {
   const [apiKeys, setApiKeys] = React.useState<types.tables.ApiKey[]>();
   const [ownGames, setOwnGames] = React.useState<types.tables.Game[]>();
 
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
   const fetchApiKeys = () => {
+    const route: types.api.AccountById_Keys["Route"] = `/account/${user.id}/keys`;
+
     axios
-      .get<types.api.Key["Get"]["Response"]>("/key")
+      .get<types.api.AccountById_Keys["Get"]["Response"]>(route)
       .then(({ data }) => {
         setApiKeys(data);
       })

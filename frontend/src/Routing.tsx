@@ -78,14 +78,14 @@ export default function Routing({
               <Dom.Route exact path="/settings">
                 <Settings user={user} />
               </Dom.Route>
-              <Dom.Route exact path="/game/show/:id">
-                <GamePage />
-              </Dom.Route>
               <Dom.Route exact path="/games">
                 <Games user={user} />
               </Dom.Route>
               <Dom.Route exact path="/game/add">
                 <AddGame user={user} />
+              </Dom.Route>
+              <Dom.Route exact path="/api-keys">
+                <APIKeys user={user} />
               </Dom.Route>
               <Dom.Route exact path="/game/edit/:id">
                 <EditGame />
@@ -93,8 +93,8 @@ export default function Routing({
               <Dom.Route exact path="/game/session/show/:id">
                 <SessionPage />
               </Dom.Route>
-              <Dom.Route exact path="/api-keys">
-                <APIKeys />
+              <Dom.Route exact path="/game/show/:id">
+                <GamePage />
               </Dom.Route>
             </>
           )}
