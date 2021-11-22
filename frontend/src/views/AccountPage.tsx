@@ -1,18 +1,19 @@
 import React from "react";
 import * as Router from "react-router";
 import * as Cookies from "react-cookie";
+import * as types from "rm2-typings";
 
-import axios from "axios";
 import NotificationSystem from "react-notification-system";
 
-import * as types from "rm2-typings";
+import * as utils from "../utils";
 import * as constants from "../constants";
 
 import CustomForm from "../nodes/CustomForm";
 import Button from "../nodes/Button";
 import Wrapper from "../nodes/Wrapper";
 import UUID from "../nodes/UUID";
-import * as utils from "../utils";
+
+const request = types.utils.request;
 
 export default function AccountPage({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
@@ -24,11 +25,8 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
   if (!account)
     if (id !== user.id) {
       if (user.is_admin) {
-        axios
-          .get<types.api.AccountById["Get"]["Response"]>("/account/" + id)
-          .then((response) => {
-            setAccount(response?.data ?? user);
-          })
+        request<types.api.AccountById>("Get", `/account/${id}`, undefined)
+          .then((data: types.tables.Account) => setAccount(data ?? user))
           .catch((error) => {
             notificationSystem.current?.addNotification({
               message: error.message,
@@ -65,14 +63,7 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
             <Button
               customClassName="hover:bg-red-600"
               callback={() =>
-                axios
-                  .get("/logout")
-                  .catch((error) => {
-                    notificationSystem.current?.addNotification({
-                      message: error.message,
-                      level: "error",
-                    });
-                  })
+                request<types.api.Logout>("Get", "/logout", undefined)
                   .then(() => {
                     notificationSystem.current?.addNotification({
                       message: "Successful disconnected",
@@ -81,6 +72,12 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
                     removeCookie(constants.COOKIE_NAME);
                     setRedirect("/login");
                     window.location.reload();
+                  })
+                  .catch((error) => {
+                    notificationSystem.current?.addNotification({
+                      message: error.message,
+                      level: "error",
+                    });
                   })
               }
             >
@@ -126,12 +123,8 @@ export default function AccountPage({ user }: { user: types.tables.Account }) {
             label: "is administrator",
           },
         }}
-        onSubmit={(data: types.api.AccountById["Put"]["Body"]) => {
-          axios
-            .put<types.api.AccountById["Put"]["Response"]>(
-              "/account/" + id,
-              data
-            )
+        onSubmit={(data: types.api.AccountById["Methods"]["Put"]["Body"]) => {
+          request<types.api.AccountById>("Put", `/account/${id}`, data)
             .then(() => {
               notificationSystem.current?.addNotification({
                 message: "Successfully edited account",

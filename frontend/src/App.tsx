@@ -15,13 +15,15 @@ import Warn from "./nodes/Warn";
 import Footer from "./nodes/Footer";
 import Wrapper from "./nodes/Wrapper";
 
-import axios from "axios";
+types.utils.setupConfig({
+  withCredentials: true,
+  baseURL: constants.API_BASE_URL,
+  headers: {
+    "Access-Control-Allow-Origin": constants.API_BASE_URL,
+  },
+});
 
-axios.defaults.withCredentials = true;
-axios.defaults.baseURL = constants.API_BASE_URL;
-axios.defaults.headers = {
-  "Access-Control-Allow-Origin": constants.API_BASE_URL,
-};
+const request = types.utils.request;
 
 export default function App() {
   new Clipboard(".clipboard");
@@ -29,23 +31,22 @@ export default function App() {
   const notificationSystem = React.createRef<NotificationSystem.System>();
   const [user, setUser] = React.useState<types.tables.Account>();
 
-  const fetchUser = () => {
-    axios
-      .get<types.api.Account["Get"]["Response"]>("/account")
-      .then((response) => {
-        const user = response.data;
+  const fetchUser = async () => {
+    const user: types.tables.Account = await request<types.api.Account>(
+      "Get",
+      "/account",
+      undefined
+    );
 
-        notificationSystem.current?.addNotification({
-          message: "Logged-in as " + user.email,
-          level: "success",
-        });
+    notificationSystem.current?.addNotification({
+      message: "Logged-in as " + user.email,
+      level: "success",
+    });
 
-        setUser(user);
-      })
-      .catch(console.error);
+    setUser(user);
   };
 
-  if (!user) fetchUser();
+  if (!user) fetchUser().catch(console.error);
 
   return (
     <>
