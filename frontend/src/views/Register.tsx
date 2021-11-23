@@ -1,14 +1,16 @@
-import axios from "axios";
 import React from "react";
 import * as Router from "react-router";
 import * as Dom from "react-router-dom";
 
 import NotificationSystem from "react-notification-system";
 
-import { api as types } from "rm2-typings";
+import * as types from "rm2-typings";
 
 import CustomForm from "../nodes/CustomForm";
+
 import * as utils from "../utils";
+
+const request = types.utils.request;
 
 export default function Register() {
   const [redirect, setRedirect] = React.useState<null | string>(null);
@@ -40,10 +42,9 @@ export default function Register() {
                 required: true,
               },
             }}
-            onSubmit={(data: types.Register["Post"]["Body"]) => {
-              axios
-                .post<types.Register["Post"]["Response"]>("/register", data)
-                .then((response) => {
+            onSubmit={(data: types.api.Register["Methods"]["Post"]["Body"]) => {
+              request<types.api.Register>("Post", "/register", data)
+                .then(() => {
                   notificationSystem.current?.addNotification({
                     message: "Successful registered",
                     level: "success",

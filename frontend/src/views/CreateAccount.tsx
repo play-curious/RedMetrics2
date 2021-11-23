@@ -4,11 +4,13 @@ import * as Router from "react-router";
 import * as types from "rm2-typings";
 
 import NotificationSystem from "react-notification-system";
-import axios from "axios";
+
 import * as uuid from "uuid";
 
 import CustomForm from "../nodes/CustomForm";
 import ErrorPage from "./ErrorPage";
+
+const request = types.utils.request;
 
 export default function CreateAccount({
   user,
@@ -33,9 +35,8 @@ export default function CreateAccount({
         <h1> Create account </h1>
         <CustomForm
           className="flex flex-col"
-          onSubmit={(data: types.api.Account["Post"]["Body"]) => {
-            axios
-              .post<types.api.Account["Post"]["Response"]>("/account", data)
+          onSubmit={(data: types.api.Account["Methods"]["Post"]["Body"]) => {
+            request<types.api.Account>("Post", "/account", data)
               .then(() => {
                 const message = `new account created with password: ${password}`;
 

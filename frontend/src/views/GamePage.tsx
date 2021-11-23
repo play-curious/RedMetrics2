@@ -2,8 +2,6 @@ import React from "react";
 import * as Router from "react-router";
 import NotificationSystem from "react-notification-system";
 
-import axios from "axios";
-
 import * as types from "rm2-typings";
 import * as utils from "../utils";
 
@@ -12,6 +10,9 @@ import Button from "../nodes/Button";
 import UUID from "../nodes/UUID";
 import Warn from "../nodes/Warn";
 import Card from "../nodes/Card";
+import DownloadButton from "../nodes/DownloadButton";
+
+const request = types.utils.request;
 
 export default function GamePage() {
   const { id } = Router.useParams<{ id: string }>();
@@ -23,9 +24,8 @@ export default function GamePage() {
   const [redirect, setRedirect] = React.useState<string>();
 
   if (game === undefined)
-    axios
-      .get<types.api.GameById["Get"]["Response"]>(`/game/${id}`)
-      .then((response) => setGame(response.data))
+    request<types.api.GameById>("Get", `/game/${id}`, undefined)
+      .then(setGame)
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,
@@ -34,9 +34,12 @@ export default function GamePage() {
       });
 
   if (game && sessions === undefined)
-    axios
-      .get<types.api.SessionsByGameId["Get"]["Response"]>(`/sessions/${id}`)
-      .then((response) => setSessions(response.data))
+    request<types.api.GameById_Sessions>(
+      "Get",
+      `/game/${id}/sessions`,
+      undefined
+    )
+      .then(setSessions)
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,
@@ -66,17 +69,11 @@ export default function GamePage() {
       </Wrapper>
       <h2> Actions </h2>
       <Wrapper>
-        <Button
-          href={axios.defaults.baseURL + `game/${id}/data`}
-          download={(game?.name ?? "game") + ".json"}
-        >
-          Download data
-        </Button>
+        <DownloadButton route={`game/${id}/data`} name={game?.name ?? "game"} />
         <Button to={"/game/edit/" + id}> Edit </Button>
         <Button
           callback={() => {
-            axios
-              .delete<types.api.GameById["Delete"]["Response"]>(`/game/${id}`)
+            request<types.api.GameById>("Delete", `/game/${id}`, undefined)
               .then(() => setRedirect("/games"))
               .catch((error) => {
                 notificationSystem.current?.addNotification({

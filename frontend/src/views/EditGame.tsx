@@ -4,10 +4,11 @@ import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
 
-import axios from "axios";
 import querystring from "query-string";
 
 import CustomForm from "../nodes/CustomForm";
+
+const request = types.utils.request;
 
 export default function EditGame() {
   const notificationSystem = React.createRef<NotificationSystem.System>();
@@ -16,21 +17,18 @@ export default function EditGame() {
   const [redirect, setRedirect] = React.useState<null | string>(null);
 
   if (!game)
-    axios
-      .get<types.api.GameById["Get"]["Response"]>("/game/" + id)
-      .then((response) => setGame(response.data))
+    request<types.api.GameById>("Get", `/game/${id}`, undefined)
+      .then(setGame)
       .catch(console.error);
 
   return (
     <>
       <NotificationSystem ref={notificationSystem} />
       {redirect && <Router.Redirect to={redirect} />}
-
       <h1> Edit Game </h1>
       <CustomForm
-        onSubmit={(data: types.api.GameById["Put"]["Body"]) => {
-          axios
-            .put<types.api.GameById["Put"]["Response"]>("/game/" + id, data)
+        onSubmit={(data: types.api.GameById["Methods"]["Put"]["Body"]) => {
+          request<types.api.GameById>("Put", `/game/${id}`, data)
             .then(() => {
               setRedirect(
                 `/game/show/${id}?${querystring.stringify({

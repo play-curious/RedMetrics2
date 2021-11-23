@@ -3,10 +3,10 @@ import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
 
-import axios from "axios";
-
 import CustomForm from "../nodes/CustomForm";
 import Button from "../nodes/Button";
+
+const request = types.utils.request;
 
 export default function ConfirmEmail() {
   const notificationSystem = React.createRef<NotificationSystem.System>();
@@ -22,12 +22,10 @@ export default function ConfirmEmail() {
           the code received below.
         </p>
         <CustomForm
-          onSubmit={(data: types.api.ConfirmEmail["Patch"]["Body"]) => {
-            axios
-              .patch<types.api.ConfirmEmail["Patch"]["Response"]>(
-                "/confirm-email",
-                data
-              )
+          onSubmit={(
+            data: types.api.ConfirmEmail["Methods"]["Patch"]["Body"]
+          ) => {
+            request<types.api.ConfirmEmail>("Patch", "/confirm-email", data)
               .then(() => {
                 notificationSystem.current?.addNotification({
                   message: "Successfully confirm your email!",
@@ -53,10 +51,11 @@ export default function ConfirmEmail() {
           otherButtons={
             <Button
               callback={() => {
-                axios
-                  .post<types.api.ConfirmEmail["Post"]["Response"]>(
-                    "/confirm-email"
-                  )
+                request<types.api.ConfirmEmail>(
+                  "Post",
+                  "/confirm-email",
+                  undefined
+                )
                   .then(() => {
                     notificationSystem.current?.addNotification({
                       message: "Successfully sent new digit code",

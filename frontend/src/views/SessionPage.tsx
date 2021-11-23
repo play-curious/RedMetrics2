@@ -2,15 +2,17 @@ import React from "react";
 import * as Router from "react-router";
 
 import * as types from "rm2-typings";
+import * as utils from "../utils";
 import * as constants from "../constants";
 
-import axios from "axios";
 import NotificationSystem from "react-notification-system";
 
 import Button from "../nodes/Button";
 import Wrapper from "../nodes/Wrapper";
 import Card from "../nodes/Card";
-import * as utils from "../utils";
+import DownloadButton from "../nodes/DownloadButton";
+
+const request = types.utils.request;
 
 export default function SessionPage() {
   const { id } = Router.useParams<{ id: string }>();
@@ -22,9 +24,8 @@ export default function SessionPage() {
   const [session, setSession] = React.useState<types.tables.Session>();
 
   if (session === undefined)
-    axios
-      .get<types.api.SessionById["Get"]["Response"]>("/session/" + id)
-      .then((response) => setSession(response.data))
+    request<types.api.SessionById>("Get", `/session/${id}`, undefined)
+      .then(setSession)
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,
@@ -33,14 +34,12 @@ export default function SessionPage() {
       });
 
   if (events === undefined)
-    axios
-      .get<types.api.SessionById_Events["Get"]["Response"]>(
-        `/session/${id}/events`,
-        {
-          baseURL: constants.API_BASE_URL,
-        }
-      )
-      .then((response) => setEvents(response.data))
+    request<types.api.SessionById_Events>(
+      "Get",
+      `/session/${id}/events`,
+      undefined
+    )
+      .then(setEvents)
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,
@@ -49,9 +48,8 @@ export default function SessionPage() {
       });
 
   if (game === undefined && session !== undefined)
-    axios
-      .get<types.api.GameById["Get"]["Response"]>("/game/" + session.game_id)
-      .then((response) => setGame(response.data))
+    request<types.api.GameById>("Get", `/game/${session.game_id}`, undefined)
+      .then(setGame)
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,
@@ -66,17 +64,14 @@ export default function SessionPage() {
       <NotificationSystem ref={notificationSystem} />
       <h1> {session?.id ?? "No id"} </h1>
       <Wrapper>
-        <Button
-          href={axios.defaults.baseURL + `session/${id}/data`}
-          download={
+        <DownloadButton
+          route={`session/${id}/data`}
+          name={
             (game?.name ?? "game") +
             " " +
-            (session?.id ? session?.id : "session") +
-            ".json"
+            (session?.id ? session?.id : "session")
           }
-        >
-          Download data
-        </Button>
+        />
         <Button to={"/game/show/" + game?.id}> Game </Button>
       </Wrapper>
       <Wrapper>

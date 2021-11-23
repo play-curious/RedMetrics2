@@ -3,11 +3,11 @@ import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
 
-import axios from "axios";
-
 import CustomForm from "../nodes/CustomForm";
 import Button from "../nodes/Button";
 import Warn from "../nodes/Warn";
+
+const request = types.utils.request;
 
 export default function ForgottenPassword() {
   const [sent, setSent] = React.useState<boolean>(false);
@@ -21,12 +21,10 @@ export default function ForgottenPassword() {
         <>
           <h2>Enter the code you received by email</h2>
           <CustomForm
-            onSubmit={(data: types.api.LostPassword["Patch"]["Body"]) => {
-              axios
-                .patch<types.api.LostPassword["Patch"]["Response"]>(
-                  "/lost-password",
-                  data
-                )
+            onSubmit={(
+              data: types.api.LostPassword["Methods"]["Patch"]["Body"]
+            ) => {
+              request<types.api.LostPassword>("Patch", "/lost-password", data)
                 .then(() => {
                   notificationSystem.current?.addNotification({
                     message: "Successfully sent your new password",
@@ -64,12 +62,10 @@ export default function ForgottenPassword() {
         </>
       ) : (
         <CustomForm
-          onSubmit={(data: types.api.LostPassword["Post"]["Body"]) => {
-            axios
-              .post<types.api.LostPassword["Post"]["Response"]>(
-                "/lost-password",
-                data
-              )
+          onSubmit={(
+            data: types.api.LostPassword["Methods"]["Post"]["Body"]
+          ) => {
+            request<types.api.LostPassword>("Post", "/lost-password", data)
               .then(() => {
                 notificationSystem.current?.addNotification({
                   message: "Successfully sent code to " + data.email,

@@ -1,12 +1,13 @@
 import React from "react";
 import * as Router from "react-router";
 
-import axios from "axios";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
 
 import CustomForm from "../nodes/CustomForm";
+
+const request = types.utils.request;
 
 export default function AddGame({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
@@ -18,11 +19,10 @@ export default function AddGame({ user }: { user: types.tables.Account }) {
       {redirect && <Router.Redirect to={redirect} />}
       <h1> Add your game </h1>
       <CustomForm
-        onSubmit={(game: types.api.Game["Post"]["Body"]) => {
-          axios
-            .post<types.api.Game["Post"]["Response"]>("/game", game)
-            .then((response) => {
-              setRedirect("/game/show/" + response.data.id);
+        onSubmit={(game: types.api.Game["Methods"]["Post"]["Body"]) => {
+          request<types.api.Game>("Post", "/game", game)
+            .then((data) => {
+              setRedirect("/game/show/" + data.id);
             })
             .catch((error) => {
               const notification = notificationSystem.current;

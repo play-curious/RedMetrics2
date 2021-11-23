@@ -3,12 +3,12 @@ import * as Router from "react-router";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
-
-import axios from "axios";
+import * as utils from "../utils";
 
 import CustomForm from "../nodes/CustomForm";
 import Button from "../nodes/Button";
-import * as utils from "../utils";
+
+const request = types.utils.request;
 
 export default function Login({ deleteUser }: { deleteUser: () => unknown }) {
   const [redirect, setRedirect] = React.useState<null | string>(null);
@@ -23,9 +23,8 @@ export default function Login({ deleteUser }: { deleteUser: () => unknown }) {
       <div className="min-h-full">
         <h1> Login </h1>
         <CustomForm
-          onSubmit={(data: types.api.Login["Post"]["Body"]) => {
-            axios
-              .post<types.api.Login["Post"]["Response"]>("/login", data)
+          onSubmit={(data: types.api.Login["Methods"]["Post"]["Body"]) => {
+            request<types.api.Login>("Post", "/login", data)
               .then(() => {
                 notificationSystem.current?.addNotification({
                   message: "Successful connected",

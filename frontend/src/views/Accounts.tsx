@@ -1,14 +1,14 @@
 import React from "react";
 import NotificationSystem from "react-notification-system";
 
-import axios from "axios";
-
 import * as types from "rm2-typings";
 
 import Card from "../nodes/Card";
 import Wrapper from "../nodes/Wrapper";
 import Button from "../nodes/Button";
 import ErrorPage from "./ErrorPage";
+
+const request = types.utils.request;
 
 export default function Accounts({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
@@ -20,11 +20,10 @@ export default function Accounts({ user }: { user: types.tables.Account }) {
     });
 
   if (accounts === undefined)
-    axios
-      .get<types.api.Accounts["Get"]["Response"]>("/accounts", {
-        params: { limit: 100, page: 1 },
-      })
-      .then((response) => setAccounts(response.data))
+    request<types.api.Accounts>("Get", "/accounts", undefined, {
+      params: { limit: 100, page: 1 },
+    })
+      .then((data) => setAccounts(data))
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,
@@ -54,10 +53,11 @@ export default function Accounts({ user }: { user: types.tables.Account }) {
                 <Button
                   to="/accounts"
                   callback={() => {
-                    axios
-                      .delete<types.api.AccountById["Delete"]["Response"]>(
-                        `/account/${account.id}`
-                      )
+                    request<types.api.AccountById>(
+                      "Delete",
+                      `/account/${account.id}`,
+                      undefined
+                    )
                       .then(() => {
                         notificationSystem.current?.addNotification({
                           message: "Account successfully deleted",

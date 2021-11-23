@@ -2,8 +2,6 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 import NotificationSystem from "react-notification-system";
 
-import axios from "axios";
-
 import * as types from "rm2-typings";
 
 import GameCard from "../nodes/GameCard";
@@ -11,6 +9,8 @@ import Wrapper from "../nodes/Wrapper";
 import Button from "../nodes/Button";
 import ErrorPage from "./ErrorPage";
 import Warn from "../nodes/Warn";
+
+const request = types.utils.request;
 
 export default function Games({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
@@ -25,11 +25,8 @@ export default function Games({ user }: { user: types.tables.Account }) {
   const gamePerPage = 15;
 
   if (games === undefined)
-    axios
-      .get<types.api.Game["Get"]["Response"]>("/game")
-      .then((response) => {
-        setGames(response.data);
-      })
+    request<types.api.Game>("Get", "/game", undefined)
+      .then(setGames)
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,

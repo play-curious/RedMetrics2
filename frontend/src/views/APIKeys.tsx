@@ -1,4 +1,3 @@
-import axios from "axios";
 import React from "react";
 import * as Dom from "react-router-dom";
 import NotificationSystem from "react-notification-system";
@@ -11,6 +10,8 @@ import Warn from "../nodes/Warn";
 import Button from "../nodes/Button";
 import CustomForm from "../nodes/CustomForm";
 
+const request = types.utils.request;
+
 import { faTrashAlt, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -21,13 +22,12 @@ export default function APIKeys({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
   const fetchApiKeys = () => {
-    const route: types.api.AccountById_Keys["Route"] = `/account/${user.id}/keys`;
-
-    axios
-      .get<types.api.AccountById_Keys["Get"]["Response"]>(route)
-      .then(({ data }) => {
-        setApiKeys(data);
-      })
+    request<types.api.AccountById_Keys>(
+      "Get",
+      `/account/${user.id}/keys`,
+      undefined
+    )
+      .then((data) => setApiKeys(data))
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,
@@ -38,9 +38,8 @@ export default function APIKeys({ user }: { user: types.tables.Account }) {
 
   if (apiKeys === undefined) fetchApiKeys();
   if (ownGames === undefined)
-    axios
-      .get<types.api.Game["Get"]["Response"]>(`/game`)
-      .then((response) => setOwnGames(response.data))
+    request<types.api.Game>("Get", "/game", undefined)
+      .then((data) => setOwnGames(data))
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,
@@ -86,10 +85,11 @@ export default function APIKeys({ user }: { user: types.tables.Account }) {
                     <Button
                       customClassName="hover:bg-red-600 rounded-full"
                       callback={function (this: types.tables.ApiKey) {
-                        axios
-                          .delete(`/key/${this.key}`, {
-                            baseURL: constants.API_BASE_URL,
-                          })
+                        request<types.api.KeyByKey>(
+                          "Delete",
+                          `/key/${this.key}`,
+                          undefined
+                        )
                           .then(() => {
                             notificationSystem.current?.addNotification({
                               message: "Successfully deleted API key",
@@ -120,9 +120,8 @@ export default function APIKeys({ user }: { user: types.tables.Account }) {
       {ownGames && ownGames.length > 0 ? (
         <>
           <CustomForm
-            onSubmit={(session: types.api.Key["Post"]["Body"]) => {
-              axios
-                .post<types.api.Key["Post"]["Response"]>("/key", session)
+            onSubmit={(session: types.api.Key["Methods"]["Post"]["Body"]) => {
+              request<types.api.Key>("Post", "/key", session)
                 .then(() => {
                   notificationSystem.current?.addNotification({
                     message: "Successfully generated API key",
