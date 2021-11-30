@@ -4,8 +4,6 @@ import * as Router from "react-router";
 import * as Cookies from "react-cookie";
 import NotificationSystem from "react-notification-system";
 
-import axios from "axios";
-
 import * as types from "rm2-typings";
 import * as constants from "../constants";
 
@@ -13,6 +11,8 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "./Dropdown.scss";
+
+const request = types.utils.request;
 
 export default function Dropdown({
   user,
@@ -26,8 +26,7 @@ export default function Dropdown({
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
   const logout = () =>
-    axios
-      .get("/logout")
+    request<types.api.Logout>("Get", "/logout", undefined)
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,

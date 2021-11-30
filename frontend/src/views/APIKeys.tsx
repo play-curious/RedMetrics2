@@ -10,10 +10,10 @@ import Warn from "../nodes/Warn";
 import Button from "../nodes/Button";
 import CustomForm from "../nodes/CustomForm";
 
-const request = types.utils.request;
-
 import { faTrashAlt, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+const request = types.utils.request;
 
 export default function APIKeys({ user }: { user: types.tables.Account }) {
   const [apiKeys, setApiKeys] = React.useState<types.tables.ApiKey[]>();

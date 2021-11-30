@@ -208,10 +208,12 @@ route<types.api.GameById_Sessions>(
   "/game/:id/sessions",
   utils.authentication(
     async (context) =>
-      (await game.getGame(context.params.game_id))?.publisher_id ===
-        context.account.id || context.account.is_admin
+      (context.params.id &&
+        (await game.getGame(context.params.id))?.publisher_id ===
+          context.account.id) ||
+      context.account.is_admin
   ),
   expressAsyncHandler(async (req, res) => {
-    res.json(await events.getGameSessions(req.params.game_id));
+    res.json(await events.getGameSessions(req.params.id));
   })
 );
