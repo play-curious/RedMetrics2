@@ -233,33 +233,48 @@ route<types.api.Event>(
     //  If no session is given, a new session will be created and returned.
     //  Since the progress object cannot be addressed by itself, no Location header will be returned.
 
-    if (!req.body.session_id)
-      return utils.sendError(res, {
-        code: 401,
-        description: "Missing game session id",
-      });
+    let eventData;
+    if(Array.isArray(req.body)) {
+      eventData = [];
 
-    await events.postEvent(
-      Array.isArray(req.body)
-        ? req.body.map((body) => ({
-            session_id: body.session_id,
-            coordinates: JSON.stringify(body.coordinates ?? {}),
-            custom_data: JSON.stringify(body.custom_data ?? {}),
-            section: body.section,
-            server_time: new Date().toISOString(),
-            type: body.type,
-            user_time: body.user_time,
-          }))
-        : {
-            session_id: req.body.session_id,
-            coordinates: JSON.stringify(req.body.coordinates ?? {}),
-            custom_data: JSON.stringify(req.body.custom_data ?? {}),
-            section: req.body.section,
-            server_time: new Date().toISOString(),
-            type: req.body.type,
-            user_time: req.body.user_time,
-          }
-    );
+      for(const body of req.body) {
+        if (!body.session_id) {
+          return utils.sendError(res, {
+              code: 401,
+              description: "Missing game session id",
+          });
+        }  
+
+        eventData.push({
+          session_id: body.session_id,
+          coordinates: JSON.stringify(body.coordinates ?? {}),
+          custom_data: JSON.stringify(body.custom_data ?? {}),
+          section: body.section,
+          server_time: new Date().toISOString(),
+          type: body.type,
+          user_time: body.user_time,
+        });
+      }
+    } else {
+      if (!req.body.session_id) {
+        return utils.sendError(res, {
+            code: 401,
+            description: "Missing game session id",
+        });
+      }      
+      
+      eventData = {
+        session_id: req.body.session_id,
+        coordinates: JSON.stringify(req.body.coordinates ?? {}),
+        custom_data: JSON.stringify(req.body.custom_data ?? {}),
+        section: req.body.section,
+        server_time: new Date().toISOString(),
+        type: req.body.type,
+        user_time: req.body.user_time,
+      }
+    }
+
+    await events.postEvent(eventData);
 
     res.sendStatus(200);
   })
