@@ -49,7 +49,8 @@ server.use(
   bodyParser.urlencoded({ extended: false }),
   bodyParser.json(),
   cookieParser(),
-  cors({ credentials: true, origin: process.env.FRONTEND_ORIGIN })
+  // Allow any site to access
+  cors({ credentials: true, origin: true })
 );
 
 export const v2 = express.Router();

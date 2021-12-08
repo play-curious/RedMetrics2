@@ -18,9 +18,6 @@ import Wrapper from "./nodes/Wrapper";
 types.utils.setupConfig({
   withCredentials: true,
   baseURL: constants.API_BASE_URL,
-  headers: {
-    "Access-Control-Allow-Origin": constants.API_BASE_URL,
-  },
 });
 
 const request = types.utils.request;
