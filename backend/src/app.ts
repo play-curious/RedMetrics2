@@ -46,7 +46,7 @@ export const server = express();
 server.set("json spaces", 2);
 
 server.use(
-  bodyParser.urlencoded({ extended: false }),
+  bodyParser.urlencoded({ extended: true }),
   bodyParser.json(),
   cookieParser(),
   // Allow any site to access

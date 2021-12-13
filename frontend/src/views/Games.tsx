@@ -37,12 +37,11 @@ export default function Games({ user }: { user: types.tables.Account }) {
       <Wrapper>
         <Button to="/game/add" children="New Game" />
       </Wrapper>
-      <h2 id="list"> Game List </h2>
+      <h2 id="list"> Game List ({gameCount ?? 0}) </h2>
       {gameCount && gameCount > 0 ? (
         <>
           <Paginator
             pageCount={Math.ceil(gameCount / gamePerPage)}
-            itemPerPage={gamePerPage}
             fetchPageItems={async (index) => {
               return request<types.api.Game>("Get", "/game", undefined, {
                 params: {

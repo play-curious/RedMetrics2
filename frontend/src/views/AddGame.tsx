@@ -38,6 +38,7 @@ export default function AddGame({ user }: { user: types.tables.Account }) {
           name: {
             is: "text",
             required: true,
+            autoFocus: true,
             minLength: 3,
             maxLength: 256,
             placeholder: "Game name",

@@ -29,7 +29,7 @@ export default function GamePage() {
   if (game === undefined)
     request<types.api.GameById>("Get", `/game/${id}`, undefined)
       .then(setGame)
-      .catch((error) => {
+      .catch((error: any) => {
         notificationSystem.current?.addNotification({
           message: error.message,
           level: "error",
@@ -43,7 +43,7 @@ export default function GamePage() {
       undefined
     )
       .then(setSessionCount)
-      .catch((error) => {
+      .catch((error: any) => {
         notificationSystem.current?.addNotification({
           message: error.message,
           level: "error",
@@ -78,7 +78,7 @@ export default function GamePage() {
           callback={() => {
             request<types.api.GameById>("Delete", `/game/${id}`, undefined)
               .then(() => setRedirect("/games"))
-              .catch((error) => {
+              .catch((error: any) => {
                 notificationSystem.current?.addNotification({
                   message: error.message,
                   level: "error",
@@ -101,7 +101,6 @@ export default function GamePage() {
       {sessionCount && sessionCount > 0 ? (
         <Paginator
           pageCount={sessionPerPage * sessionCount}
-          itemPerPage={sessionPerPage}
           fetchPageItems={(index) => {
             return request<types.api.GameById_Sessions>(
               "Get",

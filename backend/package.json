@@ -15,7 +15,9 @@
     "format": "prettier --write src tests",
     "test": "tsc && jest",
     "clean": "rm -rf dist",
-    "types": "npm up rm2-typings -f"
+    "types": "npm up rm2-typings -f",
+    "fixtures:setup": "node dist/fixtures/setup",
+    "fixtures:teardown": "node dist/fixtures/teardown"
   },
   "repository": {
     "type": "git",
@@ -41,6 +43,7 @@
     "express": "^4.17.1",
     "express-async-handler": "^1.1.4",
     "express-graphql": "^0.11.0",
+    "faker": "^5.5.3",
     "graphql": "^15.4.0",
     "knex": "^0.95.11",
     "nodemailer": "^6.6.2",
@@ -57,6 +60,7 @@
     "@types/cors": "^2.8.9",
     "@types/cron": "^1.7.2",
     "@types/express": "^4.17.9",
+    "@types/faker": "^5.5.9",
     "@types/js-cookie": "^2.2.6",
     "@types/node": "^14.14.20",
     "@types/nodemailer": "^6.4.2",

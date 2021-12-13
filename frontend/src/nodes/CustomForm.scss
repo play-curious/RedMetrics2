@@ -63,11 +63,16 @@
     justify-content: center;
 
     .button {
+      text-align: center;
       padding: 12px 20px;
-      background-color: #030918;
+      //background-color: #030918;
+
+      &:last-child {
+        flex-grow: 1;
+      }
 
       &:hover {
-        background-color: rgb(45, 55, 72);
+        //background-color: rgb(45, 55, 72);
 
         &:last-child {
           background-color: #387be5;

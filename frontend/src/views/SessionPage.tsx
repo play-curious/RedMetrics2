@@ -79,7 +79,6 @@ export default function SessionPage() {
       </Wrapper>
       {eventCount && eventCount > 0 ? (
         <Paginator
-          itemPerPage={eventPerPage}
           pageCount={Math.ceil(eventCount / eventPerPage)}
           fetchPageItems={(index) => {
             return request<types.api.SessionById_Events>(

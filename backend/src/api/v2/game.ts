@@ -20,7 +20,7 @@ route<types.api.Game>(
 
     const publisher_id = req.query.publisher_id,
       offset = req.query.offset,
-      count = req.query.count;
+      count = req.query.limit;
 
     let query: any;
 

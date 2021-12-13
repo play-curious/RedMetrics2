@@ -18,6 +18,7 @@ export interface CustomTextInput {
   is: "text" | "password" | "email";
   regex?: RegExp;
   label?: string;
+  autoFocus?: boolean;
   placeholder?: string;
   required?: boolean;
   minLength?: number;
@@ -47,6 +48,7 @@ export interface CustomRadioInput {
 export interface CustomTextAreaInput {
   is: "area";
   label?: string;
+  autoFocus?: boolean;
   required?: boolean;
   code?: boolean;
   jsonValidation?: boolean;

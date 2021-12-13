@@ -1,4 +1,18 @@
 .plan {
+  > ul > li,
+  > ol > li {
+    &::before {
+      position: absolute;
+      content: "";
+      display: block;
+      top: 0;
+      left: -20px;
+      width: 80px;
+      height: 75px;
+      background: linear-gradient(90deg, #00000033, rgba(0, 0, 0, 0));
+    }
+  }
+
   ul,
   ol {
     > li {

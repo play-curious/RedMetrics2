@@ -34,18 +34,18 @@ export default function Login({ deleteUser }: { deleteUser: () => unknown }) {
                 setRedirect("/home");
                 window.location.reload();
               })
-              .catch((error) => {
+              .catch((error: any) => {
                 if (/40[14]/.test(error?.message)) {
-                  return notificationSystem.current?.addNotification({
+                  notificationSystem.current?.addNotification({
                     message: "Incorrect email or password",
                     level: "error",
                   });
+                } else {
+                  notificationSystem.current?.addNotification({
+                    message: error.message,
+                    level: "error",
+                  });
                 }
-
-                notificationSystem.current?.addNotification({
-                  message: error.message,
-                  level: "error",
-                });
               });
           }}
           submitText="Login"
@@ -62,7 +62,9 @@ export default function Login({ deleteUser }: { deleteUser: () => unknown }) {
             },
           }}
           otherButtons={
-            <Button to="/forgotten-password">Forgotten password</Button>
+            <Button to="/forgotten-password" textOnly>
+              Forgotten password
+            </Button>
           }
         />
       </div>
