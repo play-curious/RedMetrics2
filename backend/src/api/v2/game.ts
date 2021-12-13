@@ -18,13 +18,13 @@ route<types.api.Game>(
   expressAsyncHandler(async (req, res) => {
     // Lists the games using the service as GameMeta objects (see section on Paging below)
 
-    const publisher_id = req.body.publisher_id,
-      offset = req.body.offset,
-      count = req.body.count;
+    const publisher_id = req.query.publisher_id,
+      offset = req.query.offset,
+      count = req.query.count;
 
     let query: any;
 
-    if (publisher_id) {
+    if (typeof publisher_id === "string") {
       const publisher = await auth.getAccount(publisher_id);
 
       if (!publisher)
@@ -38,8 +38,8 @@ route<types.api.Game>(
       query = game.getGames();
     }
 
-    if (offset) query.offset(+offset);
-    if (count) query.limit(+count);
+    if (typeof offset === "string") query.offset(+offset);
+    if (typeof count === "string") query.limit(+count);
 
     res.json(await query);
   })
@@ -77,6 +77,35 @@ route<types.api.Game>(
       id,
       ...currentGame,
     });
+  })
+);
+
+route<types.api.GameCount>(
+  "Get",
+  "/game/count",
+  utils.authentication(undefined, true),
+  expressAsyncHandler(async (req, res) => {
+    // Lists the games using the service as GameMeta objects (see section on Paging below)
+
+    const publisher_id = req.query.publisher_id;
+
+    let query: any;
+
+    if (typeof publisher_id === "string") {
+      const publisher = await auth.getAccount(publisher_id);
+
+      if (!publisher)
+        return utils.sendError(res, {
+          description: "Publisher not found",
+          code: 404,
+        });
+
+      query = game.getPublisherGames(publisher_id);
+    } else {
+      query = game.getGames();
+    }
+
+    res.json(Number((await query.count({ total: "id" })).count));
   })
 );
 
