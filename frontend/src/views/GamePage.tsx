@@ -10,6 +10,7 @@ import Button from "../nodes/Button";
 import UUID from "../nodes/UUID";
 import Warn from "../nodes/Warn";
 import Card from "../nodes/Card";
+import Paginator from "../nodes/Paginator";
 import DownloadButton from "../nodes/DownloadButton";
 
 const request = types.utils.request;
@@ -20,8 +21,10 @@ export default function GamePage() {
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
   const [game, setGame] = React.useState<types.tables.Game>();
-  const [sessions, setSessions] = React.useState<types.tables.Session[]>();
   const [redirect, setRedirect] = React.useState<string>();
+  const [sessionCount, setSessionCount] = React.useState<number>();
+
+  const sessionPerPage = 15;
 
   if (game === undefined)
     request<types.api.GameById>("Get", `/game/${id}`, undefined)
@@ -33,13 +36,13 @@ export default function GamePage() {
         });
       });
 
-  if (game && sessions === undefined)
-    request<types.api.GameById_Sessions>(
+  if (game && sessionCount === undefined)
+    request<types.api.GameById_SessionCount>(
       "Get",
-      `/game/${id}/sessions`,
+      `/game/${id}/sessions/count`,
       undefined
     )
-      .then(setSessions)
+      .then(setSessionCount)
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,
@@ -93,18 +96,30 @@ export default function GamePage() {
         <Warn type="warn"> No description </Warn>
       )}
       <h2>
-        Sessions <code> ({sessions?.length ?? 0}) </code>
+        Sessions <code> ({sessionCount ?? 0}) </code>
       </h2>
-      {sessions && sessions.length > 0 ? (
-        sessions.map((session, i) => {
-          return (
-            <Card
-              key={i}
-              title={session.id}
-              url={"/game/session/show/" + session.id}
-            />
-          );
-        })
+      {sessionCount && sessionCount > 0 ? (
+        <Paginator
+          pageCount={sessionPerPage * sessionCount}
+          itemPerPage={sessionPerPage}
+          fetchPageItems={(index) => {
+            return request<types.api.GameById_Sessions>(
+              "Get",
+              `/game/${id}/sessions`,
+              undefined
+            ).then((sessions: types.tables.Session[]) => {
+              return sessions.map((session, i) => {
+                return (
+                  <Card
+                    key={i}
+                    title={session.id}
+                    url={"/game/session/show/" + session.id}
+                  />
+                );
+              });
+            });
+          }}
+        />
       ) : (
         <Warn type="warn"> No sessions found </Warn>
       )}

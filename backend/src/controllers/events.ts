@@ -16,6 +16,15 @@ export function getGameSessions(
   return sessions().where("game_id", id);
 }
 
+export function getGameSessionCount(
+  id: types.tables.Game["id"]
+): Promise<number> {
+  return sessions()
+    .where("game_id", id)
+    .count({ total: "*" })
+    .then((raw) => Number(raw[0].total));
+}
+
 export function postGameSession(
   session: types.utils.Insert<types.tables.Session>
 ): Promise<string> {

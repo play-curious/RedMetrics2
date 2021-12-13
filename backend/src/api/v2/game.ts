@@ -246,3 +246,18 @@ route<types.api.GameById_Sessions>(
     res.json(await events.getGameSessions(req.params.id));
   })
 );
+
+route<types.api.GameById_SessionCount>(
+  "Get",
+  "/game/:id/sessions/count",
+  utils.authentication(
+    async (context) =>
+      (context.params.id &&
+        (await game.getGame(context.params.id))?.publisher_id ===
+          context.account.id) ||
+      context.account.is_admin
+  ),
+  expressAsyncHandler(async (req, res) => {
+    res.json(await events.getGameSessionCount(req.params.id));
+  })
+);
