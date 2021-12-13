@@ -36,10 +36,19 @@ export function updateGameSession(
     .then((ids) => ids[0]);
 }
 
-export function getEvents(
+export function getSessionEvents(
   id: types.tables.Session["id"]
 ): Promise<types.tables.Event[]> {
   return events().where("session_id", id);
+}
+
+export function getSessionEventCount(
+  id: types.tables.Session["id"]
+): Promise<number> {
+  return events()
+    .where("session_id", id)
+    .count({ total: "*" })
+    .then((raw) => Number(raw[0].total));
 }
 
 export function getEvent(

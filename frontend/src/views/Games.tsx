@@ -1,9 +1,9 @@
 import React from "react";
-import ReactPaginate from "react-paginate";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
 
+import Paginator from "../nodes/Paginator";
 import GameCard from "../nodes/GameCard";
 import Wrapper from "../nodes/Wrapper";
 import Button from "../nodes/Button";
@@ -14,8 +14,13 @@ const request = types.utils.request;
 
 export default function Games({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
-  const [games, setGames] = React.useState<types.tables.Game[]>();
-  const [, setOffset] = React.useState<number>(0);
+
+  const [gameCount, setGameCount] = React.useState<number>();
+
+  if (gameCount === undefined)
+    request<types.api.GameCount>("Get", "/game/count", undefined)
+      .then(setGameCount)
+      .catch(console.error);
 
   if (!user.is_admin)
     return ErrorPage({
@@ -23,16 +28,6 @@ export default function Games({ user }: { user: types.tables.Account }) {
     });
 
   const gamePerPage = 15;
-
-  if (games === undefined)
-    request<types.api.Game>("Get", "/game", undefined)
-      .then(setGames)
-      .catch((error) => {
-        notificationSystem.current?.addNotification({
-          message: error.message,
-          level: "error",
-        });
-      });
 
   return (
     <>
@@ -43,28 +38,23 @@ export default function Games({ user }: { user: types.tables.Account }) {
         <Button to="/game/add" children="New Game" />
       </Wrapper>
       <h2 id="list"> Game List </h2>
-      {games && games.length > 0 ? (
+      {gameCount && gameCount > 0 ? (
         <>
-          <Wrapper>
-            {games.map((game) => {
-              return <GameCard game={game} />;
-            })}
-          </Wrapper>
-          <ReactPaginate
-            pageCount={
-              games?.length !== undefined
-                ? Math.ceil(games.length / gamePerPage)
-                : 1
-            }
-            onPageChange={({ selected }) => {
-              setOffset(Math.ceil(selected * gamePerPage));
+          <Paginator
+            pageCount={Math.ceil(gameCount / gamePerPage)}
+            itemPerPage={gamePerPage}
+            fetchPageItems={async (index) => {
+              return request<types.api.Game>("Get", "/game", undefined, {
+                params: {
+                  offset: index * gamePerPage,
+                  limit: gamePerPage,
+                },
+              }).then((games: types.tables.Game[]) =>
+                games.map((game, i) => {
+                  return <GameCard key={i} game={game} />;
+                })
+              );
             }}
-            marginPagesDisplayed={2}
-            pageRangeDisplayed={5}
-            containerClassName="flex w-full justify-around mt-5"
-            pageLinkClassName="cursor-pointer hover:bg-gray-200 px-2 rounded-full"
-            activeClassName="border-2 bg-gray-200 rounded-full"
-            disabledClassName="opacity-50 no-underline"
           />
         </>
       ) : (

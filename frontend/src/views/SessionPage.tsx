@@ -3,7 +3,6 @@ import * as Router from "react-router";
 
 import * as types from "rm2-typings";
 import * as utils from "../utils";
-import * as constants from "../constants";
 
 import NotificationSystem from "react-notification-system";
 
@@ -11,6 +10,8 @@ import Button from "../nodes/Button";
 import Wrapper from "../nodes/Wrapper";
 import Card from "../nodes/Card";
 import DownloadButton from "../nodes/DownloadButton";
+import Paginator from "../nodes/Paginator";
+import Warn from "../nodes/Warn";
 
 const request = types.utils.request;
 
@@ -20,8 +21,10 @@ export default function SessionPage() {
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
   const [game, setGame] = React.useState<types.tables.Game>();
-  const [events, setEvents] = React.useState<types.tables.Event[]>();
   const [session, setSession] = React.useState<types.tables.Session>();
+  const [eventCount, setEventCount] = React.useState<number>();
+
+  const eventPerPage = 20;
 
   if (session === undefined)
     request<types.api.SessionById>("Get", `/session/${id}`, undefined)
@@ -33,13 +36,13 @@ export default function SessionPage() {
         });
       });
 
-  if (events === undefined)
-    request<types.api.SessionById_Events>(
+  if (eventCount === undefined)
+    request<types.api.SessionById_EventCount>(
       "Get",
-      `/session/${id}/events`,
+      `/session/${id}/events/count`,
       undefined
     )
-      .then(setEvents)
+      .then(setEventCount)
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,
@@ -62,7 +65,7 @@ export default function SessionPage() {
   return (
     <>
       <NotificationSystem ref={notificationSystem} />
-      <h1> {session?.id ?? "No id"} </h1>
+      <h1> {id} </h1>
       <Wrapper>
         <DownloadButton
           route={`session/${id}/data`}
@@ -74,18 +77,38 @@ export default function SessionPage() {
         />
         <Button to={"/game/show/" + game?.id}> Game </Button>
       </Wrapper>
-      <Wrapper>
-        {events?.map((event) => {
-          return (
-            <Card
-              title={event.section ?? "no section"}
-              footer={event.server_time}
-            >
-              <code>{JSON.stringify(event, null, 2)}</code>
-            </Card>
-          );
-        })}
-      </Wrapper>
+      {eventCount && eventCount > 0 ? (
+        <Paginator
+          itemPerPage={eventPerPage}
+          pageCount={Math.ceil(eventCount / eventPerPage)}
+          fetchPageItems={(index) => {
+            return request<types.api.SessionById_Events>(
+              "Get",
+              `/session/${id}/events`,
+              undefined,
+              {
+                params: {
+                  offset: index * eventPerPage,
+                },
+              }
+            ).then((events: types.tables.Event[]) => {
+              return events.map((event, i) => {
+                return (
+                  <Card
+                    key={i}
+                    title={event.section ?? "no section"}
+                    footer={event.server_time}
+                  >
+                    <code>{JSON.stringify(event, null, 2)}</code>
+                  </Card>
+                );
+              });
+            });
+          }}
+        />
+      ) : (
+        <Warn type="warn"> No events found </Warn>
+      )}
     </>
   );
 }

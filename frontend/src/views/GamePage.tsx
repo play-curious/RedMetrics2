@@ -96,9 +96,13 @@ export default function GamePage() {
         Sessions <code> ({sessions?.length ?? 0}) </code>
       </h2>
       {sessions && sessions.length > 0 ? (
-        sessions.map((session) => {
+        sessions.map((session, i) => {
           return (
-            <Card title={session.id} url={"/game/session/show/" + session.id} />
+            <Card
+              key={i}
+              title={session.id}
+              url={"/game/session/show/" + session.id}
+            />
           );
         })
       ) : (

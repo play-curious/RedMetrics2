@@ -105,7 +105,7 @@ route<types.api.GameCount>(
       query = game.getGames();
     }
 
-    res.json(Number((await query.count({ total: "id" })).count));
+    res.json(Number((await query.count({ total: "id" }))[0].total));
   })
 );
 
@@ -222,7 +222,7 @@ route<types.api.GameById_Data>(
         sessions.map(async (session) => {
           return {
             ...session,
-            events: await event.getEvents(session.id),
+            events: await event.getSessionEvents(session.id),
           };
         })
       ),

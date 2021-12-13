@@ -144,7 +144,7 @@ route<types.api.SessionById_Data>(
 
     const fullSession: types.full.FullSession = {
       ...session,
-      events: await events.getEvents(session.id),
+      events: await events.getSessionEvents(session.id),
     };
 
     res.json(fullSession);
@@ -160,7 +160,20 @@ route<types.api.SessionById_Events>(
       game.gameHasSession(context.game.id as string, context.params.id)
   ),
   expressAsyncHandler(async (req, res) => {
-    res.json(await events.getEvents(req.params.id));
+    res.json(await events.getSessionEvents(req.params.id));
+  })
+);
+
+route<types.api.SessionById_EventCount>(
+  "Get",
+  "/session/:id/events/count",
+  utils.authentication(
+    (context) =>
+      !!context.game &&
+      game.gameHasSession(context.game.id as string, context.params.id)
+  ),
+  expressAsyncHandler(async (req, res) => {
+    res.json(await events.getSessionEventCount(req.params.id));
   })
 );
 
@@ -234,16 +247,16 @@ route<types.api.Event>(
     //  Since the progress object cannot be addressed by itself, no Location header will be returned.
 
     let eventData;
-    if(Array.isArray(req.body)) {
+    if (Array.isArray(req.body)) {
       eventData = [];
 
-      for(const body of req.body) {
+      for (const body of req.body) {
         if (!body.session_id) {
           return utils.sendError(res, {
-              code: 401,
-              description: "Missing game session id",
+            code: 401,
+            description: "Missing game session id",
           });
-        }  
+        }
 
         eventData.push({
           session_id: body.session_id,
@@ -258,11 +271,11 @@ route<types.api.Event>(
     } else {
       if (!req.body.session_id) {
         return utils.sendError(res, {
-            code: 401,
-            description: "Missing game session id",
+          code: 401,
+          description: "Missing game session id",
         });
-      }      
-      
+      }
+
       eventData = {
         session_id: req.body.session_id,
         coordinates: JSON.stringify(req.body.coordinates ?? {}),
@@ -271,7 +284,7 @@ route<types.api.Event>(
         server_time: new Date().toISOString(),
         type: req.body.type,
         user_time: req.body.user_time,
-      }
+      };
     }
 
     await events.postEvent(eventData);
