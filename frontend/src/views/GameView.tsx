@@ -15,7 +15,7 @@ import DownloadButton from "../nodes/DownloadButton";
 
 const request = types.utils.request;
 
-export default function GamePage() {
+export default function GameView() {
   const { id } = Router.useParams<{ id: string }>();
 
   const notificationSystem = React.createRef<NotificationSystem.System>();
@@ -100,19 +100,26 @@ export default function GamePage() {
       </h2>
       {sessionCount && sessionCount > 0 ? (
         <Paginator
-          pageCount={sessionPerPage * sessionCount}
+          pageCount={Math.ceil(sessionCount / sessionPerPage)}
           fetchPageItems={(index) => {
             return request<types.api.GameById_Sessions>(
               "Get",
               `/game/${id}/sessions`,
-              undefined
+              undefined,
+              {
+                params: {
+                  offset: index * sessionPerPage,
+                  limit: sessionPerPage,
+                },
+              }
             ).then((sessions: types.tables.Session[]) => {
               return sessions.map((session, i) => {
                 return (
                   <Card
                     key={i}
-                    title={session.id}
+                    title={session.created_timestamp}
                     url={"/game/session/show/" + session.id}
+                    secondary={session.id}
                   />
                 );
               });

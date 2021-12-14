@@ -9,7 +9,7 @@ import Warn from "../nodes/Warn";
 
 const request = types.utils.request;
 
-export default function ForgottenPassword() {
+export default function __ForgottenPassword() {
   const [sent, setSent] = React.useState<boolean>(false);
   const notificationSystem = React.createRef<NotificationSystem.System>();
 

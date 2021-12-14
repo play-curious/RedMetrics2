@@ -15,7 +15,7 @@ import Warn from "../nodes/Warn";
 
 const request = types.utils.request;
 
-export default function SessionPage() {
+export default function SessionView() {
   const { id } = Router.useParams<{ id: string }>();
 
   const notificationSystem = React.createRef<NotificationSystem.System>();
@@ -77,6 +77,9 @@ export default function SessionPage() {
         />
         <Button to={"/game/show/" + game?.id}> Game </Button>
       </Wrapper>
+      <h2>
+        Events <code> ({eventCount ?? 0}) </code>
+      </h2>
       {eventCount && eventCount > 0 ? (
         <Paginator
           pageCount={Math.ceil(eventCount / eventPerPage)}
@@ -88,6 +91,7 @@ export default function SessionPage() {
               {
                 params: {
                   offset: index * eventPerPage,
+                  limit: eventPerPage,
                 },
               }
             ).then((events: types.tables.Event[]) => {

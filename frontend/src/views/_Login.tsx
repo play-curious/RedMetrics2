@@ -10,7 +10,7 @@ import Button from "../nodes/Button";
 
 const request = types.utils.request;
 
-export default function Login({ deleteUser }: { deleteUser: () => unknown }) {
+export default function _Login({ deleteUser }: { deleteUser: () => unknown }) {
   const [redirect, setRedirect] = React.useState<null | string>(null);
   const notificationSystem = React.createRef<NotificationSystem.System>();
 

@@ -7,12 +7,12 @@ import Paginator from "../nodes/Paginator";
 import GameCard from "../nodes/GameCard";
 import Wrapper from "../nodes/Wrapper";
 import Button from "../nodes/Button";
-import ErrorPage from "./ErrorPage";
+import _Error from "./_Error";
 import Warn from "../nodes/Warn";
 
 const request = types.utils.request;
 
-export default function Games({ user }: { user: types.tables.Account }) {
+export default function GameList({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
   const [gameCount, setGameCount] = React.useState<number>();
@@ -23,7 +23,7 @@ export default function Games({ user }: { user: types.tables.Account }) {
       .catch(console.error);
 
   if (!user.is_admin)
-    return ErrorPage({
+    return _Error({
       text: "You must be administrator to access this page.",
     });
 

@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const request = types.utils.request;
 
-export default function APIKeys({ user }: { user: types.tables.Account }) {
+export default function APIKeyList({ user }: { user: types.tables.Account }) {
   const [apiKeys, setApiKeys] = React.useState<types.tables.ApiKey[]>();
   const [ownGames, setOwnGames] = React.useState<types.tables.Game[]>();
 

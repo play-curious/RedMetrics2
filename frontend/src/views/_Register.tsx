@@ -12,7 +12,7 @@ import * as utils from "../utils";
 
 const request = types.utils.request;
 
-export default function Register() {
+export default function _Register() {
   const [redirect, setRedirect] = React.useState<null | string>(null);
   const notificationSystem = React.createRef<NotificationSystem.System>();
 

@@ -15,7 +15,7 @@ import UUID from "../nodes/UUID";
 
 const request = types.utils.request;
 
-export default function AccountPage({ user }: { user: types.tables.Account }) {
+export default function AccountView({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
   const [, , removeCookie] = Cookies.useCookies([constants.COOKIE_NAME]);
   const [account, setAccount] = React.useState<types.tables.Account>();

@@ -8,7 +8,7 @@ import Button from "../nodes/Button";
 
 const request = types.utils.request;
 
-export default function ConfirmEmail() {
+export default function __ConfirmEmail() {
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
   return (

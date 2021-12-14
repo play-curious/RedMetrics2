@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Documentation() {
+export default function _Documentation() {
   return (
     <div>
       <h1>Documentation</h1>

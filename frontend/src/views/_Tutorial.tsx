@@ -1,5 +1,5 @@
 import React from "react";
 
-export default function Tutorial() {
+export default function _Tutorial() {
   return <h1> WIP </h1>;
 }

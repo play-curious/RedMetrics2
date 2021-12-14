@@ -144,7 +144,7 @@ route<types.api.SessionById_Data>(
 
     const fullSession: types.full.FullSession = {
       ...session,
-      events: await events.getSessionEvents(session.id),
+      events: await events.getAllSessionEvents(session.id),
     };
 
     res.json(fullSession);
@@ -160,7 +160,15 @@ route<types.api.SessionById_Events>(
       game.gameHasSession(context.game.id as string, context.params.id)
   ),
   expressAsyncHandler(async (req, res) => {
-    res.json(await events.getSessionEvents(req.params.id));
+    const { offset, limit } = req.query;
+
+    res.json(
+      await events.getSessionEvents(
+        req.params.id,
+        Number(offset),
+        Number(limit)
+      )
+    );
   })
 );
 

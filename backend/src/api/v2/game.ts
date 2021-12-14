@@ -214,7 +214,7 @@ route<types.api.GameById_Data>(
         description: "Game not found",
       });
 
-    const sessions = await event.getGameSessions(targetGame.id);
+    const sessions = await event.getAllGameSessions(targetGame.id);
 
     const returned: types.api.GameById_Data["Methods"]["Get"]["Response"] = {
       ...targetGame,
@@ -222,7 +222,7 @@ route<types.api.GameById_Data>(
         sessions.map(async (session) => {
           return {
             ...session,
-            events: await event.getSessionEvents(session.id),
+            events: await event.getAllSessionEvents(session.id),
           };
         })
       ),
@@ -243,7 +243,11 @@ route<types.api.GameById_Sessions>(
       context.account.is_admin
   ),
   expressAsyncHandler(async (req, res) => {
-    res.json(await events.getGameSessions(req.params.id));
+    const { offset, limit } = req.query;
+
+    res.json(
+      await events.getGameSessions(req.params.id, Number(offset), Number(limit))
+    );
   })
 );
 

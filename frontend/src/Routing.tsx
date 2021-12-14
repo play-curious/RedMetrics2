@@ -3,25 +3,25 @@ import * as Dom from "react-router-dom";
 
 import * as types from "rm2-typings";
 
-import Register from "./views/Register";
-import Login from "./views/Login";
-import Documentation from "./views/Documentation";
-import Tutorial from "./views/Tutorial";
-import Accounts from "./views/Accounts";
-import Settings from "./views/Settings";
-import Home from "./views/Home";
-import GamePage from "./views/GamePage";
-import AddGame from "./views/AddGame";
-import NotFound from "./views/NotFound";
-import About from "./views/About";
-import Games from "./views/Games";
-import EditGame from "./views/EditGame";
-import CreateAccount from "./views/CreateAccount";
-import AccountPage from "./views/AccountPage";
-import SessionPage from "./views/SessionPage";
-import ForgottenPassword from "./views/ForgottenPassword";
-import ConfirmEmail from "./views/ConfirmEmail";
-import APIKeys from "./views/APIKeys";
+import _Register from "./views/_Register";
+import _Login from "./views/_Login";
+import _Documentation from "./views/_Documentation";
+import _Tutorial from "./views/_Tutorial";
+import AccountList from "./views/AccountList";
+import _Settings from "./views/_Settings";
+import _Home from "./views/_Home";
+import GameView from "./views/GameView";
+import GameAdd from "./views/GameAdd";
+import _NotFound from "./views/_NotFound";
+import _About from "./views/_About";
+import GameList from "./views/GameList";
+import GameEdit from "./views/GameEdit";
+import AccountAdd from "./views/AccountAdd";
+import AccountView from "./views/AccountView";
+import SessionView from "./views/SessionView";
+import __ForgottenPassword from "./views/__ForgottenPassword";
+import __ConfirmEmail from "./views/__ConfirmEmail";
+import APIKeyList from "./views/APIKeyList";
 
 import * as Router from "react-router";
 
@@ -35,73 +35,73 @@ export default function Routing({
   return (
     <Dom.Switch>
       <Dom.Route exact path={["/", "/home"]}>
-        <Home />
+        <_Home />
       </Dom.Route>
       <Dom.Route exact path="/register">
-        <Register />
+        <_Register />
       </Dom.Route>
       <Dom.Route exact path="/forgotten-password">
-        <ForgottenPassword />
+        <__ForgottenPassword />
       </Dom.Route>
       <Dom.Route exact path="/login">
-        <Login deleteUser={fetchUser} />
+        <_Login deleteUser={fetchUser} />
       </Dom.Route>
       <Dom.Route exact path="/docs">
-        <Documentation />
+        <_Documentation />
       </Dom.Route>
       <Dom.Route exact path="/tutorial">
-        <Tutorial />
+        <_Tutorial />
       </Dom.Route>
       <Dom.Route exact path="/about">
-        <About />
+        <_About />
       </Dom.Route>
 
       {user && (
         <>
           <Dom.Route exact path="/confirm-email">
-            <ConfirmEmail />
+            <__ConfirmEmail />
           </Dom.Route>
           <Dom.Route exact path="/profile">
             <Router.Redirect to={"/account/show/" + user.id} />
           </Dom.Route>
           <Dom.Route exact path="/account/show/:id">
-            <AccountPage user={user} />
+            <AccountView user={user} />
           </Dom.Route>
           {user.confirmed && (
             <>
               <Dom.Route exact path="/accounts">
-                <Accounts user={user} />
+                <AccountList user={user} />
               </Dom.Route>
               <Dom.Route exact path="/account/create">
-                <CreateAccount user={user} />
+                <AccountAdd user={user} />
               </Dom.Route>
               <Dom.Route exact path="/settings">
-                <Settings user={user} />
+                <_Settings user={user} />
               </Dom.Route>
               <Dom.Route exact path="/games">
-                <Games user={user} />
+                <GameList user={user} />
               </Dom.Route>
               <Dom.Route exact path="/game/add">
-                <AddGame user={user} />
+                <GameAdd user={user} />
               </Dom.Route>
               <Dom.Route exact path="/api-keys">
-                <APIKeys user={user} />
+                <APIKeyList user={user} />
               </Dom.Route>
               <Dom.Route exact path="/game/edit/:id">
-                <EditGame />
+                <GameEdit />
               </Dom.Route>
               <Dom.Route exact path="/game/session/show/:id">
-                <SessionPage />
+                <SessionView />
               </Dom.Route>
               <Dom.Route exact path="/game/show/:id">
-                <GamePage />
+                <GameView />
               </Dom.Route>
             </>
           )}
         </>
       )}
 
-      <Dom.Route path="*" exact component={NotFound} />
+      <Dom.Route path="*" exact component={_NotFound} />
     </Dom.Switch>
   );
 }

@@ -6,20 +6,20 @@ import * as types from "rm2-typings";
 import Card from "../nodes/Card";
 import Wrapper from "../nodes/Wrapper";
 import Button from "../nodes/Button";
-import ErrorPage from "./ErrorPage";
+import _Error from "./_Error";
 import Paginator from "../nodes/Paginator";
 import Warn from "../nodes/Warn";
 
 const request = types.utils.request;
 
-export default function Accounts({ user }: { user: types.tables.Account }) {
+export default function AccountList({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
   const [accountCount, setAccountCount] = React.useState<number>();
 
   const accountPerPage = 15;
 
   if (!user.is_admin)
-    return ErrorPage({
+    return _Error({
       text: "You must be administrator to access this page.",
     });
 

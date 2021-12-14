@@ -1,73 +1,66 @@
 import React from "react";
 import * as Router from "react-router";
+
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
-
-import querystring from "query-string";
 
 import CustomForm from "../nodes/CustomForm";
 
 const request = types.utils.request;
 
-export default function EditGame() {
+export default function GameAdd({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
-  const { id } = Router.useParams<{ id: string }>();
-  const [game, setGame] = React.useState<types.tables.Game>();
   const [redirect, setRedirect] = React.useState<null | string>(null);
-
-  if (!game)
-    request<types.api.GameById>("Get", `/game/${id}`, undefined)
-      .then(setGame)
-      .catch(console.error);
 
   return (
     <>
       <NotificationSystem ref={notificationSystem} />
       {redirect && <Router.Redirect to={redirect} />}
-      <h1> Edit Game </h1>
+      <h1> Add your game </h1>
       <CustomForm
-        onSubmit={(data: types.api.GameById["Methods"]["Put"]["Body"]) => {
-          request<types.api.GameById>("Put", `/game/${id}`, data)
-            .then(() => {
-              setRedirect(
-                `/game/show/${id}?${querystring.stringify({
-                  success: "Game successfully edited",
-                })}`
-              );
+        onSubmit={(game: types.api.Game["Methods"]["Post"]["Body"]) => {
+          request<types.api.Game>("Post", "/game", game)
+            .then((data) => {
+              setRedirect("/game/show/" + data.id);
             })
             .catch((error) => {
-              notificationSystem.current?.addNotification({
+              const notification = notificationSystem.current;
+              notification?.addNotification({
                 message: error.message,
                 level: "error",
               });
             });
         }}
+        submitText="Add"
+        className="flex flex-col"
         inputs={{
           name: {
             is: "text",
-            minLength: 2,
+            required: true,
+            autoFocus: true,
+            minLength: 3,
+            maxLength: 256,
             placeholder: "Game name",
+            label: "Game name",
           },
           author: {
             is: "text",
-            placeholder: "Author of game",
+            label: "Author",
+            minLength: 3,
+            maxLength: 256,
+            placeholder: "Game author name",
           },
           description: {
             is: "area",
+            label: "Game description",
           },
           custom_data: {
             is: "area",
-            code: true,
             label: "Custom data",
             jsonValidation: true,
           },
-        }}
-        defaultValues={{
-          name: game?.name,
-          author: game?.author,
-          description: game?.description,
-          custom_data: game?.custom_data,
+          publisher_id: user.id,
         }}
       />
     </>

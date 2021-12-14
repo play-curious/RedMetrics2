@@ -40,7 +40,7 @@ const email = "fixtures@fixtures.fixtures";
   const session = await sessions().where({ game_id: game?.id }).first();
 
   await events().insert(
-    new Array<types.utils.Insert<types.tables.Event>>().fill({
+    new Array<types.utils.Insert<types.tables.Event>>(count).fill({
       session_id: session?.id as string,
       type: "test",
       server_time: new Date().toLocaleString(),
