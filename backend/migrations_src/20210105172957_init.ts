@@ -2,110 +2,97 @@ import { Knex } from "knex";
 
 import "dotenv/config";
 
+type Mod = (knex: Knex, table: Knex.CreateTableBuilder) => Knex.ColumnBuilder;
+
+function id(alias?: string): Mod {
+  return (knex, table) => {
+    return table
+      .uuid(alias ?? "id")
+      .notNullable()
+      .primary()
+      .defaultTo(knex.raw("uuid_generate_v4()"));
+  };
+}
+
+function date(name: string): Mod {
+  return (knex, table) => {
+    return table.string(name + "_timestamp");
+  };
+}
+
+function ref(tableName: string, alias?: string): Mod {
+  return (knex, table) => {
+    return table
+      .uuid((alias ?? tableName) + "_id")
+      .references("id")
+      .inTable(tableName)
+      .onDelete("cascade")
+      .notNullable();
+  };
+}
+
+const custom: Mod = (knex, table) => {
+  return table.json("custom_data");
+};
+
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
 
   await knex.schema.createTable("account", (table) => {
-    table
-      .uuid("id")
-      .notNullable()
-      .primary()
-      .defaultTo(knex.raw("uuid_generate_v4()"));
+    id()(knex, table);
+    date("created")(knex, table).notNullable();
     table.string("email").unique().notNullable();
     table.string("password").notNullable();
     table.string("connection_token");
     table.boolean("confirmed").defaultTo(false);
     table.boolean("is_admin").defaultTo(false);
-    table.string("created_timestamp").notNullable();
   });
 
   await knex.schema.createTable("confirmation", (table) => {
-    table
-      .uuid("account_id")
-      .references("id")
-      .inTable("account")
-      .onDelete("cascade")
-      .notNullable();
+    ref("account")(knex, table);
     table.string("code").notNullable();
   });
 
   await knex.schema.createTable("game", (table) => {
-    table
-      .uuid("id")
-      .notNullable()
-      .primary()
-      .defaultTo(knex.raw("uuid_generate_v4()"));
+    id()(knex, table);
+    ref("account", "publisher")(knex, table);
+    custom(knex, table);
     table.string("name").notNullable();
     table.string("author");
     table.text("description");
-    table.json("custom_data");
-    table
-      .uuid("publisher_id")
-      .references("id")
-      .inTable("account")
-      .onDelete("CASCADE")
-      .notNullable();
   });
 
   await knex.schema.createTable("api_key", (table) => {
-    table
-      .uuid("key")
-      .notNullable()
-      .primary()
-      .defaultTo(knex.raw("uuid_generate_v4()"));
-    table.timestamp("start_at").notNullable();
+    id("key")(knex, table);
+    ref("game")(knex, table);
+    ref("account")(knex, table);
+    date("start")(knex, table).notNullable();
     table.string("description");
-    table
-      .uuid("game_id")
-      .references("id")
-      .inTable("game")
-      .onDelete("CASCADE")
-      .notNullable();
-    table
-      .uuid("account_id")
-      .references("id")
-      .inTable("account")
-      .onDelete("CASCADE")
-      .notNullable();
   });
 
   await knex.schema.createTable("session", (table) => {
-    table
-      .uuid("id")
-      .notNullable()
-      .primary()
-      .defaultTo(knex.raw("uuid_generate_v4()"));
+    id()(knex, table);
+    ref("game")(knex, table);
+    date("created")(knex, table).notNullable();
+    date("updated")(knex, table).notNullable();
+    custom(knex, table);
     table.boolean("closed");
     table.string("platform");
     table.string("screen_size");
     table.string("software");
     table.string("external_id");
-    table.json("custom_data");
     table.string("version");
-    table
-      .uuid("game_id")
-      .references("id")
-      .inTable("game")
-      .onDelete("CASCADE")
-      .notNullable();
-    table.string("updated_timestamp").notNullable();
-    table.string("created_timestamp").notNullable();
   });
 
   await knex.schema.createTable("event", (table) => {
     table.increments("id").notNullable().primary();
-    table.timestamp("user_time");
-    table.timestamp("server_time").notNullable();
+    date("user")(knex, table);
+    date("server")(knex, table).notNullable();
+    custom(knex, table);
+    ref("session")(knex, table);
     table.string("type");
-    table.json("custom_data");
     table.string("section");
     table.json("coordinates");
-    table
-      .uuid("session_id")
-      .references("id")
-      .inTable("session")
-      .onDelete("CASCADE")
-      .notNullable();
   });
 }
 

@@ -16,8 +16,8 @@
     "test": "tsc && jest",
     "clean": "rm -rf dist",
     "types": "npm up rm2-typings -f",
-    "fixtures:setup": "node dist/fixtures/setup",
-    "fixtures:teardown": "node dist/fixtures/teardown"
+    "fixtures": "node dist/fixtures/setup",
+    "fixtures-down": "node dist/fixtures/teardown"
   },
   "repository": {
     "type": "git",
