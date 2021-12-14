@@ -1,4 +1,5 @@
 import * as app from "../app";
+import * as utils from "../utils";
 import * as types from "rm2-typings";
 
 export const sessions = () => app.database<types.tables.Session>("session");
@@ -19,10 +20,7 @@ export function getGameSessions(
 export function getGameSessionCount(
   id: types.tables.Game["id"]
 ): Promise<number> {
-  return sessions()
-    .where("game_id", id)
-    .count({ total: "*" })
-    .then((raw) => Number(raw[0].total));
+  return utils.count(sessions().where("game_id", id));
 }
 
 export function postGameSession(
@@ -54,10 +52,7 @@ export function getSessionEvents(
 export function getSessionEventCount(
   id: types.tables.Session["id"]
 ): Promise<number> {
-  return events()
-    .where("session_id", id)
-    .count({ total: "*" })
-    .then((raw) => Number(raw[0].total));
+  return utils.count(events().where("session_id", id));
 }
 
 export function getEvent(

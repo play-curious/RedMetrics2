@@ -1,4 +1,5 @@
 import * as app from "../app";
+import * as utils from "../utils";
 import * as types from "rm2-typings";
 
 export const confirmations = () =>
@@ -81,10 +82,10 @@ export async function updateAccount(
   await accounts().update(account).where({ id }).returning("id");
 }
 
-export function countAccounts(): Promise<number> {
-  return accounts().count();
-}
-
 export function getAccounts(): Promise<types.tables.Account[]> {
   return accounts().select("*");
+}
+
+export function getAccountCount(): Promise<number> {
+  return utils.count(getAccounts());
 }

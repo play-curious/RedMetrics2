@@ -7,23 +7,25 @@ import Card from "../nodes/Card";
 import Wrapper from "../nodes/Wrapper";
 import Button from "../nodes/Button";
 import ErrorPage from "./ErrorPage";
+import Paginator from "../nodes/Paginator";
+import Warn from "../nodes/Warn";
 
 const request = types.utils.request;
 
 export default function Accounts({ user }: { user: types.tables.Account }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
-  const [accounts, setAccounts] = React.useState<types.tables.Account[]>();
+  const [accountCount, setAccountCount] = React.useState<number>();
+
+  const accountPerPage = 15;
 
   if (!user.is_admin)
     return ErrorPage({
       text: "You must be administrator to access this page.",
     });
 
-  if (accounts === undefined)
-    request<types.api.Accounts>("Get", "/accounts", undefined, {
-      params: { limit: 100, page: 1 },
-    })
-      .then((data) => setAccounts(data))
+  if (accountCount === undefined)
+    request<types.api.AccountCount>("Get", "/accounts/count", undefined)
+      .then(setAccountCount)
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,
@@ -40,49 +42,62 @@ export default function Accounts({ user }: { user: types.tables.Account }) {
         <Button to="/account/create"> Create </Button>
       </Wrapper>
       <h2 id="list"> Account list </h2>
-      <Wrapper>
-        {accounts?.map((account) => {
-          return (
-            <Card
-              title={account.email}
-              url={"/account/show/" + account.id}
-              secondary={account.id}
-            >
-              <div className="flex">
-                <Button to={"/account/show/" + account.id}> Edit </Button>
-                <Button
-                  to="/accounts"
-                  callback={() => {
-                    request<types.api.AccountById>(
-                      "Delete",
-                      `/account/${account.id}`,
-                      undefined
-                    )
-                      .then(() => {
-                        notificationSystem.current?.addNotification({
-                          message: "Account successfully deleted",
-                          level: "success",
-                        });
-                        setAccounts(
-                          accounts.filter((a) => a.id !== account.id)
-                        );
-                      })
-                      .catch((error) => {
-                        notificationSystem.current?.addNotification({
-                          message: error.message,
-                          level: "error",
-                        });
-                      });
-                  }}
-                  customClassName="hover:bg-red-500"
-                >
-                  Delete
-                </Button>
-              </div>
-            </Card>
-          );
-        })}
-      </Wrapper>
+      {accountCount && accountCount > 1 ? (
+        <Paginator
+          pageCount={accountCount / accountPerPage}
+          fetchPageItems={(index) => {
+            return request<types.api.Accounts>("Get", "/accounts", undefined, {
+              params: {
+                offset: index * accountPerPage,
+                limit: accountPerPage,
+              },
+            }).then((accounts: types.tables.Account[]) =>
+              accounts?.map((account) => {
+                return (
+                  <Card
+                    title={account.email}
+                    url={"/account/show/" + account.id}
+                    secondary={account.id}
+                  >
+                    <div className="flex">
+                      <Button to={"/account/show/" + account.id}> Edit </Button>
+                      <Button
+                        to="/accounts"
+                        callback={() => {
+                          request<types.api.AccountById>(
+                            "Delete",
+                            `/account/${account.id}`,
+                            undefined
+                          )
+                            .then(() => {
+                              notificationSystem.current?.addNotification({
+                                message: "Account successfully deleted",
+                                level: "success",
+                              });
+
+                              setAccountCount(undefined);
+                            })
+                            .catch((error) => {
+                              notificationSystem.current?.addNotification({
+                                message: error.message,
+                                level: "error",
+                              });
+                            });
+                        }}
+                        customClassName="hover:bg-red-500"
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  </Card>
+                );
+              })
+            );
+          }}
+        />
+      ) : (
+        <Warn type="warn"> No accounts found </Warn>
+      )}
     </>
   );
 }

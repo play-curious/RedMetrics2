@@ -1,5 +1,6 @@
 import fsp from "fs/promises";
 import path from "path";
+import knex from "knex";
 import express from "express";
 import nodemailer from "nodemailer";
 import expressAsyncHandler from "express-async-handler";
@@ -295,4 +296,8 @@ export async function sendAccountConfirmation(account: types.tables.Account) {
       `,
     "RedMetrics2 - Confirm your account"
   );
+}
+
+export function count(qb: any): Promise<number> {
+  return qb.count({ total: "*" }).then((raw: any) => Number(raw[0].total));
 }

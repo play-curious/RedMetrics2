@@ -317,6 +317,15 @@ route<types.api.Accounts>(
   })
 );
 
+route<types.api.AccountCount>(
+  "Get",
+  "/accounts/count",
+  utils.authentication("admin", true),
+  expressAsyncHandler(async (req, res) => {
+    res.json(await auth.getAccountCount());
+  })
+);
+
 route<types.api.Key>(
   "Post",
   "/key",
