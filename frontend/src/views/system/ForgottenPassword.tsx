@@ -3,13 +3,13 @@ import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
 
-import CustomForm from "../nodes/CustomForm";
-import Button from "../nodes/Button";
-import Warn from "../nodes/Warn";
+import CustomForm from "../../nodes/CustomForm";
+import Button from "../../nodes/Button";
+import Warn from "../../nodes/Warn";
 
 const request = types.utils.request;
 
-export default function __ForgottenPassword() {
+export default function ForgottenPassword() {
   const [sent, setSent] = React.useState<boolean>(false);
   const notificationSystem = React.createRef<NotificationSystem.System>();
 

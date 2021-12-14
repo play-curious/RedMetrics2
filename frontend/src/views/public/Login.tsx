@@ -3,14 +3,14 @@ import * as Router from "react-router";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
-import * as utils from "../utils";
+import * as utils from "../../utils";
 
-import CustomForm from "../nodes/CustomForm";
-import Button from "../nodes/Button";
+import CustomForm from "../../nodes/CustomForm";
+import Button from "../../nodes/Button";
 
 const request = types.utils.request;
 
-export default function _Login({ deleteUser }: { deleteUser: () => unknown }) {
+export default function Login({ deleteUser }: { deleteUser: () => unknown }) {
   const [redirect, setRedirect] = React.useState<null | string>(null);
   const notificationSystem = React.createRef<NotificationSystem.System>();
 

@@ -3,12 +3,12 @@ import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
 
-import Card from "../nodes/Card";
-import Wrapper from "../nodes/Wrapper";
-import Button from "../nodes/Button";
-import _Error from "./_Error";
-import Paginator from "../nodes/Paginator";
-import Warn from "../nodes/Warn";
+import Card from "../../nodes/Card";
+import Wrapper from "../../nodes/Wrapper";
+import Button from "../../nodes/Button";
+import Error from "../system/Error";
+import Paginator from "../../nodes/Paginator";
+import Warn from "../../nodes/Warn";
 
 const request = types.utils.request;
 
@@ -19,7 +19,7 @@ export default function AccountList({ user }: { user: types.tables.Account }) {
   const accountPerPage = 15;
 
   if (!user.is_admin)
-    return _Error({
+    return Error({
       text: "You must be administrator to access this page.",
     });
 

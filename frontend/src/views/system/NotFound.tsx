@@ -1,9 +1,9 @@
 import React from "react";
 
-import Button from "../nodes/Button";
-import Wrapper from "../nodes/Wrapper";
+import Button from "../../nodes/Button";
+import Wrapper from "../../nodes/Wrapper";
 
-export default function _NotFound() {
+export default function NotFound() {
   return (
     <>
       <h1>

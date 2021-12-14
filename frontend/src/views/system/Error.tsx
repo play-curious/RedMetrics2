@@ -1,9 +1,9 @@
 import React from "react";
 
-import Button from "../nodes/Button";
-import Wrapper from "../nodes/Wrapper";
+import Button from "../../nodes/Button";
+import Wrapper from "../../nodes/Wrapper";
 
-export default function _Error({
+export default function Error({
   text,
 }: {
   text: "You must be administrator to access this page." | string;

@@ -2,16 +2,16 @@ import React from "react";
 import * as Router from "react-router";
 
 import * as types from "rm2-typings";
-import * as utils from "../utils";
+import * as utils from "../../utils";
 
 import NotificationSystem from "react-notification-system";
 
-import Button from "../nodes/Button";
-import Wrapper from "../nodes/Wrapper";
-import Card from "../nodes/Card";
-import DownloadButton from "../nodes/DownloadButton";
-import Paginator from "../nodes/Paginator";
-import Warn from "../nodes/Warn";
+import Button from "../../nodes/Button";
+import Wrapper from "../../nodes/Wrapper";
+import Card from "../../nodes/Card";
+import DownloadButton from "../../nodes/DownloadButton";
+import Paginator from "../../nodes/Paginator";
+import Warn from "../../nodes/Warn";
 
 const request = types.utils.request;
 

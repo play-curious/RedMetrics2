@@ -5,13 +5,13 @@ import * as types from "rm2-typings";
 
 import NotificationSystem from "react-notification-system";
 
-import * as utils from "../utils";
-import * as constants from "../constants";
+import * as utils from "../../utils";
+import * as constants from "../../constants";
 
-import CustomForm from "../nodes/CustomForm";
-import Button from "../nodes/Button";
-import Wrapper from "../nodes/Wrapper";
-import UUID from "../nodes/UUID";
+import CustomForm from "../../nodes/CustomForm";
+import Button from "../../nodes/Button";
+import Wrapper from "../../nodes/Wrapper";
+import UUID from "../../nodes/UUID";
 
 const request = types.utils.request;
 

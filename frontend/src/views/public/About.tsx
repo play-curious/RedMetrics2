@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function _About() {
+export default function About() {
   return (
     <div>
       <h1>About RedMetrics2</h1>

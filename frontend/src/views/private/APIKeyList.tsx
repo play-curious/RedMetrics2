@@ -4,10 +4,10 @@ import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
 
-import UUID from "../nodes/UUID";
-import Warn from "../nodes/Warn";
-import Button from "../nodes/Button";
-import CustomForm from "../nodes/CustomForm";
+import UUID from "../../nodes/UUID";
+import Warn from "../../nodes/Warn";
+import Button from "../../nodes/Button";
+import CustomForm from "../../nodes/CustomForm";
 
 import { faTrashAlt, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

@@ -5,7 +5,7 @@ import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
 
-import CustomForm from "../nodes/CustomForm";
+import CustomForm from "../../nodes/CustomForm";
 
 const request = types.utils.request;
 

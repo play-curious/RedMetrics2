@@ -3,12 +3,12 @@ import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
 
-import Paginator from "../nodes/Paginator";
-import GameCard from "../nodes/GameCard";
-import Wrapper from "../nodes/Wrapper";
-import Button from "../nodes/Button";
-import _Error from "./_Error";
-import Warn from "../nodes/Warn";
+import Paginator from "../../nodes/Paginator";
+import GameCard from "../../nodes/GameCard";
+import Wrapper from "../../nodes/Wrapper";
+import Button from "../../nodes/Button";
+import Error from "../system/Error";
+import Warn from "../../nodes/Warn";
 
 const request = types.utils.request;
 
@@ -23,7 +23,7 @@ export default function GameList({ user }: { user: types.tables.Account }) {
       .catch(console.error);
 
   if (!user.is_admin)
-    return _Error({
+    return Error({
       text: "You must be administrator to access this page.",
     });
 

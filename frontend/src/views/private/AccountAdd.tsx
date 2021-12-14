@@ -7,8 +7,8 @@ import NotificationSystem from "react-notification-system";
 
 import * as uuid from "uuid";
 
-import CustomForm from "../nodes/CustomForm";
-import _Error from "./_Error";
+import CustomForm from "../../nodes/CustomForm";
+import Error from "../system/Error";
 
 const request = types.utils.request;
 
@@ -19,7 +19,7 @@ export default function AccountAdd({ user }: { user?: types.tables.Account }) {
   const password = uuid.v4();
 
   if (!user?.is_admin)
-    return _Error({
+    return Error({
       text: "You must be administrator to access this page.",
     });
 

@@ -3,25 +3,25 @@ import * as Dom from "react-router-dom";
 
 import * as types from "rm2-typings";
 
-import _Register from "./views/_Register";
-import _Login from "./views/_Login";
-import _Documentation from "./views/_Documentation";
-import _Tutorial from "./views/_Tutorial";
-import AccountList from "./views/AccountList";
-import _Settings from "./views/_Settings";
-import _Home from "./views/_Home";
-import GameView from "./views/GameView";
-import GameAdd from "./views/GameAdd";
-import _NotFound from "./views/_NotFound";
-import _About from "./views/_About";
-import GameList from "./views/GameList";
-import GameEdit from "./views/GameEdit";
-import AccountAdd from "./views/AccountAdd";
-import AccountView from "./views/AccountView";
-import SessionView from "./views/SessionView";
-import __ForgottenPassword from "./views/__ForgottenPassword";
-import __ConfirmEmail from "./views/__ConfirmEmail";
-import APIKeyList from "./views/APIKeyList";
+import Register from "./views/public/Register";
+import Login from "./views/public/Login";
+import Documentation from "./views/public/Documentation";
+import Tutorial from "./views/public/Tutorial";
+import AccountList from "./views/private/AccountList";
+import Settings from "./views/public/Settings";
+import Home from "./views/public/Home";
+import GameView from "./views/private/GameView";
+import GameAdd from "./views/private/GameAdd";
+import NotFound from "./views/system/NotFound";
+import About from "./views/public/About";
+import GameList from "./views/private/GameList";
+import GameEdit from "./views/private/GameEdit";
+import AccountAdd from "./views/private/AccountAdd";
+import AccountView from "./views/private/AccountView";
+import SessionView from "./views/private/SessionView";
+import ForgottenPassword from "./views/system/ForgottenPassword";
+import ConfirmEmail from "./views/system/ConfirmEmail";
+import APIKeyList from "./views/private/APIKeyList";
 
 import * as Router from "react-router";
 
@@ -35,31 +35,31 @@ export default function Routing({
   return (
     <Dom.Switch>
       <Dom.Route exact path={["/", "/home"]}>
-        <_Home />
+        <Home />
       </Dom.Route>
       <Dom.Route exact path="/register">
-        <_Register />
+        <Register />
       </Dom.Route>
       <Dom.Route exact path="/forgotten-password">
-        <__ForgottenPassword />
+        <ForgottenPassword />
       </Dom.Route>
       <Dom.Route exact path="/login">
-        <_Login deleteUser={fetchUser} />
+        <Login deleteUser={fetchUser} />
       </Dom.Route>
       <Dom.Route exact path="/docs">
-        <_Documentation />
+        <Documentation />
       </Dom.Route>
       <Dom.Route exact path="/tutorial">
-        <_Tutorial />
+        <Tutorial />
       </Dom.Route>
       <Dom.Route exact path="/about">
-        <_About />
+        <About />
       </Dom.Route>
 
       {user && (
         <>
           <Dom.Route exact path="/confirm-email">
-            <__ConfirmEmail />
+            <ConfirmEmail />
           </Dom.Route>
           <Dom.Route exact path="/profile">
             <Router.Redirect to={"/account/show/" + user.id} />
@@ -76,7 +76,7 @@ export default function Routing({
                 <AccountAdd user={user} />
               </Dom.Route>
               <Dom.Route exact path="/settings">
-                <_Settings user={user} />
+                <Settings user={user} />
               </Dom.Route>
               <Dom.Route exact path="/games">
                 <GameList user={user} />
@@ -101,7 +101,7 @@ export default function Routing({
         </>
       )}
 
-      <Dom.Route path="*" exact component={_NotFound} />
+      <Dom.Route path="*" exact component={NotFound} />
     </Dom.Switch>
   );
 }

@@ -6,7 +6,7 @@ import * as types from "rm2-typings";
 
 import querystring from "query-string";
 
-import CustomForm from "../nodes/CustomForm";
+import CustomForm from "../../nodes/CustomForm";
 
 const request = types.utils.request;
 

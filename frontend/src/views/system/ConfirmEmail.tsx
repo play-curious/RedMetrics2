@@ -3,12 +3,12 @@ import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
 
-import CustomForm from "../nodes/CustomForm";
-import Button from "../nodes/Button";
+import CustomForm from "../../nodes/CustomForm";
+import Button from "../../nodes/Button";
 
 const request = types.utils.request;
 
-export default function __ConfirmEmail() {
+export default function ConfirmEmail() {
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
   return (
