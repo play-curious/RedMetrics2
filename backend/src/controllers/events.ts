@@ -31,7 +31,7 @@ export function getAllGameSessions(
   return sessions().where("game_id", id);
 }
 
-export function postGameSession(
+export function postSession(
   session: types.utils.Insert<types.tables.Session>
 ): Promise<string> {
   return sessions()

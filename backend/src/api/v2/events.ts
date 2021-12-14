@@ -47,7 +47,7 @@ route<types.api.Session>(
       updated_timestamp: String(Date.now()),
     };
 
-    const id = await events.postGameSession(session);
+    const id = await events.postSession(session);
 
     res.json({ id, ...session });
   })
@@ -254,49 +254,52 @@ route<types.api.Event>(
     //  If no session is given, a new session will be created and returned.
     //  Since the progress object cannot be addressed by itself, no Location header will be returned.
 
-    let eventData;
-    if (Array.isArray(req.body)) {
-      eventData = [];
+    const body: types.api.Event["Methods"]["Post"]["Body"] = req.body;
+    const postEvents = Array.isArray(body) ? body : [body];
 
-      for (const body of req.body) {
-        if (!body.session_id) {
-          return utils.sendError(res, {
-            code: 401,
-            description: "Missing game session id",
-          });
-        }
+    if (postEvents.length === 0)
+      return utils.sendError(res, {
+        code: 401,
+        description: "You tried to push an empty list of events.",
+      });
 
-        eventData.push({
-          session_id: body.session_id,
-          coordinates: JSON.stringify(body.coordinates ?? {}),
-          custom_data: JSON.stringify(body.custom_data ?? {}),
-          section: body.section,
-          server_time: new Date().toISOString(),
-          type: body.type,
-          user_time: body.user_time,
-        });
-      }
-    } else {
-      if (!req.body.session_id) {
-        return utils.sendError(res, {
-          code: 401,
-          description: "Missing game session id",
-        });
-      }
+    async function newSession(): Promise<types.tables.Session> {
+      if (!utils.hasGame(req))
+        throw new Error("used event route without API key");
 
-      eventData = {
-        session_id: req.body.session_id,
-        coordinates: JSON.stringify(req.body.coordinates ?? {}),
-        custom_data: JSON.stringify(req.body.custom_data ?? {}),
-        section: req.body.section,
-        server_time: new Date().toISOString(),
-        type: req.body.type,
-        user_time: req.body.user_time,
+      const s: types.utils.Insert<types.tables.Session> = {
+        game_id: req.game.id,
+        created_timestamp: Date.now().toString(),
+        updated_timestamp: Date.now().toString(),
+        closed: false,
       };
+
+      const id = await events.postSession(s);
+
+      return { ...s, id };
     }
 
-    await events.postEvent(eventData);
+    let session: types.tables.Session;
+    if (postEvents[0].session_id) {
+      const _session = await events.getSession(postEvents[0].session_id);
+      if (!_session) session = await newSession();
+      else session = _session;
+    } else session = await newSession();
 
-    res.sendStatus(200);
+    await events.postEvent(
+      postEvents.map((postEvent) => {
+        return {
+          session_id: postEvent.session_id,
+          coordinates: JSON.stringify(postEvent.coordinates ?? {}),
+          custom_data: JSON.stringify(postEvent.custom_data ?? {}),
+          section: postEvent.section,
+          server_time: new Date().toISOString(),
+          type: postEvent.type,
+          user_time: postEvent.user_time,
+        };
+      })
+    );
+
+    res.json(session.id);
   })
 );
