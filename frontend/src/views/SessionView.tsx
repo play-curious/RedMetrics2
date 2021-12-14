@@ -24,7 +24,7 @@ export default function SessionView() {
   const [session, setSession] = React.useState<types.tables.Session>();
   const [eventCount, setEventCount] = React.useState<number>();
 
-  const eventPerPage = 20;
+  const eventPerPage = 15;
 
   if (session === undefined)
     request<types.api.SessionById>("Get", `/session/${id}`, undefined)
@@ -75,10 +75,10 @@ export default function SessionView() {
             (session?.id ? session?.id : "session")
           }
         />
-        <Button to={"/game/show/" + game?.id}> Game </Button>
+        <Button to={"/game/show/" + session?.game_id}> Game </Button>
       </Wrapper>
       <h2>
-        Events <code> ({eventCount ?? 0}) </code>
+        Events <code> ({eventCount ?? 0})</code>
       </h2>
       {eventCount && eventCount > 0 ? (
         <Paginator
@@ -102,7 +102,9 @@ export default function SessionView() {
                     title={event.section ?? "no section"}
                     footer={event.server_time}
                   >
-                    <code>{JSON.stringify(event, null, 2)}</code>
+                    <pre>
+                      <code>{JSON.stringify(event, null, 2)}</code>
+                    </pre>
                   </Card>
                 );
               });

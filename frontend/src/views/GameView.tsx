@@ -113,16 +113,31 @@ export default function GameView() {
                 },
               }
             ).then((sessions: types.tables.Session[]) => {
-              return sessions.map((session, i) => {
-                return (
-                  <Card
-                    key={i}
-                    title={session.created_timestamp}
-                    url={"/game/session/show/" + session.id}
-                    secondary={session.id}
-                  />
-                );
-              });
+              return Promise.all(
+                sessions
+                  .sort((a, b) =>
+                    a.created_timestamp.localeCompare(b.created_timestamp)
+                  )
+                  .map(async (session, i) => {
+                    return (
+                      <Card
+                        key={i}
+                        title={session.created_timestamp}
+                        url={"/game/session/show/" + session.id}
+                        secondary={session.id}
+                      >
+                        {
+                          await request<types.api.SessionById_EventCount>(
+                            "Get",
+                            `/session/${session.id}/events/count`,
+                            undefined
+                          )
+                        }{" "}
+                        events
+                      </Card>
+                    );
+                  })
+              );
             });
           }}
         />
