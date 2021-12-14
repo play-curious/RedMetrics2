@@ -87,5 +87,5 @@ export function getAccounts(): Promise<types.tables.Account[]> {
 }
 
 export function getAccountCount(): Promise<number> {
-  return utils.count(getAccounts());
+  return utils.count(accounts());
 }

@@ -4,6 +4,8 @@ import ReactPaginate from "react-paginate";
 
 import Wrapper from "./Wrapper";
 
+import "./Paginator.scss";
+
 export default function Paginator<T>({
   pageCount,
   fetchPageItems,
@@ -19,10 +21,10 @@ export default function Paginator<T>({
 
   React.useEffect(() => {
     fetchPageItems(pageIndex).then(setPageItems).catch(console.error);
-  }, [pageIndex]);
+  }, [pageIndex, fetchPageItems]);
 
   return (
-    <>
+    <div className="paginator">
       <Wrapper>{pageItems}</Wrapper>
       <ReactPaginate
         pageCount={pageCount}
@@ -30,12 +32,12 @@ export default function Paginator<T>({
           setPageIndex(selected);
         }}
         marginPagesDisplayed={2}
-        pageRangeDisplayed={5}
-        containerClassName="flex w-full justify-around my-5"
-        pageLinkClassName="cursor-pointer hover:bg-gray-200 px-2 rounded-full"
-        activeClassName="border-2 bg-gray-200 rounded-full"
-        disabledClassName="opacity-50 no-underline"
+        pageRangeDisplayed={3}
+        containerClassName="flex w-full justify-center my-5"
+        pageLinkClassName="cursor-pointer hover:bg-gray-200 px-2 rounded-full no-underline hover:no-underline"
+        activeClassName="border-2 bg-gray-200 rounded-full no-underline hover:no-underline"
+        disabledClassName="opacity-50 no-underline hover:no-underline"
       />
-    </>
+    </div>
   );
 }

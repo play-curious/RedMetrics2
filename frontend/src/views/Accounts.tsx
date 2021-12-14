@@ -42,7 +42,7 @@ export default function Accounts({ user }: { user: types.tables.Account }) {
         <Button to="/account/create"> Create </Button>
       </Wrapper>
       <h2 id="list"> Account list </h2>
-      {accountCount && accountCount > 1 ? (
+      {accountCount && accountCount > 0 ? (
         <Paginator
           pageCount={accountCount / accountPerPage}
           fetchPageItems={(index) => {

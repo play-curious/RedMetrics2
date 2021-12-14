@@ -3,7 +3,6 @@ import * as Dom from "react-router-dom";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
-import * as constants from "../constants";
 
 import UUID from "../nodes/UUID";
 import Warn from "../nodes/Warn";
