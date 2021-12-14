@@ -289,7 +289,7 @@ route<types.api.Event>(
     await events.postEvent(
       postEvents.map((postEvent) => {
         return {
-          session_id: postEvent.session_id,
+          session_id: session.id,
           coordinates: JSON.stringify(postEvent.coordinates ?? {}),
           custom_data: JSON.stringify(postEvent.custom_data ?? {}),
           section: postEvent.section,
