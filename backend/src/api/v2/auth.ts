@@ -349,7 +349,7 @@ route<types.api.Key>(
 
     const apiKey: types.tables.ApiKey = {
       description: req.body.description,
-      start_at: new Date().toISOString(),
+      start_timestamp: String(Date.now()),
       account_id: req.account.id,
       key: uuid.v4(),
       game_id: req.body.game_id,

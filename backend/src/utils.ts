@@ -1,6 +1,5 @@
 import fsp from "fs/promises";
 import path from "path";
-import knex from "knex";
 import express from "express";
 import nodemailer from "nodemailer";
 import expressAsyncHandler from "express-async-handler";

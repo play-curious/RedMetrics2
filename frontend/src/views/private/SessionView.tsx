@@ -6,17 +6,17 @@ import * as utils from "../../utils";
 
 import NotificationSystem from "react-notification-system";
 
+import DownloadButton from "../../nodes/DownloadButton";
 import Button from "../../nodes/Button";
 import Wrapper from "../../nodes/Wrapper";
 import Card from "../../nodes/Card";
-import DownloadButton from "../../nodes/DownloadButton";
 import Paginator from "../../nodes/Paginator";
 import Warn from "../../nodes/Warn";
 
 const request = types.utils.request;
 
 export default function SessionView() {
-  const { id } = Router.useParams<{ id: string }>();
+  const { id, game_id } = Router.useParams<{ id: string; game_id: string }>();
 
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
@@ -51,7 +51,7 @@ export default function SessionView() {
       });
 
   if (game === undefined && session !== undefined)
-    request<types.api.GameById>("Get", `/game/${session.game_id}`, undefined)
+    request<types.api.GameById>("Get", `/game/${game_id}`, undefined)
       .then(setGame)
       .catch((error) => {
         notificationSystem.current?.addNotification({
@@ -75,7 +75,7 @@ export default function SessionView() {
             (session?.id ? session?.id : "session")
           }
         />
-        <Button to={"/game/show/" + session?.game_id}> Game </Button>
+        <Button to={"/game/show/" + game_id}> Game </Button>
       </Wrapper>
       <h2>
         Events <code> ({eventCount ?? 0})</code>
@@ -100,7 +100,8 @@ export default function SessionView() {
                   <Card
                     key={i}
                     title={event.section ?? "no section"}
-                    footer={event.server_time}
+                    footer={event.server_timestamp}
+                    url={`/game/${game_id}/session/${id}/event/${event.id}`}
                   >
                     <pre>
                       <code>{JSON.stringify(event, null, 2)}</code>

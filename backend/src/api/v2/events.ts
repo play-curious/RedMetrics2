@@ -233,9 +233,9 @@ route<types.api.Event>(
     if (req.body.section) query = query.andWhere("section", req.body.section);
 
     if (req.body.after)
-      query = query.andWhere("server_time", ">", req.body.after);
+      query = query.andWhere("server_timestamp", ">", req.body.after);
     if (req.body.before)
-      query = query.andWhere("server_time", "<", req.body.before);
+      query = query.andWhere("server_timestamp", "<", req.body.before);
 
     if (req.body.offset) query = query.offset(+req.body.offset);
     if (req.body.count) query = query.limit(+req.body.count);
@@ -293,13 +293,24 @@ route<types.api.Event>(
           coordinates: JSON.stringify(postEvent.coordinates ?? {}),
           custom_data: JSON.stringify(postEvent.custom_data ?? {}),
           section: postEvent.section,
-          server_time: new Date().toISOString(),
+          server_timestamp: String(Date.now()),
           type: postEvent.type,
-          user_time: postEvent.user_time,
+          user_timestamp: postEvent.user_timestamp,
         };
       })
     );
 
     res.json(session.id);
+  })
+);
+
+route<types.api.EventById>(
+  "Get",
+  "/event/:id" as any,
+  utils.authentication(),
+  expressAsyncHandler(async (req, res) => {
+    const id = Number(req.params.id);
+
+    res.json(await events.getEvent(id));
   })
 );

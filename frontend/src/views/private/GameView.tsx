@@ -36,7 +36,7 @@ export default function GameView() {
         });
       });
 
-  if (game && sessionCount === undefined)
+  if (game !== undefined && sessionCount === undefined)
     request<types.api.GameById_SessionCount>(
       "Get",
       `/game/${id}/sessions/count`,
@@ -123,7 +123,7 @@ export default function GameView() {
                       <Card
                         key={i}
                         title={session.created_timestamp}
-                        url={"/game/session/show/" + session.id}
+                        url={`/game/${id}/session/show/${session.id}`}
                         secondary={session.id}
                       >
                         {

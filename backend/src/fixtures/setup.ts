@@ -11,7 +11,7 @@ const email = "fixtures@fixtures.fixtures";
 
 (async () => {
   await accounts().insert({
-    created_timestamp: new Date().toLocaleString(),
+    created_timestamp: String(Date.now()),
     email,
     is_admin: false,
     password: "fixtures",
@@ -31,8 +31,8 @@ const email = "fixtures@fixtures.fixtures";
   await sessions().insert(
     new Array<types.utils.Insert<types.tables.Session>>(count).fill({
       closed: false,
-      created_timestamp: new Date().toLocaleString(),
-      updated_timestamp: new Date().toLocaleString(),
+      created_timestamp: String(Date.now()),
+      updated_timestamp: String(Date.now()),
       game_id: game?.id as string,
     })
   );
@@ -43,7 +43,7 @@ const email = "fixtures@fixtures.fixtures";
     new Array<types.utils.Insert<types.tables.Event>>(count).fill({
       session_id: session?.id as string,
       type: "test",
-      server_time: new Date().toLocaleString(),
+      server_timestamp: String(Date.now()),
     })
   );
 

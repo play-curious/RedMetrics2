@@ -26,6 +26,7 @@ export default function Paginator<T>({
   return (
     <div className="paginator">
       <ReactPaginate
+        forcePage={pageIndex}
         pageCount={pageCount}
         onPageChange={({ selected }) => {
           setPageIndex(selected);
@@ -39,6 +40,7 @@ export default function Paginator<T>({
       />
       <Wrapper>{pageItems}</Wrapper>
       <ReactPaginate
+        forcePage={pageIndex}
         pageCount={pageCount}
         onPageChange={({ selected }) => {
           setPageIndex(selected);

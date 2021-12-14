@@ -16,6 +16,7 @@ import NotFound from "./views/system/NotFound";
 import About from "./views/public/About";
 import GameList from "./views/private/GameList";
 import GameEdit from "./views/private/GameEdit";
+import EventView from "./views/private/EventView";
 import AccountAdd from "./views/private/AccountAdd";
 import AccountView from "./views/private/AccountView";
 import SessionView from "./views/private/SessionView";
@@ -90,8 +91,14 @@ export default function Routing({
               <Dom.Route exact path="/game/edit/:id">
                 <GameEdit />
               </Dom.Route>
-              <Dom.Route exact path="/game/session/show/:id">
+              <Dom.Route exact path="/game/:game_id/session/show/:id">
                 <SessionView />
+              </Dom.Route>
+              <Dom.Route
+                exact
+                path="/game/:game_id/session/:session_id/event/show/:id"
+              >
+                <EventView />
               </Dom.Route>
               <Dom.Route exact path="/game/show/:id">
                 <GameView />
