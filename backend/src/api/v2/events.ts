@@ -3,8 +3,8 @@ import * as types from "rm2-typings";
 import * as uuid from "uuid";
 import * as app from "../../app";
 import * as utils from "../../utils";
-import * as events from "../../controllers/events";
 import * as game from "../../controllers/game";
+import * as events from "../../controllers/events";
 
 const route = types.utils.buildRouteMaker(app.v2);
 
