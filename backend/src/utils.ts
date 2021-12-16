@@ -308,7 +308,7 @@ export function applyLimits(): express.RequestHandler {
     if (req.query.limit && Number(req.query.limit) > maxLimitPerPage)
       return sendError(res, {
         code: 401,
-        description: `Min limit of paging "limit" property is exceeded. Current limit: ${maxLimitPerPage} items per page.`,
+        description: `Max limit of paging "limit" property is exceeded. Current max: ${maxLimitPerPage} items per page.`,
       });
 
     next();
