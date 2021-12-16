@@ -1,4 +1,3 @@
-import expressAsyncHandler from "express-async-handler";
 import * as types from "rm2-typings";
 import * as uuid from "uuid";
 import * as app from "../../app";
@@ -12,7 +11,7 @@ route<types.api.Session>(
   "Post",
   "/session",
   utils.authentication(),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     if (!utils.hasGame(req))
       return utils.sendError(res, {
         code: 401,
@@ -57,7 +56,7 @@ route<types.api.SessionById>(
   "Get",
   "/session/:id",
   utils.authentication(),
-  expressAsyncHandler(async (req, res, next) => {
+  utils.asyncHandler(async (req, res, next) => {
     if (!utils.hasGame(req)) return;
 
     const session = await events.getSession(req.params.id ?? uuid.v4());
@@ -76,7 +75,7 @@ route<types.api.SessionById>(
 
     next();
   }),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     // Retrieves the SessionMeta for the identified session
     res.json(await events.getSession(req.params.id));
   })
@@ -86,7 +85,7 @@ route<types.api.SessionById>(
   "Put",
   "/session/:id",
   utils.authentication(),
-  expressAsyncHandler(async (req, res, next) => {
+  utils.asyncHandler(async (req, res, next) => {
     if (!utils.hasGame(req)) return;
 
     const session = await events.getSession(req.params.id ?? uuid.v4());
@@ -105,7 +104,7 @@ route<types.api.SessionById>(
 
     next();
   }),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     // Updates the SessionMeta. Only accessible to dev and admin.
 
     const values: Partial<types.api.SessionById["Methods"]["Put"]["Body"]> = {
@@ -135,7 +134,7 @@ route<types.api.SessionById_Data>(
 
     return sessionGame.publisher_id === context.account.id;
   }),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
 
     const session = (await events.getSession(
@@ -159,7 +158,7 @@ route<types.api.SessionById_Events>(
       !!context.game &&
       game.gameHasSession(context.game.id as string, context.params.id)
   ),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     const { offset, limit } = req.query;
 
     res.json(
@@ -180,7 +179,7 @@ route<types.api.SessionById_EventCount>(
       !!context.game &&
       game.gameHasSession(context.game.id as string, context.params.id)
   ),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     res.json(await events.getSessionEventCount(req.params.id));
   })
 );
@@ -192,7 +191,7 @@ route<types.api.Event>(
     (context) =>
       utils.hasGame(context) && context.game.publisher_id === context.account.id
   ),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     //  Lists Event objects (see section on Paging below).
     //  Admin and dev accounts can see the game events they have access to.
     //  Otherwise restricted to one session id.
@@ -248,7 +247,7 @@ route<types.api.Event>(
   "Post",
   "/event",
   utils.authentication(),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     //  Adds more event information sent with the Event object, or array or Event objects.
     //  The gameVersionId query parameters is required.
     //  If no session is given, a new session will be created and returned.
@@ -308,7 +307,7 @@ route<types.api.EventById>(
   "Get",
   "/event/:id" as any,
   utils.authentication(),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     const id = Number(req.params.id);
 
     res.json(await events.getEvent(id));

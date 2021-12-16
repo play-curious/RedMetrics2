@@ -61,6 +61,7 @@ export default function SessionView() {
       });
 
   utils.checkNotificationParams(notificationSystem).catch();
+  utils.autoRefresh(setEventCount);
 
   return (
     <>

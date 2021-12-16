@@ -1,4 +1,3 @@
-import expressAsyncHandler from "express-async-handler";
 import bcrypt from "bcrypt";
 import * as uuid from "uuid";
 
@@ -15,7 +14,7 @@ route<types.api.Logout>(
   "Get",
   "/logout",
   utils.authentication(),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     if (utils.hasAccount(req)) await auth.logout(req.account.id);
     res.sendStatus(200);
   })
@@ -24,7 +23,7 @@ route<types.api.Logout>(
 route<types.api.Login>(
   "Post",
   "/login",
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     // Login to the system with valid username and password
 
     const email = req.body?.email,
@@ -74,7 +73,7 @@ route<types.api.Login>(
 route<types.api.Register>(
   "Post",
   "/register",
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     //  Registers a new account.
     //  An AccountMeta object should be sent in the body.
     //  The Location response header will contain the URL for the new account.
@@ -142,7 +141,7 @@ route<types.api.Account>(
   "Post",
   "/account",
   utils.authentication("admin", true),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     //  Registers a new account.
     //  An AccountMeta object should be sent in the body.
     //  The Location response header will contain the URL for the new account.
@@ -199,7 +198,7 @@ route<types.api.AccountById>(
     (context) => context.params.id === context.account.id,
     true
   ),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     await auth.deleteAccount(req.params.id);
     res.sendStatus(200);
   })
@@ -209,7 +208,7 @@ route<types.api.AccountById>(
   "Get",
   "/account/:id",
   utils.authentication((context) => context.params.id === context.account.id),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     //  Retrieves the AccountMeta for the given account.
     //  Only admins can access accounts other than their own
 
@@ -233,7 +232,7 @@ route<types.api.AccountById>(
       context.params.id === context.account.id || context.account.is_admin,
     true
   ),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     //  Update the given account.
     //  An AccountMeta object should be sent in the body.
     //  Only admins can access accounts other than their own
@@ -302,7 +301,7 @@ route<types.api.AccountById_Keys>(
   "Get",
   "/account/:id/keys",
   utils.authentication((ctx) => ctx.params.id === ctx.account.id),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     if (utils.hasAccount(req))
       res.json(await auth.getUserApiKeys(req.account.id));
   })
@@ -312,7 +311,7 @@ route<types.api.Accounts>(
   "Get",
   "/accounts",
   utils.authentication("admin", true),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     res.json(await auth.getAccounts());
   })
 );
@@ -321,7 +320,7 @@ route<types.api.AccountCount>(
   "Get",
   "/accounts/count",
   utils.authentication("admin", true),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     res.json(await auth.getAccountCount());
   })
 );
@@ -330,7 +329,7 @@ route<types.api.Key>(
   "Post",
   "/key",
   utils.authentication(undefined, true),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
 
     if (!req.body.game_id)
@@ -365,7 +364,7 @@ route<types.api.Key>(
   "Get",
   "/key",
   utils.authentication(undefined, true),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     if (!utils.hasGame(req))
       return utils.sendError(res, {
         code: 400,
@@ -388,7 +387,7 @@ route<types.api.Key>(
   "Delete",
   "/key",
   utils.authentication(undefined, true),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
     await auth.removeUserApiKeys(req.account.id);
     res.sendStatus(200);
@@ -402,7 +401,7 @@ route<types.api.KeyByKey>(
     const apiKey = await auth.getApiKey(context.params.key);
     return apiKey?.account_id === context.account.id;
   }, true),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
     await auth.removeApiKey(req.params.key);
     res.sendStatus(200);
@@ -412,7 +411,7 @@ route<types.api.KeyByKey>(
 route<types.api.LostPassword>(
   "Post",
   "/lost-password",
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     const email: types.api.LostPassword["Methods"]["Post"]["Body"]["email"] =
       req.body.email;
 
@@ -445,7 +444,7 @@ route<types.api.LostPassword>(
 route<types.api.LostPassword>(
   "Patch",
   "/lost-password",
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     const code: types.api.LostPassword["Methods"]["Patch"]["Body"]["code"] =
       req.body.code;
 
@@ -515,7 +514,7 @@ route<types.api.ConfirmEmail>(
   "Post",
   "/confirm-email",
   utils.authentication(),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
 
     await utils.sendAccountConfirmation(req.account);
@@ -528,7 +527,7 @@ route<types.api.ConfirmEmail>(
   "Patch",
   "/confirm-email",
   utils.authentication(),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
 
     const code: types.api.ConfirmEmail["Methods"]["Patch"]["Body"]["code"] =

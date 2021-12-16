@@ -2,7 +2,6 @@ import fsp from "fs/promises";
 import path from "path";
 import express from "express";
 import nodemailer from "nodemailer";
-import expressAsyncHandler from "express-async-handler";
 
 import * as uuid from "uuid";
 import * as types from "rm2-typings";
@@ -64,7 +63,7 @@ export function authentication(
       }) => boolean | Promise<boolean>) = () => true,
   needToBeValidated?: true
 ): express.RequestHandler {
-  return expressAsyncHandler(async (req, res, next) => {
+  return asyncHandler(async (req, res, next) => {
     if (condition === "admin") condition = () => false;
 
     const key =
@@ -312,5 +311,13 @@ export function applyLimits(): express.RequestHandler {
       });
 
     next();
+  };
+}
+
+export function asyncHandler(handler: express.RequestHandler): express.Handler {
+  return (req, res, next) => {
+    Promise.resolve(handler(req, res, next))
+      .then(() => next())
+      .catch(next);
   };
 }

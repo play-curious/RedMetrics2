@@ -1,5 +1,3 @@
-import expressAsyncHandler from "express-async-handler";
-
 import * as app from "../../app";
 import * as utils from "../../utils";
 import * as types from "rm2-typings";
@@ -15,7 +13,7 @@ route<types.api.Game>(
   "Get",
   "/game",
   utils.authentication(undefined, true),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     // Lists the games using the service as GameMeta objects (see section on Paging below)
 
     const publisher_id = req.query.publisher_id,
@@ -49,7 +47,7 @@ route<types.api.Game>(
   "Post",
   "/game",
   utils.authentication(undefined, true),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     //  Creates a new game.
     //  A GameMeta object should be sent in the body.
     //  A default version of the game will be created.
@@ -84,7 +82,7 @@ route<types.api.GameCount>(
   "Get",
   "/game/count",
   utils.authentication(undefined, true),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     // Lists the games using the service as GameMeta objects (see section on Paging below)
 
     const publisher_id = req.query.publisher_id;
@@ -118,7 +116,7 @@ route<types.api.GameById>(
       context.account.id,
     true
   ),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     // Retrieves information about the game with that Id as a GameMeta object
 
     // todo: add a v2.param("uuid") to check his validity automatically
@@ -144,7 +142,7 @@ route<types.api.GameById>(
       context.account.id,
     true
   ),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     // Updates game information with the provided GameMeta.
 
     if (!utils.hasAccount(req)) return;
@@ -177,7 +175,7 @@ route<types.api.GameById>(
       context.account.id,
     true
   ),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
 
     const targetGame = await game.getGame(req.params.id);
@@ -203,7 +201,7 @@ route<types.api.GameById_Data>(
       context.account.id,
     true
   ),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
 
     const targetGame = await game.getGame(req.params.id);
@@ -242,7 +240,7 @@ route<types.api.GameById_Sessions>(
           context.account.id) ||
       context.account.is_admin
   ),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     const { offset, limit } = req.query;
 
     res.json(
@@ -261,7 +259,7 @@ route<types.api.GameById_SessionCount>(
           context.account.id) ||
       context.account.is_admin
   ),
-  expressAsyncHandler(async (req, res) => {
+  utils.asyncHandler(async (req, res) => {
     res.json(await events.getGameSessionCount(req.params.id));
   })
 );

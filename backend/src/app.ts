@@ -1,19 +1,15 @@
-// import { graphqlHTTP } from "express-graphql";
-// import { buildSchema } from "graphql";
-import relative from "dayjs/plugin/relativeTime";
+import relative from "dayjs/plugin/relativeTime.js";
 import cookieParser from "cookie-parser";
-import querystring from "querystring";
-import bodyParser from "body-parser";
 import express from "express";
 import dotenv from "dotenv";
 import dayjs from "dayjs";
-import chalk from "chalk";
 import cors from "cors";
 import knex from "knex";
 import path from "path";
 import cron from "cron";
-// import fs from "fs";
 import pg from "pg";
+
+import * as utils from "./utils";
 
 dayjs.extend(relative);
 
@@ -46,8 +42,8 @@ export const server = express();
 server.set("json spaces", 2);
 
 server.use(
-  bodyParser.urlencoded({ extended: true }),
-  bodyParser.json(),
+  express.urlencoded({ extended: true }),
+  express.json(),
   cookieParser(),
   // Allow any site to access
   cors({ credentials: true, origin: true }),
@@ -57,36 +53,16 @@ server.use(
 export const v2 = express.Router();
 server.use("/v2", v2);
 
-// GraphQL
-
-// const rootValue = require("../graphql/resolvers");
-// const schema = fs.readFileSync(
-//   path.join(__dirname, "../graphql/schema.graphql"),
-//   {
-//     encoding: "utf-8",
-//   }
-// );
-
-// server.use(
-//   "/v2/graphql",
-//   graphqlHTTP({
-//     schema: buildSchema(schema),
-//     rootValue,
-//     graphiql: true,
-//   })
-// );
-
 // Load routes
-
-import * as utils from "./utils";
 
 export const loadRoutes = (verbose: boolean) =>
   utils
     .forFiles(
       path.join(__dirname, "api"),
       (filepath) => {
-        require(filepath);
-        if (verbose) console.log(chalk.blue("loaded"), filepath);
+        return import(filepath).then(() => {
+          if (verbose) console.log("loaded", filepath);
+        });
       },
       {
         recursive: true,
@@ -96,7 +72,7 @@ export const loadRoutes = (verbose: boolean) =>
       }
     )
     .then(() => {
-      if (verbose) console.log(chalk.green("ready"));
+      if (verbose) console.log("ready");
     });
 
 // remove accounts that have not confirmed emails before 1 week

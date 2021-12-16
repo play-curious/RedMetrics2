@@ -2,7 +2,11 @@ import { Knex } from "knex";
 
 import "dotenv/config";
 
-type Mod = (knex: Knex, table: Knex.CreateTableBuilder) => Knex.ColumnBuilder;
+type Mod<
+  T extends
+    | Knex.ColumnBuilder
+    | Knex.ReferencingColumnBuilder = Knex.ColumnBuilder
+> = (knex: Knex, table: Knex.CreateTableBuilder) => T;
 
 function id(alias?: string): Mod {
   return (knex, table) => {
@@ -20,7 +24,10 @@ function date(name: string): Mod {
   };
 }
 
-function ref(tableName: string, alias?: string): Mod {
+function ref(
+  tableName: string,
+  alias?: string
+): Mod<Knex.ReferencingColumnBuilder> {
   return (knex, table) => {
     return table
       .uuid((alias ?? tableName) + "_id")

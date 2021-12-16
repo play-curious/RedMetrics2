@@ -24,3 +24,9 @@ export async function checkNotificationParams(
         level: level,
       });
 }
+
+export function autoRefresh(setter: (value: undefined) => unknown) {
+  setTimeout(() => {
+    setter(undefined);
+  }, 1000);
+}
