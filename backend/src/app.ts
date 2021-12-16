@@ -50,7 +50,8 @@ server.use(
   bodyParser.json(),
   cookieParser(),
   // Allow any site to access
-  cors({ credentials: true, origin: true })
+  cors({ credentials: true, origin: true }),
+  utils.applyLimits()
 );
 
 export const v2 = express.Router();

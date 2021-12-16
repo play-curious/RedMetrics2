@@ -300,3 +300,17 @@ export async function sendAccountConfirmation(account: types.tables.Account) {
 export function count(qb: any): Promise<number> {
   return qb.count({ total: "*" }).then((raw: any) => Number(raw[0].total));
 }
+
+export function applyLimits(): express.RequestHandler {
+  return (req, res, next) => {
+    const maxLimitPerPage = Number(process.env.API_MAX_LIMIT_PER_PAGE ?? 1000);
+
+    if (req.query.limit && Number(req.query.limit) > maxLimitPerPage)
+      return sendError(res, {
+        code: 401,
+        description: `Min limit of paging "limit" property is exceeded. Current limit: ${maxLimitPerPage} items per page.`,
+      });
+
+    next();
+  };
+}
