@@ -4,30 +4,32 @@ import ReactPaginate from "react-paginate";
 
 import Wrapper from "./Wrapper";
 
+import type * as utils from "../utils";
+
 import "./Paginator.scss";
 
 export default function Paginator<T>({
-  pageCount,
-  fetchPageItems,
+  map,
+  headers,
+  pageItems,
+  onPageChange,
 }: {
-  pageCount: number;
-  fetchPageItems: (pageIndex: number) => Promise<T[]>;
+  map: (item: T, index: number, base: T[]) => any;
+  headers: utils.ResolvedPagingHeaders;
+  pageItems: T[];
+  onPageChange: (pageNumber: number) => unknown;
 }) {
   const [pageIndex, setPageIndex] = React.useState(0);
-  const [pageItems, setPageItems] = React.useState<T[]>();
-
-  if (pageItems === undefined)
-    fetchPageItems(pageIndex).then(setPageItems).catch(console.error);
 
   React.useEffect(() => {
-    fetchPageItems(pageIndex).then(setPageItems).catch(console.error);
-  }, [pageIndex, fetchPageItems]);
+    onPageChange(pageIndex + 1);
+  }, [pageIndex, onPageChange]);
 
   return (
     <div className="paginator">
       <ReactPaginate
         forcePage={pageIndex}
-        pageCount={pageCount}
+        pageCount={headers.pageCount}
         onPageChange={({ selected }) => {
           setPageIndex(selected);
         }}
@@ -38,10 +40,10 @@ export default function Paginator<T>({
         activeClassName="border-2 bg-gray-200 rounded-full no-underline hover:no-underline"
         disabledClassName="opacity-50 no-underline hover:no-underline"
       />
-      <Wrapper>{pageItems}</Wrapper>
+      <Wrapper>{pageItems.map(map)}</Wrapper>
       <ReactPaginate
         forcePage={pageIndex}
-        pageCount={pageCount}
+        pageCount={headers.pageCount ?? 0}
         onPageChange={({ selected }) => {
           setPageIndex(selected);
         }}

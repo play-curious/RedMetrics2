@@ -2,6 +2,7 @@ import React from "react";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
+import * as utils from "../../utils";
 
 import Paginator from "../../nodes/Paginator";
 import GameCard from "../../nodes/GameCard";
@@ -28,6 +29,8 @@ export default function GameList({ user }: { user: types.tables.Account }) {
     });
 
   const gamePerPage = 15;
+
+  utils.autoRefresh(setGameCount);
 
   return (
     <>

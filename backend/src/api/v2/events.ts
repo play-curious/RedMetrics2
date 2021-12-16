@@ -52,29 +52,31 @@ route<types.api.Session>(
   })
 );
 
+const gameSessionCheck = utils.asyncHandler(async (req, res, next) => {
+  if (!utils.hasGame(req)) return;
+
+  const session = await events.getSession(req.params.id ?? uuid.v4());
+
+  if (!session)
+    return utils.sendError(res, {
+      code: 404,
+      description: "Session not found",
+    });
+
+  if (!(await game.gameHasSession(req.game.id, session)))
+    return utils.sendError(res, {
+      code: 401,
+      description: `This API key deny access to this session.`,
+    });
+
+  next();
+});
+
 route<types.api.SessionById>(
   "Get",
   "/session/:id",
   utils.authentication(),
-  utils.asyncHandler(async (req, res, next) => {
-    if (!utils.hasGame(req)) return;
-
-    const session = await events.getSession(req.params.id ?? uuid.v4());
-
-    if (!session)
-      return utils.sendError(res, {
-        code: 404,
-        description: "Session not found",
-      });
-
-    if (!(await game.gameHasSession(req.game.id, session)))
-      return utils.sendError(res, {
-        code: 401,
-        description: `This API key deny access to this session.`,
-      });
-
-    next();
-  }),
+  gameSessionCheck,
   utils.asyncHandler(async (req, res) => {
     // Retrieves the SessionMeta for the identified session
     res.json(await events.getSession(req.params.id));
@@ -85,25 +87,7 @@ route<types.api.SessionById>(
   "Put",
   "/session/:id",
   utils.authentication(),
-  utils.asyncHandler(async (req, res, next) => {
-    if (!utils.hasGame(req)) return;
-
-    const session = await events.getSession(req.params.id ?? uuid.v4());
-
-    if (!session)
-      return utils.sendError(res, {
-        code: 404,
-        description: "Session not found",
-      });
-
-    if (!(await game.gameHasSession(req.game.id, session)))
-      return utils.sendError(res, {
-        code: 401,
-        description: `This API key deny access to this session.`,
-      });
-
-    next();
-  }),
+  gameSessionCheck,
   utils.asyncHandler(async (req, res) => {
     // Updates the SessionMeta. Only accessible to dev and admin.
 
@@ -124,7 +108,7 @@ route<types.api.SessionById>(
 
 route<types.api.SessionById_Data>(
   "Get",
-  "/session/:id/data",
+  "/session/:id/data.json",
   utils.authentication(async (context) => {
     const session = await events.getSession(context.params.id);
     if (!session) return false;
@@ -146,7 +130,8 @@ route<types.api.SessionById_Data>(
       events: await events.getAllSessionEvents(session.id),
     };
 
-    res.json(fullSession);
+    res.type("application/octet-stream");
+    res.json(utils.removeNullFields(fullSession));
   })
 );
 
@@ -159,28 +144,23 @@ route<types.api.SessionById_Events>(
       game.gameHasSession(context.game.id as string, context.params.id)
   ),
   utils.asyncHandler(async (req, res) => {
-    const { offset, limit } = req.query;
+    const total = await events.getSessionEventCount(req.params.id);
 
-    res.json(
-      await events.getSessionEvents(
-        req.params.id,
-        Number(offset),
-        Number(limit)
-      )
+    const { offset, pageCount, perPage, page } = utils.extractPagingParams(
+      req,
+      total
     );
-  })
-);
 
-route<types.api.SessionById_EventCount>(
-  "Get",
-  "/session/:id/events/count",
-  utils.authentication(
-    (context) =>
-      !!context.game &&
-      game.gameHasSession(context.game.id as string, context.params.id)
-  ),
-  utils.asyncHandler(async (req, res) => {
-    res.json(await events.getSessionEventCount(req.params.id));
+    const items = await events.getSessionEvents(req.params.id, offset, perPage);
+
+    utils.setPagingHeaders(req, res, {
+      perPage,
+      total,
+      pageCount,
+      page,
+    });
+
+    res.json(items);
   })
 );
 

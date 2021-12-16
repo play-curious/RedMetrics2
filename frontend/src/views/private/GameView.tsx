@@ -51,6 +51,7 @@ export default function GameView() {
       });
 
   utils.checkNotificationParams(notificationSystem).catch();
+  utils.autoRefresh(setSessionCount);
 
   return (
     <>

@@ -2,6 +2,7 @@ import fsp from "fs/promises";
 import path from "path";
 import express from "express";
 import nodemailer from "nodemailer";
+import url from "url";
 
 import * as uuid from "uuid";
 import * as types from "rm2-typings";
@@ -316,8 +317,69 @@ export function applyLimits(): express.RequestHandler {
 
 export function asyncHandler(handler: express.RequestHandler): express.Handler {
   return (req, res, next) => {
-    Promise.resolve(handler(req, res, next))
-      .then(() => next())
-      .catch(next);
+    Promise.resolve(handler(req, res, next)).catch(next);
   };
+}
+
+export function removeNullFields(obj: object): object {
+  return JSON.parse(
+    JSON.stringify(obj, (key, value) => {
+      if (value !== null) return value;
+    })
+  );
+}
+
+export function setPagingHeaders(
+  req: express.Request,
+  res: express.Response,
+  {
+    pageCount,
+    perPage,
+    page,
+    total,
+  }: {
+    pageCount: number;
+    total: number;
+  } & types.api.PagingParameters
+) {
+  const first = new url.URL(req.url),
+    prev = new url.URL(req.url),
+    next = new url.URL(req.url),
+    last = new url.URL(req.url);
+
+  first.searchParams.set("page", "0");
+  prev.searchParams.set("page", (page - 1).toString());
+  next.searchParams.set("page", (page + 1).toString());
+  last.searchParams.set("page", Math.floor(total / perPage).toString());
+
+  const headers: types.api.PagingHeaders = {
+    "X-Per-Page-Count": `${perPage}`,
+    "X-Total-Count": `${total}`,
+    "X-Page-Number": `${page}`,
+    "X-Page-Count": `${pageCount}`,
+    Link: Object.entries({ first, prev, next, last })
+      .map(([rel, link]) => `${link}; rel=${rel}`)
+      .join(", "),
+  };
+
+  for (const header in headers) {
+    res.header(header, headers[header as keyof types.api.PagingHeaders]);
+  }
+}
+
+export function extractPagingParams(
+  req: express.Request,
+  total: number
+): types.api.PagingParameters & { offset: number; pageCount: number } {
+  let page = Number(req.query.page ?? 1);
+  let perPage = Number(req.query.perPage ?? process.env.API_MAX_LIMIT_PER_PAGE);
+
+  if (perPage < 1) perPage = 1;
+
+  const pageCount = Math.ceil(total / perPage);
+
+  if (page < 1) page = 1;
+  if (page > pageCount) page = pageCount;
+
+  return { page, perPage, pageCount, offset: (page - 1) * perPage };
 }

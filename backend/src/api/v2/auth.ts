@@ -312,16 +312,23 @@ route<types.api.Accounts>(
   "/accounts",
   utils.authentication("admin", true),
   utils.asyncHandler(async (req, res) => {
-    res.json(await auth.getAccounts());
-  })
-);
+    const total = await auth.getAccountCount();
 
-route<types.api.AccountCount>(
-  "Get",
-  "/accounts/count",
-  utils.authentication("admin", true),
-  utils.asyncHandler(async (req, res) => {
-    res.json(await auth.getAccountCount());
+    const { page, perPage, offset, pageCount } = utils.extractPagingParams(
+      req,
+      total
+    );
+
+    const items = await auth.getAccounts(offset, perPage);
+
+    utils.setPagingHeaders(req, res, {
+      pageCount,
+      perPage,
+      total,
+      page,
+    });
+
+    res.json(items);
   })
 );
 
@@ -546,7 +553,6 @@ route<types.api.ConfirmEmail>(
       });
 
     await auth.confirmations().where("account_id", req.account.id).delete();
-
     await auth.updateAccount(req.account.id, { confirmed: true });
 
     res.sendStatus(200);

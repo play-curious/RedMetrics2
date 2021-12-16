@@ -82,8 +82,11 @@ export async function updateAccount(
   await accounts().update(account).where({ id }).returning("id");
 }
 
-export function getAccounts(): Promise<types.tables.Account[]> {
-  return accounts().select("*");
+export function getAccounts(
+  offset: number,
+  limit: number
+): Promise<types.tables.Account[]> {
+  return accounts().select("*").offset(offset).limit(limit);
 }
 
 export function getAccountCount(): Promise<number> {

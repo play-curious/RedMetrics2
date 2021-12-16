@@ -16,11 +16,9 @@ route<types.api.Game>(
   utils.asyncHandler(async (req, res) => {
     // Lists the games using the service as GameMeta objects (see section on Paging below)
 
-    const publisher_id = req.query.publisher_id,
-      offset = req.query.offset,
-      count = req.query.limit;
+    const publisher_id = req.query.publisher_id;
 
-    let query: any;
+    let query: any, total: number;
 
     if (typeof publisher_id === "string") {
       const publisher = await auth.getAccount(publisher_id);
@@ -32,14 +30,29 @@ route<types.api.Game>(
         });
 
       query = game.getPublisherGames(publisher_id);
+      total = await utils.count(
+        game.games().where({ publisher_id: publisher.id })
+      );
     } else {
       query = game.getGames();
+      total = await utils.count(game.getGames());
     }
 
-    if (typeof offset === "string") query.offset(+offset);
-    if (typeof count === "string") query.limit(+count);
+    const { offset, perPage, pageCount, page } = utils.extractPagingParams(
+      req,
+      total
+    );
 
-    res.json(await query);
+    const games = await query.offset(offset).limit(perPage);
+
+    utils.setPagingHeaders(req, res, {
+      perPage,
+      total,
+      pageCount,
+      page,
+    });
+
+    res.json(games);
   })
 );
 
@@ -75,35 +88,6 @@ route<types.api.Game>(
       id,
       ...currentGame,
     });
-  })
-);
-
-route<types.api.GameCount>(
-  "Get",
-  "/game/count",
-  utils.authentication(undefined, true),
-  utils.asyncHandler(async (req, res) => {
-    // Lists the games using the service as GameMeta objects (see section on Paging below)
-
-    const publisher_id = req.query.publisher_id;
-
-    let query: any;
-
-    if (typeof publisher_id === "string") {
-      const publisher = await auth.getAccount(publisher_id);
-
-      if (!publisher)
-        return utils.sendError(res, {
-          description: "Publisher not found",
-          code: 404,
-        });
-
-      query = game.getPublisherGames(publisher_id);
-    } else {
-      query = game.getGames();
-    }
-
-    res.json(Number((await query.count({ total: "id" }))[0].total));
   })
 );
 
@@ -194,7 +178,7 @@ route<types.api.GameById>(
 
 route<types.api.GameById_Data>(
   "Get",
-  "/game/:id/data",
+  "/game/:id/data.json",
   utils.authentication(
     async (context) =>
       (await game.getGame(context.params.id))?.publisher_id ===
@@ -226,7 +210,8 @@ route<types.api.GameById_Data>(
       ),
     };
 
-    res.json(returned);
+    res.type("application/octet-stream");
+    res.json(utils.removeNullFields(returned));
   })
 );
 
@@ -241,25 +226,22 @@ route<types.api.GameById_Sessions>(
       context.account.is_admin
   ),
   utils.asyncHandler(async (req, res) => {
-    const { offset, limit } = req.query;
+    const total = await events.getGameSessionCount(req.params.id);
 
-    res.json(
-      await events.getGameSessions(req.params.id, Number(offset), Number(limit))
+    const { offset, pageCount, page, perPage } = utils.extractPagingParams(
+      req,
+      total
     );
-  })
-);
 
-route<types.api.GameById_SessionCount>(
-  "Get",
-  "/game/:id/sessions/count",
-  utils.authentication(
-    async (context) =>
-      (context.params.id &&
-        (await game.getGame(context.params.id))?.publisher_id ===
-          context.account.id) ||
-      context.account.is_admin
-  ),
-  utils.asyncHandler(async (req, res) => {
-    res.json(await events.getGameSessionCount(req.params.id));
+    const items = await events.getGameSessions(req.params.id, offset, perPage);
+
+    utils.setPagingHeaders(req, res, {
+      pageCount,
+      perPage,
+      total,
+      page,
+    });
+
+    res.json(items);
   })
 );
