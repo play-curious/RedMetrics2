@@ -21,6 +21,7 @@ export default function GameAdd({ user }: { user: types.tables.Account }) {
       <CustomForm
         onSubmit={(game: types.api.Game["Methods"]["Post"]["Body"]) => {
           request<types.api.Game>("Post", "/game", game)
+            .then(({ data }) => data)
             .then((data) => {
               setRedirect("/game/show/" + data.id);
             })

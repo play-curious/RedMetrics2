@@ -17,6 +17,7 @@ import Wrapper from "./nodes/Wrapper";
 
 types.utils.setupConfig({
   withCredentials: true,
+
   baseURL: constants.API_BASE_URL,
 });
 
@@ -29,18 +30,18 @@ export default function App() {
   const [user, setUser] = React.useState<types.tables.Account>();
 
   const fetchUser = async () => {
-    const user: types.tables.Account = await request<types.api.Account>(
+    const { data } = await request<types.api.Account>(
       "Get",
       "/account",
       undefined
     );
 
     notificationSystem.current?.addNotification({
-      message: "Logged-in as " + user.email,
+      message: "Logged-in as " + data.email,
       level: "success",
     });
 
-    setUser(user);
+    setUser(data);
   };
 
   if (!user) fetchUser().catch(console.error);

@@ -10,6 +10,7 @@ import cron from "cron";
 import pg from "pg";
 
 import * as utils from "./utils";
+import * as types from "rm2-typings";
 
 dayjs.extend(relative);
 
@@ -42,11 +43,26 @@ export const server = express();
 server.set("json spaces", 2);
 
 server.use(
+  (req, res, next) => {
+    res.header("Access-Control-Expose-Headers", "Etag");
+    next();
+  },
   express.urlencoded({ extended: true }),
   express.json(),
   cookieParser(),
   // Allow any site to access
-  cors({ credentials: true, origin: true }),
+  cors({
+    credentials: true,
+    origin: true,
+    exposedHeaders: [
+      "Set-Cookie",
+      "X-Per-Page-Count",
+      "X-Total-Count",
+      "X-Page-Count",
+      "X-Page-Number",
+      "Link",
+    ],
+  }),
   utils.applyLimits()
 );
 

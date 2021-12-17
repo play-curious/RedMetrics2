@@ -18,6 +18,7 @@ export default function GameEdit() {
 
   if (!game)
     request<types.api.GameById>("Get", `/game/${id}`, undefined)
+      .then(({ data }) => data)
       .then(setGame)
       .catch(console.error);
 

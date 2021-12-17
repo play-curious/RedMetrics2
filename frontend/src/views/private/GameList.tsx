@@ -14,23 +14,30 @@ import Warn from "../../nodes/Warn";
 const request = types.utils.request;
 
 export default function GameList({ user }: { user: types.tables.Account }) {
+  const [context, setContext] = React.useState<{
+    data: types.tables.Game[];
+    headers: utils.ResolvedPagingHeaders;
+  }>();
+
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
-  const [gameCount, setGameCount] = React.useState<number>();
-
-  if (gameCount === undefined)
-    request<types.api.GameCount>("Get", "/game/count", undefined)
-      .then(setGameCount)
-      .catch(console.error);
+  const gamePerPage = 15;
 
   if (!user.is_admin)
     return Error({
       text: "You must be administrator to access this page.",
     });
 
-  const gamePerPage = 15;
+  const fetchGames = (pageNumber: number) => {
+    request<types.api.Game>("Get", "/game", undefined, {
+      params: {
+        page: pageNumber,
+        perPage: gamePerPage,
+      },
+    }).then(utils.handlePagingFetch(setContext));
+  };
 
-  utils.autoRefresh(setGameCount);
+  if (context === undefined) fetchGames(1);
 
   return (
     <>
@@ -40,28 +47,14 @@ export default function GameList({ user }: { user: types.tables.Account }) {
       <Wrapper>
         <Button to="/game/add" children="New Game" />
       </Wrapper>
-      <h2 id="list"> Game List ({gameCount ?? 0}) </h2>
-      {gameCount && gameCount > 0 ? (
-        <>
-          <Paginator
-            pageCount={Math.ceil(gameCount / gamePerPage)}
-            fetchPageItems={async (index) => {
-              return request<types.api.Game>("Get", "/game", undefined, {
-                params: {
-                  offset: index * gamePerPage,
-                  limit: gamePerPage,
-                },
-              }).then((games: types.tables.Game[]) =>
-                games.map((game, i) => {
-                  return <GameCard key={i} game={game} />;
-                })
-              );
-            }}
-          />
-        </>
-      ) : (
-        <Warn type="warn"> No games found </Warn>
-      )}
+      <h2 id="list"> Game List ({context?.headers.total ?? 0}) </h2>
+      <Paginator
+        context={context}
+        onPageChange={fetchGames}
+        map={(game, i) => {
+          return <GameCard key={i} game={game} />;
+        }}
+      />
     </>
   );
 }

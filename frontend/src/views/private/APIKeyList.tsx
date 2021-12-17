@@ -27,7 +27,7 @@ export default function APIKeyList({ user }: { user: types.tables.Account }) {
       `/account/${user.id}/keys`,
       undefined
     )
-      .then((data) => setApiKeys(data))
+      .then(({ data }) => setApiKeys(data))
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,
@@ -39,7 +39,7 @@ export default function APIKeyList({ user }: { user: types.tables.Account }) {
   if (apiKeys === undefined) fetchApiKeys();
   if (ownGames === undefined)
     request<types.api.Game>("Get", "/game", undefined)
-      .then((data) => setOwnGames(data))
+      .then(({ data }) => setOwnGames(data))
       .catch((error) => {
         notificationSystem.current?.addNotification({
           message: error.message,

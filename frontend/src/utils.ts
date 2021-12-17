@@ -36,23 +36,38 @@ export function autoRefresh(setter: (value: undefined) => unknown) {
 
 export function extractPagingHeaders(
   headers: axios.AxiosResponseHeaders & Partial<types.api.PagingHeaders>
-): ResolvedPagingHeaders | null {
+): ResolvedPagingHeaders {
   if (
-    headers.Link === undefined ||
-    headers["X-Page-Count"] === undefined ||
-    headers["X-Page-Number"] === undefined ||
-    headers["X-Total-Count"] === undefined ||
-    headers["X-Per-Page-Count"] === undefined
-  )
-    return null;
+    (headers.link ??
+      headers.Link ??
+      headers["X-Page-Count".toLowerCase()] ??
+      headers["X-Page-Count"] ??
+      headers["X-Page-Number".toLowerCase()] ??
+      headers["X-Page-Number"] ??
+      headers["X-Total-Count".toLowerCase()] ??
+      headers["X-Total-Count"] ??
+      headers["X-Per-Page-Count".toLowerCase()] ??
+      headers["X-Per-Page-Count"]) === undefined
+  ) {
+    console.log(headers);
+    throw new Error("Failed to extract paging headers");
+  }
 
   return {
-    pageCount: Number(headers["X-Page-Count"]),
-    pageNumber: Number(headers["X-Page-Number"]),
-    perPage: Number(headers["X-Per-Page-Count"]),
-    total: Number(headers["X-Total-Count"]),
+    pageCount: Number(
+      headers["X-Page-Count".toLowerCase()] ?? headers["X-Page-Count"]
+    ),
+    pageNumber: Number(
+      headers["X-Page-Number".toLowerCase()] ?? headers["X-Page-Number"]
+    ),
+    perPage: Number(
+      headers["X-Per-Page-Count".toLowerCase()] ?? headers["X-Per-Page-Count"]
+    ),
+    total: Number(
+      headers["X-Total-Count".toLowerCase()] ?? headers["X-Total-Count"]
+    ),
     links: Object.fromEntries(
-      headers.Link.split(", ").map((piece) => {
+      (headers.link ?? headers.Link).split(", ").map((piece) => {
         const [link, name] = piece.split("; rel=");
         return [name, link];
       })
@@ -70,5 +85,22 @@ export interface ResolvedPagingHeaders {
     last: string;
     prev: string;
     next: string;
+  };
+}
+
+export function handlePagingFetch(
+  setter: (ctx: { data: any[]; headers: ResolvedPagingHeaders }) => unknown
+) {
+  return ({
+    data,
+    headers,
+  }: {
+    data: any[];
+    headers: axios.AxiosResponseHeaders;
+  }) => {
+    setter({
+      data,
+      headers: extractPagingHeaders(headers),
+    });
   };
 }

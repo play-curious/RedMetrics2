@@ -22,12 +22,16 @@ export default function SessionView() {
 
   const [game, setGame] = React.useState<types.tables.Game>();
   const [session, setSession] = React.useState<types.tables.Session>();
-  const [eventCount, setEventCount] = React.useState<number>();
+  const [context, setContext] = React.useState<{
+    data: types.tables.Event[];
+    headers: utils.ResolvedPagingHeaders;
+  }>();
 
   const eventPerPage = 15;
 
   if (session === undefined)
     request<types.api.SessionById>("Get", `/session/${id}`, undefined)
+      .then(({ data }) => data)
       .then(setSession)
       .catch((error) => {
         notificationSystem.current?.addNotification({
@@ -36,22 +40,9 @@ export default function SessionView() {
         });
       });
 
-  if (eventCount === undefined)
-    request<types.api.SessionById_EventCount>(
-      "Get",
-      `/session/${id}/events/count`,
-      undefined
-    )
-      .then(setEventCount)
-      .catch((error) => {
-        notificationSystem.current?.addNotification({
-          message: error.message,
-          level: "error",
-        });
-      });
-
-  if (game === undefined && session !== undefined)
+  if (session && game === undefined)
     request<types.api.GameById>("Get", `/game/${game_id}`, undefined)
+      .then(({ data }) => data)
       .then(setGame)
       .catch((error) => {
         notificationSystem.current?.addNotification({
@@ -60,8 +51,23 @@ export default function SessionView() {
         });
       });
 
+  const fetchEvents = (pageNumber: number) => {
+    request<types.api.SessionById_Events>(
+      "Get",
+      `/session/${id}/events`,
+      undefined,
+      {
+        params: {
+          page: pageNumber,
+          perPage: eventPerPage,
+        },
+      }
+    ).then(utils.handlePagingFetch(setContext));
+  };
+
+  if (game && session && context === undefined) fetchEvents(1);
+
   utils.checkNotificationParams(notificationSystem).catch();
-  utils.autoRefresh(setEventCount);
 
   return (
     <>
@@ -79,43 +85,26 @@ export default function SessionView() {
         <Button to={"/game/show/" + game_id}> Game </Button>
       </Wrapper>
       <h2>
-        Events <code> ({eventCount ?? 0})</code>
+        Events <code> ({context?.data.length ?? 0})</code>
       </h2>
-      {eventCount && eventCount > 0 ? (
-        <Paginator
-          pageCount={Math.ceil(eventCount / eventPerPage)}
-          fetchPageItems={(index) => {
-            return request<types.api.SessionById_Events>(
-              "Get",
-              `/session/${id}/events`,
-              undefined,
-              {
-                params: {
-                  offset: index * eventPerPage,
-                  limit: eventPerPage,
-                },
-              }
-            ).then((events: types.tables.Event[]) => {
-              return events.map((event, i) => {
-                return (
-                  <Card
-                    key={i}
-                    title={event.section ?? "no section"}
-                    footer={event.server_timestamp}
-                    url={`/game/${game_id}/session/${id}/event/${event.id}`}
-                  >
-                    <pre>
-                      <code>{JSON.stringify(event, null, 2)}</code>
-                    </pre>
-                  </Card>
-                );
-              });
-            });
-          }}
-        />
-      ) : (
-        <Warn type="warn"> No events found </Warn>
-      )}
+      <Paginator
+        context={context}
+        onPageChange={fetchEvents}
+        map={(event, i) => {
+          return (
+            <Card
+              key={i}
+              title={event.section ?? "no section"}
+              footer={event.server_timestamp}
+              url={`/game/${game_id}/session/${id}/event/${event.id}`}
+            >
+              <pre>
+                <code>{JSON.stringify(event, null, 2)}</code>
+              </pre>
+            </Card>
+          );
+        }}
+      />
     </>
   );
 }

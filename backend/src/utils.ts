@@ -342,12 +342,14 @@ export function setPagingHeaders(
     total: number;
   } & types.api.PagingParameters
 ) {
-  const first = new url.URL(req.url),
-    prev = new url.URL(req.url),
-    next = new url.URL(req.url),
-    last = new url.URL(req.url);
+  const currentUrl = process.env.API_BASE_URL + req.originalUrl;
 
-  first.searchParams.set("page", "0");
+  const first = new url.URL(currentUrl),
+    prev = new url.URL(currentUrl),
+    next = new url.URL(currentUrl),
+    last = new url.URL(currentUrl);
+
+  first.searchParams.set("page", "1");
   prev.searchParams.set("page", (page - 1).toString());
   next.searchParams.set("page", (page + 1).toString());
   last.searchParams.set("page", Math.floor(total / perPage).toString());
@@ -362,8 +364,9 @@ export function setPagingHeaders(
       .join(", "),
   };
 
-  for (const header in headers) {
-    res.header(header, headers[header as keyof types.api.PagingHeaders]);
+  for (const name in headers) {
+    const value = headers[name as keyof types.api.PagingHeaders];
+    res.setHeader(name, value);
   }
 }
 
@@ -371,15 +374,12 @@ export function extractPagingParams(
   req: express.Request,
   total: number
 ): types.api.PagingParameters & { offset: number; pageCount: number } {
-  let page = Number(req.query.page ?? 1);
-  let perPage = Number(req.query.perPage ?? process.env.API_MAX_LIMIT_PER_PAGE);
-
-  if (perPage < 1) perPage = 1;
-
+  const perPage = Math.max(
+    Number(req.query.perPage ?? process.env.API_MAX_LIMIT_PER_PAGE),
+    1
+  );
   const pageCount = Math.ceil(total / perPage);
-
-  if (page < 1) page = 1;
-  if (page > pageCount) page = pageCount;
-
-  return { page, perPage, pageCount, offset: (page - 1) * perPage };
+  const page = Math.min(Math.max(Number(req.query.page ?? 1), 1), pageCount);
+  const offset = Math.max((page - 1) * perPage, 0);
+  return { page, perPage, pageCount, offset };
 }

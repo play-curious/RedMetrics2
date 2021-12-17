@@ -25,6 +25,7 @@ export default function EventView() {
 
   if (event === undefined)
     request<types.api.EventById>("Get", `/event/${id}`, undefined)
+      .then(({ data }) => data)
       .then(setEvent)
       .catch((error) => {
         notificationSystem.current?.addNotification({
@@ -34,6 +35,7 @@ export default function EventView() {
       });
   else if (game === undefined)
     request<types.api.GameById>("Get", `/game/${game_id}`, undefined)
+      .then(({ data }) => data)
       .then(setGame)
       .catch((error) => {
         notificationSystem.current?.addNotification({
@@ -43,6 +45,7 @@ export default function EventView() {
       });
   else if (session === undefined)
     request<types.api.SessionById>("Get", `/session/${session_id}`, undefined)
+      .then(({ data }) => data)
       .then(setSession)
       .catch((error) => {
         notificationSystem.current?.addNotification({

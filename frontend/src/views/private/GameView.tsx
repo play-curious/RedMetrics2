@@ -22,12 +22,16 @@ export default function GameView() {
 
   const [game, setGame] = React.useState<types.tables.Game>();
   const [redirect, setRedirect] = React.useState<string>();
-  const [sessionCount, setSessionCount] = React.useState<number>();
+  const [context, setContext] = React.useState<{
+    data: types.tables.Session[];
+    headers: utils.ResolvedPagingHeaders;
+  }>();
 
   const sessionPerPage = 15;
 
   if (game === undefined)
     request<types.api.GameById>("Get", `/game/${id}`, undefined)
+      .then(({ data }) => data)
       .then(setGame)
       .catch((error: any) => {
         notificationSystem.current?.addNotification({
@@ -36,22 +40,23 @@ export default function GameView() {
         });
       });
 
-  if (game !== undefined && sessionCount === undefined)
-    request<types.api.GameById_SessionCount>(
+  const fetchSessions = (pageNumber: number) => {
+    request<types.api.GameById_Sessions>(
       "Get",
-      `/game/${id}/sessions/count`,
-      undefined
-    )
-      .then(setSessionCount)
-      .catch((error: any) => {
-        notificationSystem.current?.addNotification({
-          message: error.message,
-          level: "error",
-        });
-      });
+      `/game/${id}/sessions`,
+      undefined,
+      {
+        params: {
+          page: pageNumber,
+          perPage: sessionPerPage,
+        },
+      }
+    ).then(utils.handlePagingFetch(setContext));
+  };
+
+  if (context === undefined) fetchSessions(1);
 
   utils.checkNotificationParams(notificationSystem).catch();
-  utils.autoRefresh(setSessionCount);
 
   return (
     <>
@@ -97,54 +102,22 @@ export default function GameView() {
         <Warn type="warn"> No description </Warn>
       )}
       <h2>
-        Sessions <code> ({sessionCount ?? 0}) </code>
+        Sessions <code> ({context?.headers.total ?? 0}) </code>
       </h2>
-      {sessionCount && sessionCount > 0 ? (
-        <Paginator
-          pageCount={Math.ceil(sessionCount / sessionPerPage)}
-          fetchPageItems={(index) => {
-            return request<types.api.GameById_Sessions>(
-              "Get",
-              `/game/${id}/sessions`,
-              undefined,
-              {
-                params: {
-                  offset: index * sessionPerPage,
-                  limit: sessionPerPage,
-                },
-              }
-            ).then((sessions: types.tables.Session[]) => {
-              return Promise.all(
-                sessions
-                  .sort((a, b) =>
-                    a.created_timestamp.localeCompare(b.created_timestamp)
-                  )
-                  .map(async (session, i) => {
-                    return (
-                      <Card
-                        key={i}
-                        title={session.created_timestamp}
-                        url={`/game/${id}/session/show/${session.id}`}
-                        secondary={session.id}
-                      >
-                        {
-                          await request<types.api.SessionById_EventCount>(
-                            "Get",
-                            `/session/${session.id}/events/count`,
-                            undefined
-                          )
-                        }{" "}
-                        events
-                      </Card>
-                    );
-                  })
-              );
-            });
-          }}
-        />
-      ) : (
-        <Warn type="warn"> No sessions found </Warn>
-      )}
+      <Paginator
+        context={context}
+        onPageChange={fetchSessions}
+        map={async (session, i) => {
+          return (
+            <Card
+              key={i}
+              title={session.created_timestamp}
+              url={`/game/${id}/session/show/${session.id}`}
+              secondary={session.id}
+            />
+          );
+        }}
+      />
     </>
   );
 }

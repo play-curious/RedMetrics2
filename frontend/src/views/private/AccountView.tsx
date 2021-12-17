@@ -26,7 +26,7 @@ export default function AccountView({ user }: { user: types.tables.Account }) {
     if (id !== user.id) {
       if (user.is_admin) {
         request<types.api.AccountById>("Get", `/account/${id}`, undefined)
-          .then((data: types.tables.Account) => setAccount(data ?? user))
+          .then(({ data }) => setAccount(data ?? user))
           .catch((error) => {
             notificationSystem.current?.addNotification({
               message: error.message,

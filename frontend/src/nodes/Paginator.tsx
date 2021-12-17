@@ -3,6 +3,7 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 
 import Wrapper from "./Wrapper";
+import Warn from "./Warn";
 
 import type * as utils from "../utils";
 
@@ -10,28 +11,20 @@ import "./Paginator.scss";
 
 export default function Paginator<T>({
   map,
-  headers,
-  pageItems,
+  context,
   onPageChange,
 }: {
   map: (item: T, index: number, base: T[]) => any;
-  headers: utils.ResolvedPagingHeaders;
-  pageItems: T[];
+  context?: { data: T[]; headers: utils.ResolvedPagingHeaders };
   onPageChange: (pageNumber: number) => unknown;
 }) {
-  const [pageIndex, setPageIndex] = React.useState(0);
-
-  React.useEffect(() => {
-    onPageChange(pageIndex + 1);
-  }, [pageIndex, onPageChange]);
-
-  return (
+  return context && context.data.length > 0 ? (
     <div className="paginator">
       <ReactPaginate
-        forcePage={pageIndex}
-        pageCount={headers.pageCount}
+        forcePage={context.headers.pageNumber - 1}
+        pageCount={context.headers.pageCount}
         onPageChange={({ selected }) => {
-          setPageIndex(selected);
+          onPageChange(selected + 1);
         }}
         marginPagesDisplayed={2}
         pageRangeDisplayed={3}
@@ -40,12 +33,12 @@ export default function Paginator<T>({
         activeClassName="border-2 bg-gray-200 rounded-full no-underline hover:no-underline"
         disabledClassName="opacity-50 no-underline hover:no-underline"
       />
-      <Wrapper>{pageItems.map(map)}</Wrapper>
+      <Wrapper>{context.data.map(map)}</Wrapper>
       <ReactPaginate
-        forcePage={pageIndex}
-        pageCount={headers.pageCount ?? 0}
+        forcePage={context.headers.pageNumber - 1}
+        pageCount={context.headers.pageCount}
         onPageChange={({ selected }) => {
-          setPageIndex(selected);
+          onPageChange(selected + 1);
         }}
         marginPagesDisplayed={2}
         pageRangeDisplayed={3}
@@ -55,5 +48,7 @@ export default function Paginator<T>({
         disabledClassName="opacity-50 no-underline hover:no-underline"
       />
     </div>
+  ) : (
+    <Warn type="warn"> No data found </Warn>
   );
 }

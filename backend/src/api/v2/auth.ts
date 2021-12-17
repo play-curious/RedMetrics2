@@ -328,7 +328,11 @@ route<types.api.Accounts>(
       page,
     });
 
-    res.json(items);
+    const body = JSON.stringify(items);
+
+    res.header("coucou", "2");
+
+    res.send(body);
   })
 );
 
