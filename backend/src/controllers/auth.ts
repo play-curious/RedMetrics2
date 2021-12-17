@@ -84,9 +84,14 @@ export async function updateAccount(
 
 export function getAccounts(
   offset: number,
-  limit: number
+  limit: number,
+  sortBy: { column: keyof types.tables.Account; order: "asc" | "desc" }
 ): Promise<types.tables.Account[]> {
-  return accounts().select("*").offset(offset).limit(limit);
+  return accounts()
+    .select("*")
+    .offset(offset)
+    .limit(limit)
+    .orderBy(sortBy.column, sortBy.order);
 }
 
 export function getAccountCount(): Promise<number> {

@@ -8,7 +8,6 @@ import Wrapper from "../../nodes/Wrapper";
 import Button from "../../nodes/Button";
 import Error from "../system/Error";
 import Paginator from "../../nodes/Paginator";
-import Warn from "../../nodes/Warn";
 import AccountCard from "../../nodes/AccountCard";
 
 const request = types.utils.request;

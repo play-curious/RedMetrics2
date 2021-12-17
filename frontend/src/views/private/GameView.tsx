@@ -15,6 +15,13 @@ import DownloadButton from "../../nodes/DownloadButton";
 
 const request = types.utils.request;
 
+const sortByList: types.api.AllParameters["sortBy"][] = [
+  "created_timestamp asc",
+  "created_timestamp desc",
+  "updated_timestamp asc",
+  "updated_timestamp desc",
+];
+
 export default function GameView() {
   const { id } = Router.useParams<{ id: string }>();
 
@@ -22,6 +29,9 @@ export default function GameView() {
 
   const [game, setGame] = React.useState<types.tables.Game>();
   const [redirect, setRedirect] = React.useState<string>();
+  const [sortBy, setSortBy] = React.useState<types.api.AllParameters["sortBy"]>(
+    sortByList[0]
+  );
   const [context, setContext] = React.useState<{
     data: types.tables.Session[];
     headers: utils.ResolvedPagingHeaders;
@@ -49,12 +59,17 @@ export default function GameView() {
         params: {
           page: pageNumber,
           perPage: sessionPerPage,
+          sortBy,
         },
       }
     ).then(utils.handlePagingFetch(setContext));
   };
 
   if (context === undefined) fetchSessions(1);
+
+  React.useEffect(() => {
+    fetchSessions(1);
+  }, [sortBy]);
 
   utils.checkNotificationParams(notificationSystem).catch();
 
@@ -78,7 +93,10 @@ export default function GameView() {
       </Wrapper>
       <h2> Actions </h2>
       <Wrapper>
-        <DownloadButton route={`game/${id}/data`} name={game?.name ?? "game"} />
+        <DownloadButton
+          route={`game/${id}/data.json`}
+          name={game?.name ?? "game"}
+        />
         <Button to={"/game/edit/" + id}> Edit </Button>
         <Button
           callback={() => {
@@ -104,10 +122,22 @@ export default function GameView() {
       <h2>
         Sessions <code> ({context?.headers.total ?? 0}) </code>
       </h2>
+      <Wrapper>
+        <Button
+          callback={() => {
+            const newIndex = sortByList.indexOf(sortBy) + 1;
+            setSortBy(
+              sortByList[newIndex > sortByList.length - 1 ? 0 : newIndex]
+            );
+          }}
+        >
+          sort by {sortBy ?? "default"}
+        </Button>
+      </Wrapper>
       <Paginator
         context={context}
         onPageChange={fetchSessions}
-        map={async (session, i) => {
+        map={(session, i) => {
           return (
             <Card
               key={i}

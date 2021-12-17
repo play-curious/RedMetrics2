@@ -11,7 +11,6 @@ import Button from "../../nodes/Button";
 import Wrapper from "../../nodes/Wrapper";
 import Card from "../../nodes/Card";
 import Paginator from "../../nodes/Paginator";
-import Warn from "../../nodes/Warn";
 
 const request = types.utils.request;
 
@@ -75,7 +74,7 @@ export default function SessionView() {
       <h1> {id} </h1>
       <Wrapper>
         <DownloadButton
-          route={`session/${id}/data`}
+          route={`session/${id}/data.json`}
           name={
             (game?.name ?? "game") +
             " " +

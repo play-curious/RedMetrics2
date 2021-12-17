@@ -6,6 +6,7 @@ import * as game from "../../controllers/game";
 import * as auth from "../../controllers/auth";
 import * as event from "../../controllers/events";
 import * as events from "../../controllers/events";
+import { sessions } from "../../controllers/events";
 
 const route = types.utils.buildRouteMaker(app.v2);
 
@@ -38,12 +39,13 @@ route<types.api.Game>(
       total = await utils.count(game.getGames());
     }
 
-    const { offset, perPage, pageCount, page } = utils.extractPagingParams(
-      req,
-      total
-    );
+    const { offset, perPage, pageCount, page, sortBy } =
+      utils.extractPagingParams(req, total);
 
-    const games = await query.offset(offset).limit(perPage);
+    const games = await query
+      .offset(offset)
+      .limit(perPage)
+      .orderBy(sortBy.column, sortBy.order);
 
     utils.setPagingHeaders(req, res, {
       perPage,
@@ -228,12 +230,14 @@ route<types.api.GameById_Sessions>(
   utils.asyncHandler(async (req, res) => {
     const total = await events.getGameSessionCount(req.params.id);
 
-    const { offset, pageCount, page, perPage } = utils.extractPagingParams(
-      req,
-      total
-    );
+    const { offset, pageCount, page, perPage, sortBy } =
+      utils.extractPagingParams(req, total);
 
-    const items = await events.getGameSessions(req.params.id, offset, perPage);
+    const items = await sessions()
+      .where("game_id", req.params.id)
+      .offset(offset)
+      .limit(perPage)
+      .orderBy(sortBy.column, sortBy.order);
 
     utils.setPagingHeaders(req, res, {
       pageCount,

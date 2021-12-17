@@ -9,7 +9,6 @@ import GameCard from "../../nodes/GameCard";
 import Wrapper from "../../nodes/Wrapper";
 import Button from "../../nodes/Button";
 import Error from "../system/Error";
-import Warn from "../../nodes/Warn";
 
 const request = types.utils.request;
 

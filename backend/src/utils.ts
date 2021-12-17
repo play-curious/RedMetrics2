@@ -10,6 +10,7 @@ import * as types from "rm2-typings";
 import * as auth from "./controllers/auth";
 import * as game from "./controllers/game";
 import * as constants from "./constants";
+import { sortBy } from "underscore";
 
 interface ForFilesOptions {
   recursive?: boolean;
@@ -373,7 +374,15 @@ export function setPagingHeaders(
 export function extractPagingParams(
   req: express.Request,
   total: number
-): types.api.PagingParameters & { offset: number; pageCount: number } {
+): Omit<types.api.AllParameters, "sortBy"> & {
+  sortBy: {
+    column: "created_timestamp";
+    order: "desc" | "asc";
+  };
+} & { offset: number; pageCount: number } {
+  const sortBy =
+    (String(req.query.sortBy) as types.api.AllParameters["sortBy"]) ??
+    "created_timestamp desc";
   const perPage = Math.max(
     Number(req.query.perPage ?? process.env.API_MAX_LIMIT_PER_PAGE),
     1
@@ -381,5 +390,14 @@ export function extractPagingParams(
   const pageCount = Math.ceil(total / perPage);
   const page = Math.min(Math.max(Number(req.query.page ?? 1), 1), pageCount);
   const offset = Math.max((page - 1) * perPage, 0);
-  return { page, perPage, pageCount, offset };
+  return {
+    page,
+    perPage,
+    pageCount,
+    offset,
+    sortBy: {
+      column: sortBy.split(" ")[0] as "created_timestamp",
+      order: sortBy.split(" ")[1] as "desc" | "asc",
+    },
+  };
 }

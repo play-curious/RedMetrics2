@@ -11,14 +11,6 @@ export function getSession(
   return sessions().where("id", id).first();
 }
 
-export function getGameSessions(
-  id: types.tables.Game["id"],
-  offset: number,
-  limit: number
-): Promise<types.tables.Session[]> {
-  return sessions().where("game_id", id).offset(offset).limit(limit);
-}
-
 export function getGameSessionCount(
   id: types.tables.Game["id"]
 ): Promise<number> {
@@ -54,9 +46,14 @@ export function updateGameSession(
 export function getSessionEvents(
   id: types.tables.Session["id"],
   offset: number,
-  limit: number
+  limit: number,
+  sortBy: { column: keyof types.tables.Session; order: "asc" | "desc" }
 ): Promise<types.tables.Event[]> {
-  return events().where("session_id", id).offset(offset).limit(limit);
+  return events()
+    .where("session_id", id)
+    .offset(offset)
+    .limit(limit)
+    .orderBy(sortBy.column, sortBy.order);
 }
 
 export function getAllSessionEvents(

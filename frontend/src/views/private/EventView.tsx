@@ -59,7 +59,7 @@ export default function EventView() {
       <NotificationSystem ref={notificationSystem} />
       <h1> Event n°{id} </h1>
       <Wrapper>
-        <DownloadButton route={`event/${id}/data`} name={"event" + id} />
+        <DownloadButton route={`event/${id}/data.json`} name={"event" + id} />
         <Button to={"/game/show/" + game_id}> Game </Button>
         <Button to={`/game/${game_id}/session/show/${session_id}`}>
           Session

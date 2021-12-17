@@ -146,12 +146,15 @@ route<types.api.SessionById_Events>(
   utils.asyncHandler(async (req, res) => {
     const total = await events.getSessionEventCount(req.params.id);
 
-    const { offset, pageCount, perPage, page } = utils.extractPagingParams(
-      req,
-      total
-    );
+    const { offset, pageCount, perPage, page, sortBy } =
+      utils.extractPagingParams(req, total);
 
-    const items = await events.getSessionEvents(req.params.id, offset, perPage);
+    const items = await events.getSessionEvents(
+      req.params.id,
+      offset,
+      perPage,
+      sortBy
+    );
 
     utils.setPagingHeaders(req, res, {
       perPage,

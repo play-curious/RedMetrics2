@@ -314,12 +314,10 @@ route<types.api.Accounts>(
   utils.asyncHandler(async (req, res) => {
     const total = await auth.getAccountCount();
 
-    const { page, perPage, offset, pageCount } = utils.extractPagingParams(
-      req,
-      total
-    );
+    const { page, perPage, offset, pageCount, sortBy } =
+      utils.extractPagingParams(req, total);
 
-    const items = await auth.getAccounts(offset, perPage);
+    const items = await auth.getAccounts(offset, perPage, sortBy);
 
     utils.setPagingHeaders(req, res, {
       pageCount,
