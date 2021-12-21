@@ -9,18 +9,11 @@ import Wrapper from "../../nodes/Wrapper";
 import Button from "../../nodes/Button";
 import UUID from "../../nodes/UUID";
 import Warn from "../../nodes/Warn";
-import Card from "../../nodes/Card";
 import Paginator from "../../nodes/Paginator";
 import DownloadButton from "../../nodes/DownloadButton";
+import SessionCard from "../../nodes/SessionCard";
 
 const request = types.utils.request;
-
-const sortByList: types.api.AllParameters["sortBy"][] = [
-  "created_timestamp asc",
-  "created_timestamp desc",
-  "updated_timestamp asc",
-  "updated_timestamp desc",
-];
 
 export default function GameView() {
   const { id } = Router.useParams<{ id: string }>();
@@ -29,9 +22,6 @@ export default function GameView() {
 
   const [game, setGame] = React.useState<types.tables.Game>();
   const [redirect, setRedirect] = React.useState<string>();
-  const [sortBy, setSortBy] = React.useState<types.api.AllParameters["sortBy"]>(
-    sortByList[0]
-  );
   const [context, setContext] = React.useState<{
     data: types.tables.Session[];
     headers: utils.ResolvedPagingHeaders;
@@ -50,7 +40,10 @@ export default function GameView() {
         });
       });
 
-  const fetchSessions = (pageNumber: number) => {
+  const fetchSessions = (
+    pageNumber: number,
+    sortBy: `${string} ${"asc" | "desc"}`
+  ) => {
     request<types.api.GameById_Sessions>(
       "Get",
       `/game/${id}/sessions`,
@@ -65,11 +58,7 @@ export default function GameView() {
     ).then(utils.handlePagingFetch(setContext));
   };
 
-  if (context === undefined) fetchSessions(1);
-
-  React.useEffect(() => {
-    fetchSessions(1);
-  }, [sortBy]);
+  if (context === undefined) fetchSessions(1, "id desc");
 
   utils.checkNotificationParams(notificationSystem).catch();
 
@@ -126,14 +115,7 @@ export default function GameView() {
         context={context}
         onPageChange={fetchSessions}
         map={(session, i) => {
-          return (
-            <Card
-              key={i}
-              title={session.created_timestamp}
-              url={`/game/${id}/session/show/${session.id}`}
-              secondary={session.id}
-            />
-          );
+          return <SessionCard key={i} session={session} />;
         }}
       />
     </>

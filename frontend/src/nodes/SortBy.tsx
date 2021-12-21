@@ -1,12 +1,6 @@
 import React from "react";
 
-import Button from "./Button";
-
-import {
-  faSyncAlt,
-  faSortUp,
-  faSortDown,
-} from "@fortawesome/free-solid-svg-icons";
+import { faSortUp, faSortDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const unneededColumns: string[] = ["custom_data"];
