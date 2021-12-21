@@ -22,24 +22,26 @@ export default function AccountList({ user }: { user: types.tables.Account }) {
 
   const accountPerPage = 15;
 
-  const fetchAccounts = (pageNumber: number) => {
+  const fetchAccounts = (
+    pageNumber: number,
+    sortBy: `${string} ${"asc" | "desc"}`
+  ) => {
     request<types.api.Accounts>("Get", "/accounts", undefined, {
       withCredentials: true,
       params: {
         page: pageNumber,
         perPage: accountPerPage,
+        sortBy,
       },
     }).then(utils.handlePagingFetch(setContext));
   };
 
-  if (context === undefined) fetchAccounts(1);
+  if (context === undefined) fetchAccounts(1, "id desc");
 
   if (!user.is_admin)
     return Error({
       text: "You must be administrator to access this page.",
     });
-
-  console.log(context);
 
   return (
     <>
@@ -48,7 +50,7 @@ export default function AccountList({ user }: { user: types.tables.Account }) {
       <h2> Actions </h2>
       <Wrapper>
         <Button to="/account/create"> Create </Button>
-        <Button callback={() => fetchAccounts(1)}> Refresh </Button>
+        <Button callback={() => fetchAccounts(1, "id desc")}> Refresh </Button>
       </Wrapper>
       <h2 id="list"> Account list ({context?.headers.total ?? 0}) </h2>
       <Paginator

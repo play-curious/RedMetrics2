@@ -27,16 +27,20 @@ export default function GameList({ user }: { user: types.tables.Account }) {
       text: "You must be administrator to access this page.",
     });
 
-  const fetchGames = (pageNumber: number) => {
+  const fetchGames = (
+    pageNumber: number,
+    sortBy: `${string} ${"asc" | "desc"}`
+  ) => {
     request<types.api.Game>("Get", "/game", undefined, {
       params: {
         page: pageNumber,
         perPage: gamePerPage,
+        sortBy,
       },
     }).then(utils.handlePagingFetch(setContext));
   };
 
-  if (context === undefined) fetchGames(1);
+  if (context === undefined) fetchGames(1, "id desc");
 
   return (
     <>

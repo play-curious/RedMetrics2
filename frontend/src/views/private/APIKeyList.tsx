@@ -47,8 +47,6 @@ export default function APIKeyList({ user }: { user: types.tables.Account }) {
         });
       });
 
-  utils.autoRefresh(setApiKeys);
-
   return (
     <>
       <NotificationSystem ref={notificationSystem} />

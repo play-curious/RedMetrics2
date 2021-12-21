@@ -50,7 +50,10 @@ export default function SessionView() {
         });
       });
 
-  const fetchEvents = (pageNumber: number) => {
+  const fetchEvents = (
+    pageNumber: number,
+    sortBy: `${string} ${"asc" | "desc"}`
+  ) => {
     request<types.api.SessionById_Events>(
       "Get",
       `/session/${id}/events`,
@@ -59,12 +62,13 @@ export default function SessionView() {
         params: {
           page: pageNumber,
           perPage: eventPerPage,
+          sortBy,
         },
       }
     ).then(utils.handlePagingFetch(setContext));
   };
 
-  if (game && session && context === undefined) fetchEvents(1);
+  if (game && session && context === undefined) fetchEvents(1, "id desc");
 
   utils.checkNotificationParams(notificationSystem).catch();
 
