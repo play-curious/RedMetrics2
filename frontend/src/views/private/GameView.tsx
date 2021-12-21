@@ -122,18 +122,6 @@ export default function GameView() {
       <h2>
         Sessions <code> ({context?.headers.total ?? 0}) </code>
       </h2>
-      <Wrapper>
-        <Button
-          callback={() => {
-            const newIndex = sortByList.indexOf(sortBy) + 1;
-            setSortBy(
-              sortByList[newIndex > sortByList.length - 1 ? 0 : newIndex]
-            );
-          }}
-        >
-          sort by {sortBy ?? "default"}
-        </Button>
-      </Wrapper>
       <Paginator
         context={context}
         onPageChange={fetchSessions}
