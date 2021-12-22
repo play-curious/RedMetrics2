@@ -56,6 +56,55 @@ export default function APIKeyList({ user }: { user: types.tables.Account }) {
     <>
       <NotificationSystem ref={notificationSystem} />
       <h1>API Keys Management</h1>
+      <h2 id="add">Add API Key</h2>
+      {ownGames && ownGames.length > 0 ? (
+        <>
+          <CustomForm
+            onSubmit={(session: types.api.Key["Methods"]["Post"]["Body"]) => {
+              request<types.api.Key>("Post", "/key", session)
+                .then(() => {
+                  notificationSystem.current?.addNotification({
+                    message: "Successfully generated API key",
+                    level: "success",
+                  });
+                  fetchApiKeys();
+                })
+                .catch((error) => {
+                  notificationSystem.current?.addNotification({
+                    message: error.message,
+                    level: "error",
+                  });
+                });
+            }}
+            inputs={{
+              description: {
+                is: "text",
+                placeholder: "API key name or reason",
+              },
+              game_id: {
+                is: "select",
+                label: "game",
+                required: true,
+                options:
+                  ownGames.map((game) => {
+                    return { value: game.id as string, label: game.name };
+                  }) ?? [],
+              },
+            }}
+            submitText="Add"
+            otherButtons={
+              <Button callback={() => setOwnGames(undefined)}>
+                <FontAwesomeIcon icon={faSyncAlt} />
+              </Button>
+            }
+          />
+        </>
+      ) : (
+        <Warn type="warn">
+          <Dom.Link to={"/game/add"}>First create a game</Dom.Link>, and then
+          create an API key for it
+        </Warn>
+      )}
       <h2 id="list">API Key list</h2>
       {apiKeys && apiKeys.length > 0 ? (
         <div className="table">
@@ -120,55 +169,6 @@ export default function APIKeyList({ user }: { user: types.tables.Account }) {
         </div>
       ) : (
         <Warn type="warn">You don't have any API keys...</Warn>
-      )}
-      <h2 id="add">Add API Key</h2>
-      {ownGames && ownGames.length > 0 ? (
-        <>
-          <CustomForm
-            onSubmit={(session: types.api.Key["Methods"]["Post"]["Body"]) => {
-              request<types.api.Key>("Post", "/key", session)
-                .then(() => {
-                  notificationSystem.current?.addNotification({
-                    message: "Successfully generated API key",
-                    level: "success",
-                  });
-                  fetchApiKeys();
-                })
-                .catch((error) => {
-                  notificationSystem.current?.addNotification({
-                    message: error.message,
-                    level: "error",
-                  });
-                });
-            }}
-            inputs={{
-              description: {
-                is: "text",
-                placeholder: "API key name or reason",
-              },
-              game_id: {
-                is: "select",
-                label: "game",
-                required: true,
-                options:
-                  ownGames.map((game) => {
-                    return { value: game.id as string, label: game.name };
-                  }) ?? [],
-              },
-            }}
-            submitText="Add"
-            otherButtons={
-              <Button callback={() => setOwnGames(undefined)}>
-                <FontAwesomeIcon icon={faSyncAlt} />
-              </Button>
-            }
-          />
-        </>
-      ) : (
-        <Warn type="warn">
-          <Dom.Link to={"/game/add"}>First create a game</Dom.Link>, and then
-          create an API key for it
-        </Warn>
       )}
     </>
   );
