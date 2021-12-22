@@ -37,7 +37,13 @@ export default function APIKeyList({ user }: { user: types.tables.Account }) {
 
   if (apiKeys === undefined) fetchApiKeys();
   if (ownGames === undefined)
-    request<types.api.Game>("Get", "/game", undefined)
+    request<types.api.Game>("Get", "/game", undefined, {
+      params: {
+        page: 1,
+        sortBy: "name asc" as `${string} ${"asc" | "desc"}`,
+        perPage: Number(process.env.API_MAX_LIMIT_PER_PAGE ?? 9000),
+      },
+    })
       .then(({ data }) => setOwnGames(data))
       .catch((error) => {
         notificationSystem.current?.addNotification({
