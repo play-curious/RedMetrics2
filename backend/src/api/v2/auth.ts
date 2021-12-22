@@ -16,7 +16,7 @@ route<types.api.Logout>(
   utils.authentication(),
   utils.asyncHandler(async (req, res) => {
     if (utils.hasAccount(req)) await auth.logout(req.account.id);
-    res.sendStatus(200);
+    res.json({});
   })
 );
 
@@ -187,7 +187,7 @@ route<types.api.Account>(
 
     await utils.sendAccountConfirmation(account);
 
-    res.sendStatus(200);
+    res.json({});
   })
 );
 
@@ -200,7 +200,7 @@ route<types.api.AccountById>(
   ),
   utils.asyncHandler(async (req, res) => {
     await auth.deleteAccount(req.params.id);
-    res.sendStatus(200);
+    res.json({});
   })
 );
 
@@ -399,7 +399,7 @@ route<types.api.Key>(
   utils.asyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
     await auth.removeUserApiKeys(req.account.id);
-    res.sendStatus(200);
+    res.json({});
   })
 );
 
@@ -413,7 +413,7 @@ route<types.api.KeyByKey>(
   utils.asyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
     await auth.removeApiKey(req.params.key);
-    res.sendStatus(200);
+    res.json({});
   })
 );
 
@@ -446,7 +446,7 @@ route<types.api.LostPassword>(
       "RedMetrics2 - Reset your password"
     );
 
-    res.sendStatus(200);
+    res.json({});
   })
 );
 
@@ -515,7 +515,7 @@ route<types.api.LostPassword>(
       ),
     });
 
-    res.sendStatus(200);
+    res.json({});
   })
 );
 
@@ -528,7 +528,7 @@ route<types.api.ConfirmEmail>(
 
     await utils.sendAccountConfirmation(req.account);
 
-    res.sendStatus(200);
+    res.json({});
   })
 );
 
@@ -557,6 +557,6 @@ route<types.api.ConfirmEmail>(
     await auth.confirmations().where("account_id", req.account.id).delete();
     await auth.updateAccount(req.account.id, { confirmed: true });
 
-    res.sendStatus(200);
+    res.json({});
   })
 );

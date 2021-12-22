@@ -8,11 +8,14 @@ export default function DownloadButton({
   route,
   name,
 }: {
-  route: string;
+  route: `/${string}`;
   name: string;
 }) {
   return (
-    <Button href={constants.API_BASE_URL + route} download={name + ".json"}>
+    <Button
+      href={constants.API_BASE_URL + route.slice(1)}
+      download={name + ".json"}
+    >
       Download data
     </Button>
   );

@@ -8,6 +8,7 @@ import knex from "knex";
 import path from "path";
 import cron from "cron";
 import pg from "pg";
+import fs from "fs";
 
 import * as utils from "./utils";
 import * as types from "rm2-typings";
@@ -16,7 +17,26 @@ dayjs.extend(relative);
 
 // Global
 
-dotenv.config({ path: path.join(process.cwd(), "..", ".env") });
+{
+  const templateConfigPath = path.join(process.cwd(), "..", ".env.template");
+  const templateConfigFile = fs.readFileSync(templateConfigPath, "utf-8");
+  const templateConfig = dotenv.parse(templateConfigFile);
+
+  dotenv.config({ path: path.join(process.cwd(), "..", ".env") });
+
+  const missing: string[] = [];
+
+  for (const key in templateConfig) {
+    if (!process.env[key]) missing.push(key);
+  }
+
+  if (missing.length > 0) {
+    console.table(missing);
+    throw new (class ConfigError extends Error {})(
+      `Missing ${missing.length} properties in dotenv file.`
+    );
+  }
+}
 
 // Database
 

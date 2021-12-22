@@ -148,7 +148,7 @@ route<types.api.GameById>(
       author: req.body.author,
     });
 
-    res.sendStatus(200);
+    res.json({});
   })
 );
 
@@ -174,7 +174,7 @@ route<types.api.GameById>(
 
     await game.removeGame(targetGame.id as string);
 
-    res.sendStatus(200);
+    res.json({});
   })
 );
 
@@ -247,5 +247,13 @@ route<types.api.GameById_Sessions>(
     });
 
     res.json(items);
+  })
+);
+
+route<types.api.GameById_Keys>(
+  "Get",
+  `/game/:id/keys`,
+  utils.asyncHandler(async (req, res) => {
+    res.json(await game.getGameKeys(req.params.id));
   })
 );

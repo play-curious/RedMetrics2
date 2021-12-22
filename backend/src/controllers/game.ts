@@ -3,6 +3,7 @@ import * as events from "./events";
 import * as types from "rm2-typings";
 
 export const games = () => app.database<types.tables.Game>("game");
+export const apiKeys = () => app.database<types.tables.ApiKey>("api_key");
 
 export function getGames(): Promise<types.tables.Game[]> {
   return games().select();
@@ -19,6 +20,13 @@ export function getGame(
 ): Promise<types.tables.Game | undefined> {
   if (!id) return Promise.resolve(undefined);
   return games().where("id", id).first();
+}
+
+export function getGameKeys(
+  id: types.tables.Game["id"]
+): Promise<types.tables.ApiKey[]> {
+  if (!id) return Promise.resolve([]);
+  return apiKeys().where("game_id", id);
 }
 
 export function postGame(

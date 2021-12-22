@@ -20,6 +20,8 @@ export default function APIKeyList({ user }: { user: types.tables.Account }) {
 
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
+  const gameId = new URLSearchParams(window.location.search).get("game_id");
+
   const fetchApiKeys = () => {
     request<types.api.AccountById_Keys>(
       "Get",
@@ -86,9 +88,23 @@ export default function APIKeyList({ user }: { user: types.tables.Account }) {
                 label: "game",
                 required: true,
                 options:
-                  ownGames.map((game) => {
-                    return { value: game.id as string, label: game.name };
-                  }) ?? [],
+                  gameId === null
+                    ? ownGames.map((game) => ({
+                        value: game.id as string,
+                        label: game.name,
+                      }))
+                    : [ownGames.find((game) => game.id === gameId)].map(
+                        (game) =>
+                          game
+                            ? {
+                                value: game.id as string,
+                                label: game.name,
+                              }
+                            : {
+                                value: "error",
+                                label: "No game found",
+                              }
+                      ),
               },
             }}
             submitText="Add"

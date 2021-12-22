@@ -28,50 +28,38 @@ export async function checkNotificationParams(
       });
 }
 
-export function autoRefresh(setter: (value: undefined) => unknown) {
-  // setTimeout(() => {
-  //   setter(undefined);
-  // }, 1000);
-}
-
 export function extractPagingHeaders(
   headers: axios.AxiosResponseHeaders & Partial<types.api.PagingHeaders>
 ): ResolvedPagingHeaders {
-  if (
-    (headers.link ??
-      headers.Link ??
-      headers["X-Page-Count".toLowerCase()] ??
-      headers["X-Page-Count"] ??
-      headers["X-Page-Number".toLowerCase()] ??
-      headers["X-Page-Number"] ??
-      headers["X-Total-Count".toLowerCase()] ??
-      headers["X-Total-Count"] ??
-      headers["X-Per-Page-Count".toLowerCase()] ??
-      headers["X-Per-Page-Count"]) === undefined
-  ) {
-    console.log(headers);
-    throw new Error("Failed to extract paging headers");
-  }
+  const links = headers.link || headers.Link || "";
+  const pageCount = Number(
+    headers["X-Page-Count"] || headers["X-Page-Count".toLowerCase()] || 1
+  );
+  const pageNumber = Number(
+    headers["X-Page-Number"] || headers["X-Page-Number".toLowerCase()] || 1
+  );
+  const total = Number(
+    headers["X-Total-Count"] || headers["X-Total-Count".toLowerCase()] || 0
+  );
+  const perPage = Number(
+    headers["X-Per-Page-Count"] ||
+      headers["X-Per-Page-Count".toLowerCase()] ||
+      50
+  );
 
   return {
-    pageCount: Number(
-      headers["X-Page-Count".toLowerCase()] ?? headers["X-Page-Count"]
-    ),
-    pageNumber: Number(
-      headers["X-Page-Number".toLowerCase()] ?? headers["X-Page-Number"]
-    ),
-    perPage: Number(
-      headers["X-Per-Page-Count".toLowerCase()] ?? headers["X-Per-Page-Count"]
-    ),
-    total: Number(
-      headers["X-Total-Count".toLowerCase()] ?? headers["X-Total-Count"]
-    ),
-    links: Object.fromEntries(
-      (headers.link ?? headers.Link).split(", ").map((piece) => {
-        const [link, name] = piece.split("; rel=");
-        return [name, link];
-      })
-    ) as any,
+    pageCount,
+    pageNumber,
+    perPage,
+    total,
+    links: links
+      ? Object.fromEntries(
+          links.split(", ").map((piece) => {
+            const [link, name] = piece.split("; rel=");
+            return [name, link];
+          })
+        )
+      : {},
   };
 }
 
@@ -80,12 +68,12 @@ export interface ResolvedPagingHeaders {
   pageNumber: number;
   perPage: number;
   total: number;
-  links: {
+  links: Partial<{
     first: string;
     last: string;
     prev: string;
     next: string;
-  };
+  }>;
 }
 
 export function handlePagingFetch(

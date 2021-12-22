@@ -374,7 +374,7 @@ export function setPagingHeaders(
 export function extractPagingParams(
   req: express.Request,
   total: number
-): Omit<types.api.AllParameters, "sortBy"> & {
+): Omit<types.api.AllParameters, "sortBy" | "apiKey"> & {
   sortBy: {
     column: "created_timestamp";
     order: "desc" | "asc";

@@ -15,7 +15,7 @@ export default function Card({
   url?: string;
 }) {
   return (
-    <Dom.Link className="border mr-3" to={url ?? "#"}>
+    <Dom.Link className="border mr-3 mb-3" to={url ?? "#"}>
       <div className="overflow-hidden shadow-md">
         {title && (
           <div className="px-6 py-4 bg-white border-b border-gray-200 font-bold">

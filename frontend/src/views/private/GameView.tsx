@@ -12,6 +12,9 @@ import Warn from "../../nodes/Warn";
 import Paginator from "../../nodes/Paginator";
 import DownloadButton from "../../nodes/DownloadButton";
 import SessionCard from "../../nodes/SessionCard";
+import * as Dom from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 const request = types.utils.request;
 
@@ -22,6 +25,7 @@ export default function GameView() {
 
   const [game, setGame] = React.useState<types.tables.Game>();
   const [redirect, setRedirect] = React.useState<string>();
+  const [apiKeys, setApiKeys] = React.useState<types.tables.ApiKey[]>();
   const [context, setContext] = React.useState<{
     data: types.tables.Session[];
     headers: utils.ResolvedPagingHeaders;
@@ -33,6 +37,17 @@ export default function GameView() {
     request<types.api.GameById>("Get", `/game/${id}`, undefined)
       .then(({ data }) => data)
       .then(setGame)
+      .catch((error: any) => {
+        notificationSystem.current?.addNotification({
+          message: error.message,
+          level: "error",
+        });
+      });
+
+  if (apiKeys === undefined)
+    request<types.api.GameById_Keys>("Get", `/game/${id}/keys`, undefined)
+      .then(({ data }) => data)
+      .then(setApiKeys)
       .catch((error: any) => {
         notificationSystem.current?.addNotification({
           message: error.message,
@@ -83,20 +98,22 @@ export default function GameView() {
       <h2> Actions </h2>
       <Wrapper>
         <DownloadButton
-          route={`game/${id}/data.json`}
+          route={`/game/${id}/data.json`}
           name={game?.name ?? "game"}
         />
+        <Button to={"/api-keys?game_id=" + id}> New API key </Button>
         <Button to={"/game/edit/" + id}> Edit </Button>
         <Button
           callback={() => {
-            request<types.api.GameById>("Delete", `/game/${id}`, undefined)
-              .then(() => setRedirect("/games"))
-              .catch((error: any) => {
-                notificationSystem.current?.addNotification({
-                  message: error.message,
-                  level: "error",
+            if (window.confirm("Are you sure you want to delete this game?"))
+              request<types.api.GameById>("Delete", `/game/${id}`, undefined)
+                .then(() => setRedirect("/games"))
+                .catch((error: any) => {
+                  notificationSystem.current?.addNotification({
+                    message: error.message,
+                    level: "error",
+                  });
                 });
-              });
           }}
         >
           Remove
@@ -107,6 +124,62 @@ export default function GameView() {
         <p> {game.description} </p>
       ) : (
         <Warn type="warn"> No description </Warn>
+      )}
+      <h2>API keys</h2>
+      {apiKeys && apiKeys.length > 0 ? (
+        <div className="table">
+          <div className="table-row-group shadow">
+            <div className="table-row">
+              <div className="table-cell font-bold px-5">Name</div>
+              <div className="table-cell font-bold px-5">Key</div>
+              <div className="table-cell" />
+            </div>
+            {apiKeys.map((apiKey) => {
+              return (
+                <div className="table-row border-2">
+                  <div
+                    className="table-cell p-1 text-red-900 whitespace-nowrap overflow-hidden"
+                    title={apiKey.description}
+                  >
+                    {apiKey.description}
+                  </div>
+                  <div className="table-cell p-1">
+                    <UUID _key={apiKey.key} />
+                  </div>
+                  <div className="table-cell p-1 flex items-center h-full">
+                    <Button
+                      customClassName="hover:bg-red-600 rounded-full"
+                      callback={function (this: types.tables.ApiKey) {
+                        request<types.api.KeyByKey>(
+                          "Delete",
+                          `/key/${this.key}`,
+                          undefined
+                        )
+                          .then(() => {
+                            notificationSystem.current?.addNotification({
+                              message: "Successfully deleted API key",
+                              level: "success",
+                            });
+                            setApiKeys(undefined);
+                          })
+                          .catch((error) => {
+                            notificationSystem.current?.addNotification({
+                              message: error.message,
+                              level: "error",
+                            });
+                          });
+                      }.bind(apiKey)}
+                    >
+                      <FontAwesomeIcon icon={faTrashAlt} />
+                    </Button>
+                  </div>
+                </div>
+              );
+            }) || "No API key found"}
+          </div>
+        </div>
+      ) : (
+        <Warn type="warn"> No API keys </Warn>
       )}
       <h2>
         Sessions <code> ({context?.headers.total ?? 0}) </code>

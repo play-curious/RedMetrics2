@@ -9,8 +9,8 @@ import NotificationSystem from "react-notification-system";
 import DownloadButton from "../../nodes/DownloadButton";
 import Button from "../../nodes/Button";
 import Wrapper from "../../nodes/Wrapper";
-import Card from "../../nodes/Card";
 import Paginator from "../../nodes/Paginator";
+import EventCard from "../../nodes/EventCard";
 
 const request = types.utils.request;
 
@@ -68,7 +68,7 @@ export default function SessionView() {
     ).then(utils.handlePagingFetch(setContext));
   };
 
-  if (game && session && context === undefined) fetchEvents(1, "id desc");
+  if (context === undefined) fetchEvents(1, "id desc");
 
   utils.checkNotificationParams(notificationSystem).catch();
 
@@ -78,7 +78,7 @@ export default function SessionView() {
       <h1> {id} </h1>
       <Wrapper>
         <DownloadButton
-          route={`session/${id}/data.json`}
+          route={`/session/${id}/data.json`}
           name={
             (game?.name ?? "game") +
             " " +
@@ -93,20 +93,9 @@ export default function SessionView() {
       <Paginator
         context={context}
         onPageChange={fetchEvents}
-        map={(event, i) => {
-          return (
-            <Card
-              key={i}
-              title={event.section ?? "no section"}
-              footer={event.server_timestamp}
-              url={`/game/${game_id}/session/${id}/event/${event.id}`}
-            >
-              <pre>
-                <code>{JSON.stringify(event, null, 2)}</code>
-              </pre>
-            </Card>
-          );
-        }}
+        map={(event, i) => (
+          <EventCard game_id={game_id} event={event} key={i} />
+        )}
       />
     </>
   );

@@ -53,7 +53,12 @@ route<types.api.Session>(
 );
 
 const gameSessionCheck = utils.asyncHandler(async (req, res, next) => {
-  if (!utils.hasGame(req)) return;
+  if (!utils.hasGame(req))
+    return utils.sendError(res, {
+      code: 401,
+      description:
+        "You must use this route via an API key instead of a cookie.",
+    });
 
   const session = await events.getSession(req.params.id ?? uuid.v4());
 
@@ -102,7 +107,7 @@ route<types.api.SessionById>(
 
     await events.updateGameSession(req.params.id, values);
 
-    res.sendStatus(200);
+    res.json({});
   })
 );
 

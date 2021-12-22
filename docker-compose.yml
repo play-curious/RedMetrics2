@@ -29,6 +29,7 @@ services:
       - ./backend/tests:/usr/src/app/tests:ro
       - ./backend/migrations_src:/usr/src/app/migrations_src:ro
       - ./backend/seeds:/usr/src/app/seeds:ro
+      - ./.env.template:/usr/src/.env.template:ro
 
   db:
     image: postgres
