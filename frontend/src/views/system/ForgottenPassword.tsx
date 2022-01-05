@@ -22,9 +22,13 @@ export default function ForgottenPassword() {
           <h2>Enter the code you received by email</h2>
           <CustomForm
             onSubmit={(
-              data: types.api.LostPassword["Methods"]["Patch"]["Body"]
+              data: types.api.ResetPassword_Confirm["Methods"]["Post"]["Body"]
             ) => {
-              request<types.api.LostPassword>("Patch", "/lost-password", data)
+              request<types.api.ResetPassword_Confirm>(
+                "Post",
+                "/reset-password/confirm",
+                data
+              )
                 .then(() => {
                   notificationSystem.current?.addNotification({
                     message: "Successfully sent your new password",
@@ -63,9 +67,9 @@ export default function ForgottenPassword() {
       ) : (
         <CustomForm
           onSubmit={(
-            data: types.api.LostPassword["Methods"]["Post"]["Body"]
+            data: types.api.ResetPassword["Methods"]["Post"]["Body"]
           ) => {
-            request<types.api.LostPassword>("Post", "/lost-password", data)
+            request<types.api.ResetPassword>("Post", "/reset-password", data)
               .then(() => {
                 notificationSystem.current?.addNotification({
                   message: "Successfully sent code to " + data.email,

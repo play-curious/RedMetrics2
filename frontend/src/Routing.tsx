@@ -41,7 +41,7 @@ export default function Routing({
       <Dom.Route exact path="/register">
         <Register />
       </Dom.Route>
-      <Dom.Route exact path="/forgotten-password">
+      <Dom.Route exact path="/reset-password">
         <ForgottenPassword />
       </Dom.Route>
       <Dom.Route exact path="/login">

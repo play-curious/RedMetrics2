@@ -12,7 +12,7 @@ import Warn from "../../nodes/Warn";
 import Paginator from "../../nodes/Paginator";
 import DownloadButton from "../../nodes/DownloadButton";
 import SessionCard from "../../nodes/SessionCard";
-import * as Dom from "react-router-dom";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
@@ -45,7 +45,7 @@ export default function GameView() {
       });
 
   if (apiKeys === undefined)
-    request<types.api.GameById_Keys>("Get", `/game/${id}/keys`, undefined)
+    request<types.api.GameById_Key>("Get", `/game/${id}/key`, undefined)
       .then(({ data }) => data)
       .then(setApiKeys)
       .catch((error: any) => {
@@ -59,9 +59,9 @@ export default function GameView() {
     pageNumber: number,
     sortBy: `${string} ${"asc" | "desc"}`
   ) => {
-    request<types.api.GameById_Sessions>(
+    request<types.api.GameById_Session>(
       "Get",
-      `/game/${id}/sessions`,
+      `/game/${id}/session`,
       undefined,
       {
         params: {

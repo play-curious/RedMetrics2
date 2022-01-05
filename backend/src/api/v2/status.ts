@@ -1,5 +1,8 @@
 import * as app from "../../app";
+
 import express from "express";
+
+import * as types from "rm2-typings";
 
 const project = require("../../../package.json");
 
@@ -7,10 +10,10 @@ const startedAt = new Date();
 
 const statusHandler: express.RequestHandler = async (req, res) => {
   res.json({
-    apiVersion: project.version,
-    startedAt,
-    uptime: Date.now() - startedAt.getTime(),
-  });
+    build: "",
+    api_version: project.version,
+    started_at: startedAt.toDateString(),
+  } as types.api.Status);
 };
 
 // Full (versioned) route

@@ -7,6 +7,9 @@ exports.seed = async function (knex) {
     process.env.ADMIN_PASSWORD || Math.random().toString(16).substr(2, 14);
 
   try {
+    await knex("account").del().where({ email: adminEmail })
+
+
     await knex("account").insert({
       email: adminEmail,
       password: bcrypt.hashSync(

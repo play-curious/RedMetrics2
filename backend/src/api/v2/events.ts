@@ -140,9 +140,9 @@ route<types.api.SessionById_Data>(
   })
 );
 
-route<types.api.SessionById_Events>(
+route<types.api.SessionById_Event>(
   "Get",
-  "/session/:id/events",
+  "/session/:id/event",
   utils.authentication(
     (context) =>
       !!context.game &&

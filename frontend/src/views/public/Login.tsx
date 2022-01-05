@@ -62,7 +62,7 @@ export default function Login({ deleteUser }: { deleteUser: () => unknown }) {
             },
           }}
           otherButtons={
-            <Button to="/forgotten-password" textOnly>
+            <Button to="/reset-password" textOnly>
               Forgotten password
             </Button>
           }

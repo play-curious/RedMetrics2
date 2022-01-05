@@ -54,9 +54,9 @@ export default function SessionView() {
     pageNumber: number,
     sortBy: `${string} ${"asc" | "desc"}`
   ) => {
-    request<types.api.SessionById_Events>(
+    request<types.api.SessionById_Event>(
       "Get",
-      `/session/${id}/events`,
+      `/session/${id}/event`,
       undefined,
       {
         params: {

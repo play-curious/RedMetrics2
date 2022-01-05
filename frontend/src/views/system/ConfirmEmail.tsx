@@ -23,9 +23,13 @@ export default function ConfirmEmail() {
         </p>
         <CustomForm
           onSubmit={(
-            data: types.api.ConfirmEmail["Methods"]["Patch"]["Body"]
+            data: types.api.CheckEmail_Confirm["Methods"]["Post"]["Body"]
           ) => {
-            request<types.api.ConfirmEmail>("Patch", "/confirm-email", data)
+            request<types.api.CheckEmail_Confirm>(
+              "Post",
+              "/check-email/confirm",
+              data
+            )
               .then(() => {
                 notificationSystem.current?.addNotification({
                   message: "Successfully confirm your email!",
@@ -51,11 +55,7 @@ export default function ConfirmEmail() {
           otherButtons={
             <Button
               callback={() => {
-                request<types.api.ConfirmEmail>(
-                  "Post",
-                  "/confirm-email",
-                  undefined
-                )
+                request<types.api.CheckEmail>("Post", "/check-email", undefined)
                   .then(() => {
                     notificationSystem.current?.addNotification({
                       message: "Successfully sent new digit code",

@@ -148,7 +148,7 @@ route<types.api.Account>(
 
     const email = req.body?.email,
       password = req.body?.password,
-      is_admin = /^(?:true|1|)$/.test(String(req.body?.is_admin ?? "false"));
+      is_admin = /^(?:true|1)$/.test(String(req.body?.is_admin ?? "false"));
 
     if (!email || !password)
       return utils.sendError(res, {
@@ -417,11 +417,11 @@ route<types.api.KeyByKey>(
   })
 );
 
-route<types.api.LostPassword>(
+route<types.api.ResetPassword>(
   "Post",
-  "/lost-password",
+  "/reset-password",
   utils.asyncHandler(async (req, res) => {
-    const email: types.api.LostPassword["Methods"]["Post"]["Body"]["email"] =
+    const email: types.api.ResetPassword["Methods"]["Post"]["Body"]["email"] =
       req.body.email;
 
     if (!email)
@@ -450,11 +450,11 @@ route<types.api.LostPassword>(
   })
 );
 
-route<types.api.LostPassword>(
-  "Patch",
-  "/lost-password",
+route<types.api.ResetPassword_Confirm>(
+  "Post",
+  "/reset-password/confirm",
   utils.asyncHandler(async (req, res) => {
-    const code: types.api.LostPassword["Methods"]["Patch"]["Body"]["code"] =
+    const code: types.api.ResetPassword_Confirm["Methods"]["Post"]["Body"]["code"] =
       req.body.code;
 
     const confirmation = await auth.confirmations().where("code", code).first();
@@ -519,9 +519,9 @@ route<types.api.LostPassword>(
   })
 );
 
-route<types.api.ConfirmEmail>(
+route<types.api.CheckEmail>(
   "Post",
-  "/confirm-email",
+  "/check-email",
   utils.authentication(),
   utils.asyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
@@ -532,14 +532,14 @@ route<types.api.ConfirmEmail>(
   })
 );
 
-route<types.api.ConfirmEmail>(
-  "Patch",
-  "/confirm-email",
+route<types.api.CheckEmail_Confirm>(
+  "Post",
+  "/check-email/confirm",
   utils.authentication(),
   utils.asyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
 
-    const code: types.api.ConfirmEmail["Methods"]["Patch"]["Body"]["code"] =
+    const code: types.api.CheckEmail_Confirm["Methods"]["Post"]["Body"]["code"] =
       req.body.code;
 
     const confirmation = await auth

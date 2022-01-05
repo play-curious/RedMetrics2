@@ -6,7 +6,6 @@ import * as game from "../../controllers/game";
 import * as auth from "../../controllers/auth";
 import * as event from "../../controllers/events";
 import * as events from "../../controllers/events";
-import { sessions } from "../../controllers/events";
 
 const route = types.utils.buildRouteMaker(app.v2);
 
@@ -217,9 +216,9 @@ route<types.api.GameById_Data>(
   })
 );
 
-route<types.api.GameById_Sessions>(
+route<types.api.GameById_Session>(
   "Get",
-  "/game/:id/sessions",
+  "/game/:id/session",
   utils.authentication(
     async (context) =>
       (context.params.id &&
@@ -233,7 +232,8 @@ route<types.api.GameById_Sessions>(
     const { offset, pageCount, page, perPage, sortBy } =
       utils.extractPagingParams(req, total);
 
-    const items = await sessions()
+    const items = await event
+      .sessions()
       .where("game_id", req.params.id)
       .offset(offset)
       .limit(perPage)
@@ -250,9 +250,9 @@ route<types.api.GameById_Sessions>(
   })
 );
 
-route<types.api.GameById_Keys>(
+route<types.api.GameById_Key>(
   "Get",
-  `/game/:id/keys`,
+  `/game/:id/key`,
   utils.asyncHandler(async (req, res) => {
     res.json(await game.getGameKeys(req.params.id));
   })
