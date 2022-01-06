@@ -133,7 +133,8 @@ route<types.api.Account>(
   "/account",
   utils.authentication(),
   (req, res) => {
-    if (utils.hasAccount(req)) res.json(req.account);
+    if (utils.hasAccount(req))
+      res.json(utils.jsonRecursivelySnakeToCamelCase(req.account));
   }
 );
 
@@ -220,7 +221,7 @@ route<types.api.AccountById>(
         description: "Account not found",
       });
 
-    res.json(account);
+    res.json(utils.jsonRecursivelySnakeToCamelCase(account));
   })
 );
 
@@ -239,7 +240,7 @@ route<types.api.AccountById>(
 
     if (!utils.hasAccount(req)) return;
 
-    const body = req.body as types.api.AccountById["Methods"]["Put"]["Body"];
+    const body: types.api.AccountById["Methods"]["Put"]["Body"] = req.body;
 
     const id = req.params.id;
 
@@ -261,13 +262,13 @@ route<types.api.AccountById>(
       });
 
     if ((account.id === id && !req.account.is_admin) || !req.account.is_admin) {
-      if (!body.old_password)
+      if (!body.oldPassword)
         return utils.sendError(res, {
           code: 401,
           description: "Missing old_password",
         });
 
-      if (!(await bcrypt.compare(body.old_password, account.password)))
+      if (!(await bcrypt.compare(body.oldPassword, account.password)))
         return utils.sendError(res, {
           code: 401,
           description: "Incorrect password",
@@ -276,9 +277,9 @@ route<types.api.AccountById>(
 
     let hash: string | undefined;
 
-    if (body.new_password)
+    if (body.newPassword)
       hash = await bcrypt.hash(
-        body.new_password,
+        body.newPassword,
         parseInt(process.env.SALT_ROUNDS as string)
       );
 
@@ -297,13 +298,17 @@ route<types.api.AccountById>(
   })
 );
 
-route<types.api.AccountById_Keys>(
+route<types.api.AccountById_Key>(
   "Get",
-  "/account/:id/keys",
+  "/account/:id/key",
   utils.authentication((ctx) => ctx.params.id === ctx.account.id),
   utils.asyncHandler(async (req, res) => {
     if (utils.hasAccount(req))
-      res.json(await auth.getUserApiKeys(req.account.id));
+      res.json(
+        utils.jsonRecursivelySnakeToCamelCase(
+          await auth.getUserApiKeys(req.account.id)
+        )
+      );
   })
 );
 
@@ -365,7 +370,7 @@ route<types.api.Key>(
 
     await auth.apiKeys().insert(apiKey);
 
-    res.json(apiKey);
+    res.json(utils.jsonRecursivelySnakeToCamelCase(apiKey));
   })
 );
 
@@ -388,7 +393,7 @@ route<types.api.Key>(
         description: "API key not found",
       });
 
-    return res.json(apiKey);
+    return res.json(utils.jsonRecursivelySnakeToCamelCase(apiKey));
   })
 );
 

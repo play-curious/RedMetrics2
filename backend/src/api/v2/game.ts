@@ -53,7 +53,7 @@ route<types.api.Game>(
       page,
     });
 
-    res.json(games);
+    res.json(utils.jsonRecursivelySnakeToCamelCase(games));
   })
 );
 
@@ -76,14 +76,14 @@ route<types.api.Game>(
       });
 
     const currentGame: types.api.Game["Methods"]["Post"]["Body"] = {
-      publisher_id: req.account.id,
+      publisherId: req.account.id,
       author: req.body.author,
-      custom_data: JSON.stringify(req.body.custom_data ?? {}),
+      customData: JSON.stringify(req.body.customData ?? {}),
       description: req.body.description,
       name: req.body.name,
     };
 
-    const id = await game.postGame(currentGame);
+    const id = await game.postGame(utils.jsonCamelToSnakeCase(currentGame));
 
     res.json({
       id,
@@ -114,7 +114,7 @@ route<types.api.GameById>(
         description: "Game not found",
       });
 
-    res.json(targetGame);
+    res.json(utils.jsonRecursivelySnakeToCamelCase(targetGame));
   })
 );
 
@@ -143,7 +143,7 @@ route<types.api.GameById>(
     await game.updateGame(req.params.id, {
       name: req.body.name,
       description: req.body.description,
-      custom_data: JSON.stringify(req.body.custom_data ?? {}),
+      custom_data: JSON.stringify(req.body.customData ?? {}),
       author: req.body.author,
     });
 
@@ -201,18 +201,22 @@ route<types.api.GameById_Data>(
 
     const returned: types.api.GameById_Data["Methods"]["Get"]["Response"] = {
       ...targetGame,
-      sessions: await Promise.all(
-        sessions.map(async (session) => {
-          return {
-            ...session,
-            events: await event.getAllSessionEvents(session.id),
-          };
-        })
+      sessions: utils.jsonRecursivelySnakeToCamelCase(
+        await Promise.all(
+          sessions.map(async (session) => {
+            return {
+              ...session,
+              events: await event.getAllSessionEvents(session.id),
+            };
+          })
+        )
       ),
     };
 
     res.type("application/octet-stream");
-    res.json(utils.removeNullFields(returned));
+    res.json(
+      utils.removeNullFields(utils.jsonRecursivelySnakeToCamelCase(returned))
+    );
   })
 );
 
@@ -246,7 +250,7 @@ route<types.api.GameById_Session>(
       page,
     });
 
-    res.json(items);
+    res.json(utils.jsonRecursivelySnakeToCamelCase(items));
   })
 );
 
@@ -254,6 +258,10 @@ route<types.api.GameById_Key>(
   "Get",
   `/game/:id/key`,
   utils.asyncHandler(async (req, res) => {
-    res.json(await game.getGameKeys(req.params.id));
+    res.json(
+      utils.jsonRecursivelySnakeToCamelCase(
+        await game.getGameKeys(req.params.id)
+      )
+    );
   })
 );

@@ -92,9 +92,9 @@ export default function AccountView({ user }: { user: types.tables.Account }) {
         submitText="Edit"
         defaultValues={{
           email: account?.email ?? user.email,
-          new_password: "",
-          old_password: "",
-          is_admin: account?.is_admin ?? user.is_admin,
+          newPassword: "",
+          oldPassword: "",
+          isAdmin: account?.is_admin ?? user.is_admin,
         }}
         inputs={{
           email: {
@@ -103,7 +103,7 @@ export default function AccountView({ user }: { user: types.tables.Account }) {
             label: "Email",
             placeholder: "Email",
           },
-          old_password:
+          oldPassword:
             user.id === id
               ? {
                   is: "password",
@@ -112,13 +112,13 @@ export default function AccountView({ user }: { user: types.tables.Account }) {
                   placeholder: "Current password",
                 }
               : "",
-          new_password: {
+          newPassword: {
             is: "password",
             required: true,
             label: "New password",
             placeholder: "New password",
           },
-          is_admin: {
+          isAdmin: {
             is: "checkbox",
             label: "is administrator",
           },

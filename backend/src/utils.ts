@@ -10,7 +10,7 @@ import * as types from "rm2-typings";
 import * as auth from "./controllers/auth";
 import * as game from "./controllers/game";
 import * as constants from "./constants";
-import { sortBy } from "underscore";
+import { type } from "os";
 
 interface ForFilesOptions {
   recursive?: boolean;
@@ -322,14 +322,6 @@ export function asyncHandler(handler: express.RequestHandler): express.Handler {
   };
 }
 
-export function removeNullFields(obj: object): object {
-  return JSON.parse(
-    JSON.stringify(obj, (key, value) => {
-      if (value !== null) return value;
-    })
-  );
-}
-
 export function setPagingHeaders(
   req: express.Request,
   res: express.Response,
@@ -400,4 +392,61 @@ export function extractPagingParams(
       order: sortBy.split(" ")[1] as "desc" | "asc",
     },
   };
+}
+
+export function snakeToCamelCase<String extends string>(
+  snake: String
+): types.utils.SnakeToCamelCase<String> {
+  return snake
+    .toLowerCase()
+    .replace(/([-_][a-z])/g, (group) => group.slice(1).toUpperCase()) as any;
+}
+
+export function camelToSnakeCase(camel: string): string {
+  return camel.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+}
+
+export function jsonCamelToSnakeCase(value: any): any {
+  return {
+    ...Object.fromEntries(
+      Object.entries(value).map(([key, value]) => [
+        camelToSnakeCase(key),
+        value,
+      ])
+    ),
+  };
+}
+
+export function jsonRecursivelySnakeToCamelCase<Value>(
+  value: Array<Value>
+): Array<types.utils.SnakeToCamelCaseNested<Value>>;
+export function jsonRecursivelySnakeToCamelCase<Value>(
+  value: Value
+): types.utils.SnakeToCamelCaseNested<Value>;
+export function jsonRecursivelySnakeToCamelCase<Value>(
+  value: Array<Value> | Value
+):
+  | Array<types.utils.SnakeToCamelCaseNested<Value>>
+  | types.utils.SnakeToCamelCaseNested<Value> {
+  if (Array.isArray(value))
+    return value.map((v) => jsonRecursivelySnakeToCamelCase(v));
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, value]) => [
+      snakeToCamelCase(key),
+      /boolean|string|number/.test(typeof value) ||
+      value === null ||
+      value === undefined
+        ? value
+        : jsonRecursivelySnakeToCamelCase(value),
+    ])
+  ) as types.utils.SnakeToCamelCaseNested<Value>;
+}
+
+export function removeNullFields(obj: object): object {
+  return JSON.parse(
+    JSON.stringify(obj, (key, value) => {
+      if (value !== null && value !== undefined) return value;
+    })
+  );
 }

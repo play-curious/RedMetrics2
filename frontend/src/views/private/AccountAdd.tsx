@@ -67,7 +67,7 @@ export default function AccountAdd({ user }: { user?: types.tables.Account }) {
               required: true,
               placeholder: "Email",
             },
-            is_admin: {
+            isAdmin: {
               is: "checkbox",
               label: "as admin?",
             },

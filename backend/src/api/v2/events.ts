@@ -22,24 +22,24 @@ route<types.api.Session>(
     //  The Location response header will contain the URL for the new session.
     //  Only accessible to dev and admin.
 
-    const external_id = req.body.external_id,
+    const externalId = req.body.externalId,
       platform = req.body.platform,
-      screen_size = req.body.screen_size,
+      screenSize = req.body.screenSize,
       software = req.body.software,
       version = req.body.version,
-      custom_data = JSON.stringify(req.body.custom_data ?? {});
+      customData = JSON.stringify(req.body.customData ?? {});
 
     const sessionData: types.api.Session["Methods"]["Post"]["Body"] = {
-      external_id,
+      externalId,
       platform,
-      screen_size,
+      screenSize,
       software,
       version,
-      custom_data,
+      customData,
     };
 
     const session: Omit<types.tables.Session, "id"> = {
-      ...sessionData,
+      ...utils.jsonCamelToSnakeCase(sessionData),
       game_id: req.game.id,
       closed: false,
       created_timestamp: String(Date.now()),
@@ -48,7 +48,7 @@ route<types.api.Session>(
 
     const id = await events.postSession(session);
 
-    res.json({ id, ...session });
+    res.json({ id, ...utils.jsonRecursivelySnakeToCamelCase(session) });
   })
 );
 
@@ -80,11 +80,13 @@ const gameSessionCheck = utils.asyncHandler(async (req, res, next) => {
 route<types.api.SessionById>(
   "Get",
   "/session/:id",
-  utils.authentication(),
-  gameSessionCheck,
   utils.asyncHandler(async (req, res) => {
     // Retrieves the SessionMeta for the identified session
-    res.json(await events.getSession(req.params.id));
+    res.json(
+      utils.jsonRecursivelySnakeToCamelCase(
+        await events.getSession(req.params.id)
+      )
+    );
   })
 );
 
@@ -97,15 +99,18 @@ route<types.api.SessionById>(
     // Updates the SessionMeta. Only accessible to dev and admin.
 
     const values: Partial<types.api.SessionById["Methods"]["Put"]["Body"]> = {
-      custom_data: JSON.stringify(req.body.custom_data ?? {}),
+      customData: JSON.stringify(req.body.customData ?? {}),
       software: req.body.software,
-      screen_size: req.body.screen_size,
+      screenSize: req.body.screenSize,
       platform: req.body.platform,
-      external_id: req.body.external_id,
+      externalId: req.body.externalId,
       closed: req.body.closed,
     };
 
-    await events.updateGameSession(req.params.id, values);
+    await events.updateGameSession(
+      req.params.id,
+      utils.jsonCamelToSnakeCase(values)
+    );
 
     res.json({});
   })
@@ -131,12 +136,16 @@ route<types.api.SessionById_Data>(
     )) as types.tables.Session;
 
     const fullSession: types.full.FullSession = {
-      ...session,
-      events: await events.getAllSessionEvents(session.id),
+      ...utils.jsonRecursivelySnakeToCamelCase(session),
+      events: utils.jsonRecursivelySnakeToCamelCase(
+        await events.getAllSessionEvents(session.id)
+      ),
     };
 
     res.type("application/octet-stream");
-    res.json(utils.removeNullFields(fullSession));
+    res.json(
+      utils.removeNullFields(utils.jsonRecursivelySnakeToCamelCase(fullSession))
+    );
   })
 );
 
@@ -168,7 +177,7 @@ route<types.api.SessionById_Event>(
       page,
     });
 
-    res.json(items);
+    res.json(utils.jsonRecursivelySnakeToCamelCase(items));
   })
 );
 
@@ -227,7 +236,7 @@ route<types.api.Event>(
     if (req.body.offset) query = query.offset(+req.body.offset);
     if (req.body.count) query = query.limit(+req.body.count);
 
-    res.json(await query);
+    res.json(utils.jsonRecursivelySnakeToCamelCase(await query));
   })
 );
 
@@ -267,8 +276,8 @@ route<types.api.Event>(
     }
 
     let session: types.tables.Session;
-    if (postEvents[0].session_id) {
-      const _session = await events.getSession(postEvents[0].session_id);
+    if (postEvents[0].sessionId) {
+      const _session = await events.getSession(postEvents[0].sessionId);
       if (!_session) session = await newSession();
       else session = _session;
     } else session = await newSession();
@@ -278,11 +287,11 @@ route<types.api.Event>(
         return {
           session_id: session.id,
           coordinates: JSON.stringify(postEvent.coordinates ?? {}),
-          custom_data: JSON.stringify(postEvent.custom_data ?? {}),
+          custom_data: JSON.stringify(postEvent.customData ?? {}),
           section: postEvent.section,
           server_timestamp: String(Date.now()),
           type: postEvent.type,
-          user_timestamp: postEvent.user_timestamp,
+          user_timestamp: postEvent.userTimestamp,
         };
       })
     );
@@ -298,6 +307,6 @@ route<types.api.EventById>(
   utils.asyncHandler(async (req, res) => {
     const id = Number(req.params.id);
 
-    res.json(await events.getEvent(id));
+    res.json(utils.jsonRecursivelySnakeToCamelCase(await events.getEvent(id)));
   })
 );

@@ -23,9 +23,9 @@ export default function APIKeyList({ user }: { user: types.tables.Account }) {
   const gameId = new URLSearchParams(window.location.search).get("game_id");
 
   const fetchApiKeys = () => {
-    request<types.api.AccountById_Keys>(
+    request<types.api.AccountById_Key>(
       "Get",
-      `/account/${user.id}/keys`,
+      `/account/${user.id}/key`,
       undefined
     )
       .then(({ data }) => setApiKeys(data))
@@ -83,7 +83,7 @@ export default function APIKeyList({ user }: { user: types.tables.Account }) {
                 is: "text",
                 placeholder: "API key name or reason",
               },
-              game_id: {
+              gameId: {
                 is: "select",
                 label: "game",
                 required: true,

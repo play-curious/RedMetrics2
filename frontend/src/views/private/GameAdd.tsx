@@ -56,12 +56,12 @@ export default function GameAdd({ user }: { user: types.tables.Account }) {
             is: "area",
             label: "Game description",
           },
-          custom_data: {
+          customData: {
             is: "area",
             label: "Custom data",
             jsonValidation: true,
           },
-          publisher_id: user.id,
+          publisherId: user.id,
         }}
       />
     </>
