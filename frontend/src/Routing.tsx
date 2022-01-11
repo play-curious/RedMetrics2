@@ -26,11 +26,13 @@ import APIKeyList from "./views/private/APIKeyList";
 
 import * as Router from "react-router";
 
+import { User } from "./utils";
+
 export default function Routing({
   user,
   fetchUser,
 }: {
-  user?: types.tables.Account;
+  user?: User;
   fetchUser: () => unknown;
 }) {
   return (

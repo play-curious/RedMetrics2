@@ -4,12 +4,13 @@ import * as Router from "react-router";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
+import * as utils from "../../utils";
 
 import CustomForm from "../../nodes/CustomForm";
 
 const request = types.utils.request;
 
-export default function GameAdd({ user }: { user: types.tables.Account }) {
+export default function GameAdd({ user }: { user: utils.User }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
   const [redirect, setRedirect] = React.useState<null | string>(null);
 

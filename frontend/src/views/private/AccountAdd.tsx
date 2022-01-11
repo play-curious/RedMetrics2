@@ -1,24 +1,23 @@
 import React from "react";
 import * as Router from "react-router";
-
+import * as uuid from "uuid";
 import * as types from "rm2-typings";
+import * as utils from "../../utils";
 
 import NotificationSystem from "react-notification-system";
-
-import * as uuid from "uuid";
 
 import CustomForm from "../../nodes/CustomForm";
 import Error from "../system/Error";
 
 const request = types.utils.request;
 
-export default function AccountAdd({ user }: { user?: types.tables.Account }) {
+export default function AccountAdd({ user }: { user?: utils.User }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
   const [redirect, setRedirect] = React.useState<null | string>(null);
 
   const password = uuid.v4();
 
-  if (!user?.is_admin)
+  if (!user?.isAdmin)
     return Error({
       text: "You must be administrator to access this page.",
     });

@@ -3,6 +3,7 @@ import * as Dom from "react-router-dom";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
+import * as utils from "../../utils";
 
 import UUID from "../../nodes/UUID";
 import Warn from "../../nodes/Warn";
@@ -14,7 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const request = types.utils.request;
 
-export default function APIKeyList({ user }: { user: types.tables.Account }) {
+export default function APIKeyList({ user }: { user: utils.User }) {
   const [apiKeys, setApiKeys] = React.useState<types.tables.ApiKey[]>();
   const [ownGames, setOwnGames] = React.useState<types.tables.Game[]>();
 

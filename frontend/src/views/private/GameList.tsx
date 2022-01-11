@@ -12,7 +12,7 @@ import Error from "../system/Error";
 
 const request = types.utils.request;
 
-export default function GameList({ user }: { user: types.tables.Account }) {
+export default function GameList({ user }: { user: utils.User }) {
   const [context, setContext] = React.useState<{
     data: types.tables.Game[];
     headers: utils.ResolvedPagingHeaders;
@@ -22,7 +22,7 @@ export default function GameList({ user }: { user: types.tables.Account }) {
 
   const gamePerPage = 15;
 
-  if (!user.is_admin)
+  if (!user.isAdmin)
     return Error({
       text: "You must be administrator to access this page.",
     });

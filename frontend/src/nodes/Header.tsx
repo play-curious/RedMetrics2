@@ -1,7 +1,5 @@
 import React from "react";
 
-import { tables as types } from "rm2-typings";
-
 import MenuItem from "./MenuItem";
 import Menu from "./Menu";
 import Button from "./Button";
@@ -11,7 +9,9 @@ import Logo from "./Logo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt, faUser } from "@fortawesome/free-solid-svg-icons";
 
-export default function Header({ user }: { user?: types.Account }) {
+import { User } from "../utils";
+
+export default function Header({ user }: { user?: User }) {
   return (
     <div className="bg-gray-800">
       <Container hidden={true}>
@@ -21,9 +21,9 @@ export default function Header({ user }: { user?: types.Account }) {
               <Logo />
             </div>
             <Menu>
-              {user?.is_admin && <MenuItem to="/games"> Games </MenuItem>}
+              {user?.isAdmin && <MenuItem to="/games"> Games </MenuItem>}
               {user && <MenuItem to="/api-keys"> Api Keys </MenuItem>}
-              {user?.is_admin && <MenuItem to="/accounts"> Accounts </MenuItem>}
+              {user?.isAdmin && <MenuItem to="/accounts"> Accounts </MenuItem>}
               <MenuItem to="/docs"> Docs </MenuItem>
               <MenuItem to="/about"> About </MenuItem>
             </Menu>

@@ -15,9 +15,10 @@ import Warn from "./nodes/Warn";
 import Footer from "./nodes/Footer";
 import Wrapper from "./nodes/Wrapper";
 
+import { User } from "./utils";
+
 types.utils.setupConfig({
   withCredentials: true,
-
   baseURL: constants.API_BASE_URL,
 });
 
@@ -27,7 +28,7 @@ export default function App() {
   new Clipboard(".clipboard");
 
   const notificationSystem = React.createRef<NotificationSystem.System>();
-  const [user, setUser] = React.useState<types.tables.Account>();
+  const [user, setUser] = React.useState<User>();
 
   const fetchUser = async () => {
     const { data } = await request<types.api.Account>(
@@ -74,7 +75,7 @@ export default function App() {
               ))}
             <Routing {...{ fetchUser, user }} />
           </Container>
-          <Footer />
+          {/*<Footer />*/}
         </div>
       </Dom.BrowserRouter>
     </>

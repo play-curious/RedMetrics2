@@ -12,7 +12,7 @@ import AccountCard from "../../nodes/AccountCard";
 
 const request = types.utils.request;
 
-export default function AccountList({ user }: { user: types.tables.Account }) {
+export default function AccountList({ user }: { user: utils.User }) {
   const [context, setContext] = React.useState<{
     data: types.tables.Account[];
     headers: utils.ResolvedPagingHeaders;
@@ -38,7 +38,7 @@ export default function AccountList({ user }: { user: types.tables.Account }) {
 
   if (context === undefined) fetchAccounts(1, "id desc");
 
-  if (!user.is_admin)
+  if (!user.isAdmin)
     return Error({
       text: "You must be administrator to access this page.",
     });

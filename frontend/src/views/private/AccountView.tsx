@@ -15,16 +15,16 @@ import UUID from "../../nodes/UUID";
 
 const request = types.utils.request;
 
-export default function AccountView({ user }: { user: types.tables.Account }) {
+export default function AccountView({ user }: { user: utils.User }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
   const [, , removeCookie] = Cookies.useCookies([constants.COOKIE_NAME]);
-  const [account, setAccount] = React.useState<types.tables.Account>();
+  const [account, setAccount] = React.useState<utils.User>();
   const [redirect, setRedirect] = React.useState<string>();
   const { id } = Router.useParams<{ id: string }>();
 
   if (!account)
     if (id !== user.id) {
-      if (user.is_admin) {
+      if (user.isAdmin) {
         request<types.api.AccountById>("Get", `/account/${id}`, undefined)
           .then(({ data }) => setAccount(data ?? user))
           .catch((error) => {
@@ -94,7 +94,7 @@ export default function AccountView({ user }: { user: types.tables.Account }) {
           email: account?.email ?? user.email,
           newPassword: "",
           oldPassword: "",
-          isAdmin: account?.is_admin ?? user.is_admin,
+          isAdmin: account?.isAdmin ?? user.isAdmin,
         }}
         inputs={{
           email: {
