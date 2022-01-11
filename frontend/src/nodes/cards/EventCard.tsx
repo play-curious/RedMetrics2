@@ -8,14 +8,14 @@ export default function EventCard({
   event,
   game_id,
 }: {
-  event: types.tables.Event;
+  event: types.utils.SnakeToCamelCaseNested<types.tables.Event>;
   game_id: types.tables.Game["id"];
 }) {
   return (
     <Card
       title={event.section ?? "no section"}
-      footer={event.server_timestamp}
-      url={`/game/${game_id}/session/${event.session_id}/event/${event.id}`}
+      footer={event.serverTimestamp}
+      url={`/game/${game_id}/session/${event.sessionId}/event/${event.id}`}
     >
       <pre>
         <code>{JSON.stringify(event, null, 2)}</code>

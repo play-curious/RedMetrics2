@@ -8,13 +8,17 @@ import Wrapper from "../../nodes/Wrapper";
 import Button from "../../nodes/Button";
 import Error from "../system/Error";
 import Paginator from "../../nodes/Paginator";
-import AccountCard from "../../nodes/AccountCard";
+import AccountCard from "../../nodes/cards/AccountCard";
 
 const request = types.utils.request;
 
-export default function AccountList({ user }: { user: utils.User }) {
+export default function AccountList({
+  user,
+}: {
+  user: types.utils.SnakeToCamelCaseNested<types.tables.Account>;
+}) {
   const [context, setContext] = React.useState<{
-    data: types.tables.Account[];
+    data: types.utils.SnakeToCamelCaseNested<types.tables.Account>[];
     headers: utils.ResolvedPagingHeaders;
   }>();
 

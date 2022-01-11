@@ -5,14 +5,18 @@ import * as types from "rm2-typings";
 import * as utils from "../../utils";
 
 import Paginator from "../../nodes/Paginator";
-import GameCard from "../../nodes/GameCard";
+import GameCard from "../../nodes/cards/GameCard";
 import Wrapper from "../../nodes/Wrapper";
 import Button from "../../nodes/Button";
 import Error from "../system/Error";
 
 const request = types.utils.request;
 
-export default function GameList({ user }: { user: utils.User }) {
+export default function GameList({
+  user,
+}: {
+  user: types.utils.SnakeToCamelCaseNested<types.tables.Account>;
+}) {
   const [context, setContext] = React.useState<{
     data: types.tables.Game[];
     headers: utils.ResolvedPagingHeaders;

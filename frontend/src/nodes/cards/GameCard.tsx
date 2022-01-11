@@ -4,7 +4,11 @@ import * as types from "rm2-typings";
 
 import Card from "./Card";
 
-export default function GameCard({ game }: { game: types.tables.Game }) {
+export default function GameCard({
+  game,
+}: {
+  game: types.utils.SnakeToCamelCaseNested<types.tables.Game>;
+}) {
   return (
     <Card
       title={game.name}

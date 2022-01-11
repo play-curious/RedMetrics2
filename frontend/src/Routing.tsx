@@ -1,8 +1,6 @@
 import React from "react";
 import * as Dom from "react-router-dom";
 
-import * as types from "rm2-typings";
-
 import Register from "./views/public/Register";
 import Login from "./views/public/Login";
 import Documentation from "./views/public/Documentation";
@@ -25,14 +23,13 @@ import ConfirmEmail from "./views/system/ConfirmEmail";
 import APIKeyList from "./views/private/APIKeyList";
 
 import * as Router from "react-router";
-
-import { User } from "./utils";
+import * as types from "rm2-typings";
 
 export default function Routing({
   user,
   fetchUser,
 }: {
-  user?: User;
+  user?: types.utils.SnakeToCamelCaseNested<types.tables.Account>;
   fetchUser: () => unknown;
 }) {
   return (

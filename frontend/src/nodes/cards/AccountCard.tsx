@@ -3,7 +3,7 @@ import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
 
-import Button from "./Button";
+import Button from "../Button";
 import Card from "./Card";
 
 const request = types.utils.request;
@@ -12,7 +12,7 @@ export default function AccountCard({
   account,
   onRemoved,
 }: {
-  account: types.tables.Account;
+  account: types.utils.SnakeToCamelCaseNested<types.tables.Account>;
   onRemoved: (id: types.tables.Account["id"]) => void;
 }) {
   const notificationSystem = React.createRef<NotificationSystem.System>();

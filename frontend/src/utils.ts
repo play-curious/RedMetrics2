@@ -5,8 +5,6 @@ import NotificationSystem from "react-notification-system";
 import * as types from "rm2-typings";
 import * as axios from "axios";
 
-export type User = types.api.Account["Methods"]["Get"]["Response"];
-
 export async function checkNotificationParams(
   notificationSystem: React.RefObject<NotificationSystem.System>
 ) {

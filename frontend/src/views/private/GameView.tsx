@@ -11,7 +11,7 @@ import UUID from "../../nodes/UUID";
 import Warn from "../../nodes/Warn";
 import Paginator from "../../nodes/Paginator";
 import DownloadButton from "../../nodes/DownloadButton";
-import SessionCard from "../../nodes/SessionCard";
+import SessionCard from "../../nodes/cards/SessionCard";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
@@ -27,7 +27,7 @@ export default function GameView() {
   const [redirect, setRedirect] = React.useState<string>();
   const [apiKeys, setApiKeys] = React.useState<types.tables.ApiKey[]>();
   const [context, setContext] = React.useState<{
-    data: types.tables.Session[];
+    data: types.utils.SnakeToCamelCaseNested<types.tables.Session>[];
     headers: utils.ResolvedPagingHeaders;
   }>();
 

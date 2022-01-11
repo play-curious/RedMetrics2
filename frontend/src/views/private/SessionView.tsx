@@ -10,7 +10,7 @@ import DownloadButton from "../../nodes/DownloadButton";
 import Button from "../../nodes/Button";
 import Wrapper from "../../nodes/Wrapper";
 import Paginator from "../../nodes/Paginator";
-import EventCard from "../../nodes/EventCard";
+import EventCard from "../../nodes/cards/EventCard";
 
 const request = types.utils.request;
 
@@ -22,7 +22,7 @@ export default function SessionView() {
   const [game, setGame] = React.useState<types.tables.Game>();
   const [session, setSession] = React.useState<types.tables.Session>();
   const [context, setContext] = React.useState<{
-    data: types.tables.Event[];
+    data: types.utils.SnakeToCamelCaseNested<types.tables.Event>[];
     headers: utils.ResolvedPagingHeaders;
   }>();
 

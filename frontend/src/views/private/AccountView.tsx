@@ -15,10 +15,15 @@ import UUID from "../../nodes/UUID";
 
 const request = types.utils.request;
 
-export default function AccountView({ user }: { user: utils.User }) {
+export default function AccountView({
+  user,
+}: {
+  user: types.utils.SnakeToCamelCaseNested<types.tables.Account>;
+}) {
   const notificationSystem = React.createRef<NotificationSystem.System>();
   const [, , removeCookie] = Cookies.useCookies([constants.COOKIE_NAME]);
-  const [account, setAccount] = React.useState<utils.User>();
+  const [account, setAccount] =
+    React.useState<types.utils.SnakeToCamelCaseNested<types.tables.Account>>();
   const [redirect, setRedirect] = React.useState<string>();
   const { id } = Router.useParams<{ id: string }>();
 

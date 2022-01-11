@@ -9,9 +9,13 @@ import Logo from "./Logo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignInAlt, faUser } from "@fortawesome/free-solid-svg-icons";
 
-import { User } from "../utils";
+import * as types from "rm2-typings";
 
-export default function Header({ user }: { user?: User }) {
+export default function Header({
+  user,
+}: {
+  user?: types.utils.SnakeToCamelCaseNested<types.tables.Account>;
+}) {
   return (
     <div className="bg-gray-800">
       <Container hidden={true}>

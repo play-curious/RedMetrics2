@@ -12,10 +12,7 @@ import Routing from "./Routing";
 import Header from "./nodes/Header";
 import Container from "./nodes/Container";
 import Warn from "./nodes/Warn";
-import Footer from "./nodes/Footer";
 import Wrapper from "./nodes/Wrapper";
-
-import { User } from "./utils";
 
 types.utils.setupConfig({
   withCredentials: true,
@@ -28,7 +25,8 @@ export default function App() {
   new Clipboard(".clipboard");
 
   const notificationSystem = React.createRef<NotificationSystem.System>();
-  const [user, setUser] = React.useState<User>();
+  const [user, setUser] =
+    React.useState<types.utils.SnakeToCamelCaseNested<types.tables.Account>>();
 
   const fetchUser = async () => {
     const { data } = await request<types.api.Account>(
