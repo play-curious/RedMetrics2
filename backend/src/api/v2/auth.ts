@@ -134,7 +134,12 @@ route<types.api.Account>(
   utils.authentication(),
   (req, res) => {
     if (utils.hasAccount(req))
-      res.json(utils.jsonRecursivelySnakeToCamelCase(req.account));
+      res.json(
+        utils.jsonRecursivelySnakeToCamelCase({
+          ...req.account,
+          password: null,
+        })
+      );
   }
 );
 
@@ -221,7 +226,9 @@ route<types.api.AccountById>(
         description: "Account not found",
       });
 
-    res.json(utils.jsonRecursivelySnakeToCamelCase(account));
+    res.json(
+      utils.jsonRecursivelySnakeToCamelCase({ ...account, password: null })
+    );
   })
 );
 
@@ -331,11 +338,7 @@ route<types.api.Accounts>(
       page,
     });
 
-    const body = JSON.stringify(items);
-
-    res.header("coucou", "2");
-
-    res.send(body);
+    res.send(items.map((item) => ({ ...item, password: null })));
   })
 );
 
