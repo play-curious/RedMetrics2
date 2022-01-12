@@ -39,7 +39,12 @@ route<types.api.Session>(
     };
 
     const session: Omit<types.tables.Session, "id"> = {
-      ...utils.jsonCamelToSnakeCase(sessionData),
+      custom_data: sessionData.customData,
+      external_id: sessionData.externalId,
+      platform: sessionData.platform,
+      screen_size: sessionData.screenSize,
+      software: sessionData.software,
+      version: sessionData.version,
       game_id: req.game.id,
       closed: false,
       created_timestamp: new Date(),
@@ -107,10 +112,15 @@ route<types.api.SessionById>(
       closed: req.body.closed,
     };
 
-    await events.updateGameSession(
-      req.params.id,
-      utils.jsonCamelToSnakeCase(values)
-    );
+    await events.updateGameSession(req.params.id, {
+      closed: values.closed,
+      custom_data: values.customData,
+      external_id: values.externalId,
+      platform: values.platform,
+      screen_size: values.screenSize,
+      software: values.software,
+      updated_timestamp: new Date(),
+    });
 
     res.json({});
   })

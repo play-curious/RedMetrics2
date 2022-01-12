@@ -394,25 +394,6 @@ export function extractPagingParams(
   };
 }
 
-export function snakeToCamelCase<String extends string>(
-  snake: String
-): types.utils.SnakeToCamelCase<String> {
-  return snake
-    .toLowerCase()
-    .replace(/([-_][a-z])/g, (group) => group.slice(1).toUpperCase()) as any;
-}
-
-export function jsonCamelToSnakeCase(value: any): any {
-  return {
-    ...Object.fromEntries(
-      Object.entries(value).map(([key, value]) => [
-        camelToSnakeCase(key),
-        value,
-      ])
-    ),
-  };
-}
-
 // export function jsonRecursivelySnakeToCamelCase<Value>(
 //   value: Array<Value>
 // ): Array<types.utils.SnakeToCamelCaseNested<Value>>;
@@ -447,7 +428,7 @@ export function removeNullFields(obj: object): object {
   );
 }
 
-export function camelToSnakeCase(camel: string): string {
+export function snakeToCamelCase(camel: string): string {
   return camel.replace(/([-_][a-z])/gi, ($1) => {
     return $1.toUpperCase().replace("-", "").replace("_", "");
   });
@@ -475,7 +456,7 @@ export function jsonRecursivelySnakeToCamelCase<Value>(
 
     Object.keys(value).forEach((k) => {
       // @ts-ignore
-      n[camelToSnakeCase(k)] = jsonRecursivelySnakeToCamelCase(value[k]);
+      n[snakeToCamelCase(k)] = jsonRecursivelySnakeToCamelCase(value[k]);
     });
 
     return n;
