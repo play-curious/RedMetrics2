@@ -83,7 +83,13 @@ route<types.api.Game>(
       name: req.body.name,
     };
 
-    const id = await game.postGame(utils.jsonCamelToSnakeCase(currentGame));
+    const id = await game.postGame({
+      publisher_id: currentGame.publisherId,
+      author: currentGame.author,
+      custom_data: currentGame.customData,
+      description: currentGame.description,
+      name: currentGame.name,
+    });
 
     res.json({
       id,

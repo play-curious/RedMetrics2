@@ -350,13 +350,13 @@ route<types.api.Key>(
   utils.asyncHandler(async (req, res) => {
     if (!utils.hasAccount(req)) return;
 
-    if (!req.body.game_id)
+    if (!req.body.gameId)
       return utils.sendError(res, {
         code: 400,
-        description: "Missing 'game_id' property in body",
+        description: "Missing 'gameId' property in body",
       });
 
-    const currentGame = await game.getGame(req.body.game_id);
+    const currentGame = await game.getGame(req.body.gameId);
 
     if (!currentGame)
       return utils.sendError(res, {
@@ -369,7 +369,7 @@ route<types.api.Key>(
       start_timestamp: new Date(),
       account_id: req.account.id,
       key: uuid.v4(),
-      game_id: req.body.game_id,
+      game_id: req.body.gameId,
     };
 
     await auth.apiKeys().insert(apiKey);

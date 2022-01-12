@@ -18,7 +18,7 @@ exports.seed = async function (knex) {
       ),
       is_admin: true,
       confirmed: true,
-      created_timestamp: String(Date.now()),
+      created_timestamp: new Date(),
     });
 
     console.log(`Created admin account for ${adminEmail} ${adminPassword}`);
