@@ -14,7 +14,7 @@ export default function SessionCard({
   return (
     <Card
       key={key}
-      title={new Date().setTime(Number(session.createdTimestamp)).toString()}
+      title={"created at " + session.createdTimestamp}
       url={`/game/${session.gameId}/session/show/${session.id}`}
       secondary={session.id}
     />

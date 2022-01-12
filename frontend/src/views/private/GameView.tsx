@@ -188,7 +188,7 @@ export default function GameView() {
         context={context}
         onPageChange={fetchSessions}
         map={(session, i) => {
-          return <SessionCard key={i} session={session} />;
+          return <SessionCard session={session} />;
         }}
       />
     </>
