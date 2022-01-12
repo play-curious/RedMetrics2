@@ -199,24 +199,21 @@ route<types.api.GameById_Data>(
 
     const sessions = await event.getAllGameSessions(targetGame.id);
 
-    const returned: types.api.GameById_Data["Methods"]["Get"]["Response"] = {
-      ...targetGame,
-      sessions: utils.jsonRecursivelySnakeToCamelCase(
-        await Promise.all(
+    const returned: types.api.GameById_Data["Methods"]["Get"]["Response"] =
+      utils.jsonRecursivelySnakeToCamelCase({
+        ...targetGame,
+        sessions: await Promise.all(
           sessions.map(async (session) => {
             return {
               ...session,
               events: await event.getAllSessionEvents(session.id),
             };
           })
-        )
-      ),
-    };
+        ),
+      });
 
     res.type("application/octet-stream");
-    res.json(
-      utils.removeNullFields(utils.jsonRecursivelySnakeToCamelCase(returned))
-    );
+    res.json(utils.removeNullFields(returned));
   })
 );
 

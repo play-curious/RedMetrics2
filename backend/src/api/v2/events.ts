@@ -135,17 +135,14 @@ route<types.api.SessionById_Data>(
       req.params.id
     )) as types.tables.Session;
 
-    const fullSession: types.full.FullSession = {
-      ...utils.jsonRecursivelySnakeToCamelCase(session),
-      events: utils.jsonRecursivelySnakeToCamelCase(
-        await events.getAllSessionEvents(session.id)
-      ),
-    };
+    const fullSession: types.full.FullSession =
+      utils.jsonRecursivelySnakeToCamelCase({
+        ...session,
+        events: await events.getAllSessionEvents(session.id),
+      });
 
     res.type("application/octet-stream");
-    res.json(
-      utils.removeNullFields(utils.jsonRecursivelySnakeToCamelCase(fullSession))
-    );
+    res.json(utils.removeNullFields(fullSession));
   })
 );
 
