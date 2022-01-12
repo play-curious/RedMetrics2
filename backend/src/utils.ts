@@ -368,7 +368,7 @@ export function extractPagingParams(
   total: number
 ): Omit<types.api.AllParameters, "sortBy" | "apiKey"> & {
   sortBy: {
-    column: "created_timestamp";
+    column: string;
     order: "desc" | "asc";
   };
 } & { offset: number; pageCount: number } {
@@ -388,7 +388,7 @@ export function extractPagingParams(
     pageCount,
     offset,
     sortBy: {
-      column: sortBy.split(" ")[0] as "created_timestamp",
+      column: sortBy.split(" ")[0],
       order: sortBy.split(" ")[1] as "desc" | "asc",
     },
   };

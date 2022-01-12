@@ -20,7 +20,7 @@ function id(alias?: string): Mod {
 
 function date(name: string): Mod {
   return (knex, table) => {
-    return table.string(name + "_timestamp");
+    return table.datetime(name + "_timestamp");
   };
 }
 

@@ -117,23 +117,13 @@ cron.job("0 0 * * *", () => {
     delete from account
     where
         not confirmed and
-        now() > to_timestamp(
-            to_number(
-                created_timestamp,
-                '9999999999999999'
-            ) / 1000
-        ) + '7 days'::interval
+        now() > created_timestamp + '7 days'::interval
   `);
 
   database.raw(`
     update session set closed = 1
     where
         not closed and
-        now() > to_timestamp(
-            to_number(
-                updated_timestamp,
-                '9999999999999999'
-            ) / 1000
-        ) + '1 hour'::interval
+        now() > updated_timestamp + '1 hour'::interval
   `);
 });

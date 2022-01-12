@@ -11,7 +11,7 @@ import { events, sessions } from "../controllers/events";
   const key = "fixtures";
 
   await accounts().insert({
-    created_timestamp: String(Date.now()),
+    created_timestamp: new Date(),
     email,
     is_admin: false,
     password: key,
@@ -37,12 +37,8 @@ import { events, sessions } from "../controllers/events";
       .map(() => ({
         external_id: key,
         closed: false,
-        created_timestamp: String(
-          Math.floor(Date.now() - (1000000 + Math.random() * 100000))
-        ),
-        updated_timestamp: String(
-          Math.floor(Date.now() - Math.random() * 100000)
-        ),
+        created_timestamp: new Date(),
+        updated_timestamp: new Date(),
         custom_data: JSON.stringify(key),
         game_id: gameList[Math.floor(gameList.length * Math.random())].id,
       }))
@@ -59,7 +55,7 @@ import { events, sessions } from "../controllers/events";
         session_id:
           sessionList[Math.floor(sessionList.length * Math.random())].id,
         type: "test",
-        server_timestamp: String(Date.now()),
+        server_timestamp: new Date(),
       }))
   );
 

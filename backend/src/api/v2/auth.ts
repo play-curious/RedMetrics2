@@ -6,6 +6,7 @@ import * as utils from "../../utils";
 import * as constants from "../../constants";
 import * as auth from "../../controllers/auth";
 import * as game from "../../controllers/game";
+
 import * as types from "rm2-typings";
 
 const route = types.utils.buildRouteMaker(app.v2);
@@ -110,7 +111,7 @@ route<types.api.Register>(
       is_admin,
       connection_token: connectionToken,
       confirmed: false,
-      created_timestamp: String(Date.now()),
+      created_timestamp: new Date(),
     });
 
     const account = await auth.getAccount(id);
@@ -184,7 +185,7 @@ route<types.api.Account>(
       password: hash,
       is_admin,
       confirmed: false,
-      created_timestamp: String(Date.now()),
+      created_timestamp: new Date(),
     });
 
     const account = await auth.getAccount(id);
@@ -329,7 +330,7 @@ route<types.api.Accounts>(
     const { page, perPage, offset, pageCount, sortBy } =
       utils.extractPagingParams(req, total);
 
-    const items = await auth.getAccounts(offset, perPage, sortBy);
+    const items = await auth.getAccounts(offset, perPage, sortBy as any);
 
     utils.setPagingHeaders(req, res, {
       pageCount,
@@ -365,7 +366,7 @@ route<types.api.Key>(
 
     const apiKey: types.tables.ApiKey = {
       description: req.body.description,
-      start_timestamp: String(Date.now()),
+      start_timestamp: new Date(),
       account_id: req.account.id,
       key: uuid.v4(),
       game_id: req.body.game_id,

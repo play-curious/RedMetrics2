@@ -42,8 +42,8 @@ route<types.api.Session>(
       ...utils.jsonCamelToSnakeCase(sessionData),
       game_id: req.game.id,
       closed: false,
-      created_timestamp: String(Date.now()),
-      updated_timestamp: String(Date.now()),
+      created_timestamp: new Date(),
+      updated_timestamp: new Date(),
     };
 
     const id = await events.postSession(session);
@@ -164,7 +164,7 @@ route<types.api.SessionById_Event>(
       req.params.id,
       offset,
       perPage,
-      sortBy
+      sortBy as any
     );
 
     utils.setPagingHeaders(req, res, {
@@ -262,8 +262,8 @@ route<types.api.Event>(
 
       const s: types.utils.Insert<types.tables.Session> = {
         game_id: req.game.id,
-        created_timestamp: Date.now().toString(),
-        updated_timestamp: Date.now().toString(),
+        created_timestamp: new Date(),
+        updated_timestamp: new Date(),
         closed: false,
       };
 
@@ -286,9 +286,9 @@ route<types.api.Event>(
           coordinates: JSON.stringify(postEvent.coordinates ?? {}),
           custom_data: JSON.stringify(postEvent.customData ?? {}),
           section: postEvent.section,
-          server_timestamp: String(Date.now()),
+          server_timestamp: new Date(),
           type: postEvent.type,
-          user_timestamp: postEvent.userTimestamp,
+          user_timestamp: postEvent.userTimestamp as string | undefined,
         };
       })
     );
