@@ -155,7 +155,7 @@ route<types.api.Account>(
 
     const email = req.body?.email,
       password = req.body?.password,
-      is_admin = /^(?:true|1)$/.test(String(req.body?.is_admin ?? "false"));
+      is_admin = /^(?:true|1)$/.test(String(req.body?.isAdmin ?? "false"));
 
     if (!email || !password)
       return utils.sendError(res, {
