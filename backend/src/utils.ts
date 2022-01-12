@@ -2,6 +2,7 @@ import fsp from "fs/promises";
 import path from "path";
 import express from "express";
 import nodemailer from "nodemailer";
+import Mail from "nodemailer/lib/mailer";
 import url from "url";
 
 import * as uuid from "uuid";
@@ -10,7 +11,6 @@ import * as types from "rm2-typings";
 import * as auth from "./controllers/auth";
 import * as game from "./controllers/game";
 import * as constants from "./constants";
-import { type } from "os";
 
 interface ForFilesOptions {
   recursive?: boolean;
@@ -270,21 +270,39 @@ export async function sendMail(options: {
   to: string;
   subject: string;
 }) {
-  const transporter = await nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT),
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
+  let errorText = "",
+    error: any = null;
 
-  await transporter.sendMail({
-    from: process.env.SMTP_FROM,
-    ...options,
-  });
+  try {
+    const transporter = await nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT),
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
 
-  transporter.close();
+    try {
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM,
+        ...options,
+      });
+    } catch (e) {
+      errorText = "Error during mail sending...";
+      error = e;
+    }
+
+    transporter.close();
+  } catch (e) {
+    errorText = "Error during transporter creation...";
+    error = e;
+  }
+
+  if (error) {
+    console.error(errorText, error);
+    throw error;
+  }
 }
 
 export async function sendAccountConfirmation(account: types.tables.Account) {
