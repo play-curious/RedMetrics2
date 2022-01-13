@@ -148,7 +148,10 @@ route<types.api.SessionById_Data>(
     const fullSession: types.full.FullSession =
       utils.jsonRecursivelySnakeToCamelCase({
         ...session,
-        events: await events.getAllSessionEvents(session.id),
+        events: (await events.getAllSessionEvents(session.id)).map((e) => {
+          delete e.session_id;
+          return e;
+        }),
       });
 
     res.type("application/octet-stream");

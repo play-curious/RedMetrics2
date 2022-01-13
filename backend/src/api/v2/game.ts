@@ -210,9 +210,15 @@ route<types.api.GameById_Data>(
         ...targetGame,
         sessions: await Promise.all(
           sessions.map(async (session) => {
+            delete session.game_id;
             return {
               ...session,
-              events: await event.getAllSessionEvents(session.id),
+              events: (await events.getAllSessionEvents(session.id)).map(
+                (e) => {
+                  delete e.session_id;
+                  return e;
+                }
+              ),
             };
           })
         ),
