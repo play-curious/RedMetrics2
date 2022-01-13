@@ -1,5 +1,6 @@
 import React from "react";
 import * as Dom from "react-router-dom";
+import { confirmAlert } from "react-confirm-alert";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
@@ -159,24 +160,43 @@ export default function APIKeyList({
                     <Button
                       customClassName="hover:bg-red-600 rounded-full"
                       callback={function (this: types.tables.ApiKey) {
-                        request<types.api.KeyByKey>(
-                          "Delete",
-                          `/key/${this.key}`,
-                          undefined
-                        )
-                          .then(() => {
-                            notificationSystem.current?.addNotification({
-                              message: "Successfully deleted API key",
-                              level: "success",
-                            });
-                            fetchApiKeys();
-                          })
-                          .catch((error) => {
-                            notificationSystem.current?.addNotification({
-                              message: error.message,
-                              level: "error",
-                            });
-                          });
+                        confirmAlert({
+                          title: "Confirm to remove",
+                          message:
+                            "Are you sure you want to delete this API key?",
+                          buttons: [
+                            {
+                              label: "Yes",
+                              onClick: () =>
+                                request<types.api.KeyByKey>(
+                                  "Delete",
+                                  `/key/${this.key}`,
+                                  undefined
+                                )
+                                  .then(() => {
+                                    notificationSystem.current?.addNotification(
+                                      {
+                                        message: "Successfully deleted API key",
+                                        level: "success",
+                                      }
+                                    );
+                                    fetchApiKeys();
+                                  })
+                                  .catch((error) => {
+                                    notificationSystem.current?.addNotification(
+                                      {
+                                        message: error.message,
+                                        level: "error",
+                                      }
+                                    );
+                                  }),
+                            },
+                            {
+                              label: "No",
+                              onClick: () => null,
+                            },
+                          ],
+                        });
                       }.bind(apiKey)}
                     >
                       <FontAwesomeIcon icon={faTrashAlt} />

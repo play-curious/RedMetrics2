@@ -309,9 +309,9 @@ export async function sendAccountConfirmation(account: types.tables.Account) {
   await sendDigitCode(
     account,
     `
-        <h1> Confirm your account </h1>
-        <h2> Use the following digit code to confirm your account </h2>
-      `,
+      <h1> Confirm your account </h1>
+      <h2> Use the following digit code to confirm your account </h2>
+    `,
     "RedMetrics2 - Confirm your account"
   );
 }

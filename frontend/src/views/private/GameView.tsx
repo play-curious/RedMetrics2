@@ -1,5 +1,6 @@
 import React from "react";
 import * as Router from "react-router";
+import { confirmAlert } from "react-confirm-alert";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
@@ -105,15 +106,32 @@ export default function GameView() {
         <Button to={"/game/edit/" + id}> Edit </Button>
         <Button
           callback={() => {
-            if (window.confirm("Are you sure you want to delete this game?"))
-              request<types.api.GameById>("Delete", `/game/${id}`, undefined)
-                .then(() => setRedirect("/games"))
-                .catch((error: any) => {
-                  notificationSystem.current?.addNotification({
-                    message: error.message,
-                    level: "error",
-                  });
-                });
+            confirmAlert({
+              title: "Confirm to remove",
+              message: "Are you sure you want to delete this game?",
+              buttons: [
+                {
+                  label: "Yes",
+                  onClick: () =>
+                    request<types.api.GameById>(
+                      "Delete",
+                      `/game/${id}`,
+                      undefined
+                    )
+                      .then(() => setRedirect("/games"))
+                      .catch((error: any) => {
+                        notificationSystem.current?.addNotification({
+                          message: error.message,
+                          level: "error",
+                        });
+                      }),
+                },
+                {
+                  label: "No",
+                  onClick: () => null,
+                },
+              ],
+            });
           }}
         >
           Remove
@@ -150,24 +168,43 @@ export default function GameView() {
                     <Button
                       customClassName="hover:bg-red-600 rounded-full"
                       callback={function (this: types.tables.ApiKey) {
-                        request<types.api.KeyByKey>(
-                          "Delete",
-                          `/key/${this.key}`,
-                          undefined
-                        )
-                          .then(() => {
-                            notificationSystem.current?.addNotification({
-                              message: "Successfully deleted API key",
-                              level: "success",
-                            });
-                            setApiKeys(undefined);
-                          })
-                          .catch((error) => {
-                            notificationSystem.current?.addNotification({
-                              message: error.message,
-                              level: "error",
-                            });
-                          });
+                        confirmAlert({
+                          title: "Confirm to remove",
+                          message:
+                            "Are you sure you want to delete this API key?",
+                          buttons: [
+                            {
+                              label: "Yes",
+                              onClick: () =>
+                                request<types.api.KeyByKey>(
+                                  "Delete",
+                                  `/key/${this.key}`,
+                                  undefined
+                                )
+                                  .then(() => {
+                                    notificationSystem.current?.addNotification(
+                                      {
+                                        message: "Successfully deleted API key",
+                                        level: "success",
+                                      }
+                                    );
+                                    setApiKeys(undefined);
+                                  })
+                                  .catch((error) => {
+                                    notificationSystem.current?.addNotification(
+                                      {
+                                        message: error.message,
+                                        level: "error",
+                                      }
+                                    );
+                                  }),
+                            },
+                            {
+                              label: "No",
+                              onClick: () => null,
+                            },
+                          ],
+                        });
                       }.bind(apiKey)}
                     >
                       <FontAwesomeIcon icon={faTrashAlt} />

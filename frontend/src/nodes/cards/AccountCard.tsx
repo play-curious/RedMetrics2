@@ -1,4 +1,5 @@
 import React from "react";
+import { confirmAlert } from "react-confirm-alert";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
@@ -29,25 +30,39 @@ export default function AccountCard({
         <Button
           to="/accounts"
           callback={() => {
-            request<types.api.AccountById>(
-              "Delete",
-              `/account/${account.id}`,
-              undefined
-            )
-              .then(() => {
-                notificationSystem.current?.addNotification({
-                  message: "Account successfully deleted",
-                  level: "success",
-                });
+            confirmAlert({
+              title: "Confirm to remove",
+              message: "Are you sure you want to delete this account?",
+              buttons: [
+                {
+                  label: "Yes",
+                  onClick: () =>
+                    request<types.api.AccountById>(
+                      "Delete",
+                      `/account/${account.id}`,
+                      undefined
+                    )
+                      .then(() => {
+                        notificationSystem.current?.addNotification({
+                          message: "Account successfully deleted",
+                          level: "success",
+                        });
 
-                onRemoved(account.id);
-              })
-              .catch((error) => {
-                notificationSystem.current?.addNotification({
-                  message: error.message,
-                  level: "error",
-                });
-              });
+                        onRemoved(account.id);
+                      })
+                      .catch((error) => {
+                        notificationSystem.current?.addNotification({
+                          message: error.message,
+                          level: "error",
+                        });
+                      }),
+                },
+                {
+                  label: "No",
+                  onClick: () => null,
+                },
+              ],
+            });
           }}
           customClassName="hover:bg-red-500"
         >
