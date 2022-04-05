@@ -133,7 +133,7 @@ route<types.api.SessionById_Data>(
     const session = await events.getSession(context.params.id);
     if (!session) return false;
 
-    const sessionGame = await game.getGame(session.game_id);
+    const sessionGame = await game.getGame(session.game_id as string);
     if (!sessionGame) return false;
 
     return sessionGame.publisher_id === context.account.id;
