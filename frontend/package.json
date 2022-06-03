@@ -1,7 +1,7 @@
 {
-  "name": "site",
+  "name": "red-metrics-2-frontend",
   "version": "0.1.0",
-  "private": true,
+  "license": "MIT",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
@@ -44,6 +44,7 @@
     "format": "prettier --write src",
     "types": "npm up rm2-typings -f"
   },
+  "prepublish": "npm run build",
   "eslintConfig": {
     "extends": [
       "react-app",
