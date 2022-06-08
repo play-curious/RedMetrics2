@@ -65,7 +65,7 @@
   },
   "react-dotenv": {
     "whitelist": [
-      "API_URL"
+      "API_BASE_URL"
     ]
   },
   "devDependencies": {
