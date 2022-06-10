@@ -4,14 +4,14 @@ FROM node:16
 WORKDIR /usr/src/app
 
 # Install app dependencies
-COPY package*.json ./
-RUN npm i
+COPY package*.json yarn.lock ./
+RUN yarn 
 
 # Copy the rest
 COPY . ./
 
 EXPOSE 6627
-CMD ["npm", "run", "watch"]
+CMD ["yarn", "watch"]
 
 # DEBUG: Keep the container running for debugging purposes
 # CMD ["tail", "-f", "/dev/null"]

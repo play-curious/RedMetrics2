@@ -2121,7 +2121,7 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-notification-system@^0.2.40":
+"@types/react-notification-system@0.2.41":
   version "0.2.41"
   resolved "https://registry.yarnpkg.com/@types/react-notification-system/-/react-notification-system-0.2.41.tgz#0fc4b7a140574bd8290f9c5a97553049d4224fca"
   integrity sha512-XUlGQG4SfMbdmKZyBKwoKyCzjDQx9pNXffTjdLiYMXxpANHqofgXELyOsQvWgkBBX237g0O4g6vNCPDJlHkwgQ==

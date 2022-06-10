@@ -75,7 +75,7 @@
     "@types/clipboard": "^2.0.1",
     "@types/dotenv": "^8.2.0",
     "@types/prismjs": "^1.16.6",
-    "@types/react-notification-system": "^0.2.40",
+    "@types/react-notification-system": "0.2.41",
     "@types/react-paginate": "^7.1.0",
     "@types/react-router-dom": "^5.1.7",
     "@types/react-select": "^4.0.15",

@@ -9,9 +9,9 @@ This project uses a `package.json` file only to run scripts through yarn or npm.
 1. Create your .env file from the template
    `cp .env.template .env`
 
-2. To start containers, run `npm run start`
+2. To build & start containers, run `npm run start`
 
-3. To force rebuild of containers upon start, run `npm run start-no-build`
+3. To avoid rebuilding containers upon start, run `npm run start-no-build`
 
 4. To test docker container by logging into CLI
 
