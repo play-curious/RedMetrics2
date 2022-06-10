@@ -4,27 +4,27 @@ Open game analytics
 
 ## Building with Docker
 
-This project uses a `package.json` file only to run scripts through yarn or npm.
+This project uses a `package.json` file only to run scripts through yarn (preferred) or npm.
 
 1. Create your .env file from the template
    `cp .env.template .env`
 
-2. To build & start containers, run `npm run start`
+2. To build & start containers, run `yarn start`
 
-3. To avoid rebuilding containers upon start, run `npm run start-no-build`
+3. To avoid rebuilding containers upon start, run `yarn start-no-build`
 
 4. To test docker container by logging into CLI
 
    1. Enter/connect to the container
-      `npm run connect-backend` or `npm run connect-frontend`
+      `yarn connect-backend` or `yarn connect-frontend`
    2. Stop containers
-      `npm run stop`
+      `yarn run stop`
    3. Remove containers
-      `npm run remove`
+      `yarn run remove`
 
-5. To run the test suite on the backend, run the container, connect to it, and run `npm test`
+5. To run the test suite on the backend, run the container, connect to it, and run `yarn test`
 
-6. To run the backend in watch mode, first stop the existing backend container. Then use the command `docker-compose run --service-ports backend npm run watch`.
+6. To run the backend in watch mode, first stop the existing backend container. Then use the command `docker-compose run --service-ports backend yarn watch`.
 
 ## Developing the database
 
@@ -34,4 +34,4 @@ To build and run the migrations, use `npx knex migrate` on the backend.
 
 ## Admin account
 
-To create an admin account, run `npm run seed` on the backend. It will create an account with the email `ADMIN_EMAIL` and `ADMIN_PASSWORD`, if they are in the `.env` file, or they will use a preset email and random password. The account information will be written to standard out.
+To create an admin account, run `yarn seed` on the backend. It will create an account with the email `ADMIN_EMAIL` and `ADMIN_PASSWORD`, if they are in the `.env` file, or they will use a preset email and random password. The account information will be written to standard out.

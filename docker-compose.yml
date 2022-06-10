@@ -12,6 +12,7 @@ services:
       API_URL: "http://localhost:${BACKEND_PORT}"
     volumes:
       - ./frontend/src:/usr/src/app/src:ro
+      - ./frontend/node_modules:/usr/src/app/node_modules
 
   backend:
     restart: unless-stopped
@@ -30,6 +31,7 @@ services:
       - ./backend/migrations_src:/usr/src/app/migrations_src:ro
       - ./backend/seeds:/usr/src/app/seeds:ro
       - ./.env.template:/usr/src/.env.template:ro
+      - ./backend/node_modules:/usr/src/app/node_modules
 
   db:
     image: postgres

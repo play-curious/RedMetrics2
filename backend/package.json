@@ -11,7 +11,7 @@
     "seed": "npx knex seed:run",
     "debug": "set DEBUG=express:* & npm run start",
     "start": "npm run migrate && npm run serve",
-    "watch": "npm run migrate && tsc-watch --onSuccess \"node dist/index.js\"",
+    "watch": "npm run migrate && tsc-watch --preserveWatchOutput --onSuccess \"node dist/index.js\"",
     "format": "prettier --write src tests",
     "test": "tsc && jest",
     "clean": "rm -rf dist",
