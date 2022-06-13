@@ -5,8 +5,8 @@
   "scripts": {
     "start": "docker compose up --build",
     "start-no-build": "docker compose up",
-    "connect-backend": "docker exec -it redmetrics2_backend_1 /bin/bash",
-    "connect-frontend": "docker exec -it redmetrics2_frontend_1 /bin/bash",
+    "connect-backend": "docker exec -it redmetrics2-backend-1 /bin/bash",
+    "connect-frontend": "docker exec -it redmetrics2-frontend-1 /bin/bash",
     "stop": "docker-compose stop frontend backend db adminer",
     "remove": "yarn run stop; docker-compose rm -f frontend backend db adminer",
     "format": "prettier --write frontend/src backend/src backend/tests"

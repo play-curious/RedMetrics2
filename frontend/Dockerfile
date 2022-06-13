@@ -3,8 +3,8 @@ FROM node:16
 # Create app directory
 WORKDIR /usr/src/app
 
-# Copy the code
-COPY . ./
+# No copy is done, because all files are shared via volumes and bind mounts in Docker Compose
+# COPY . ./
 
 # Configure
 EXPOSE 3000

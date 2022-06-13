@@ -12,7 +12,26 @@ services:
       API_URL: "http://localhost:${BACKEND_PORT}"
     volumes:
       - ./frontend/src:/usr/src/app/src:ro
+      - ./frontend/public:/usr/src/app/public
       - ./frontend/node_modules:/usr/src/app/node_modules
+      - type: bind
+        source: ./frontend/yarn.lock
+        target: /usr/src/app/yarn.lock
+      - type: bind
+        source: ./frontend/package.json
+        target: /usr/src/app/package.json
+      - type: bind
+        source: ./frontend/craco.config.js
+        target: /usr/src/app/craco.config.js
+      - type: bind
+        source: ./frontend/start_frontend.sh
+        target: /usr/src/app/start_frontend.sh
+      - type: bind
+        source: ./frontend/tailwind.config.js
+        target: /usr/src/app/tailwind.config.js
+      - type: bind
+        source: ./frontend/tsconfig.json
+        target: /usr/src/app/tsconfig.json
 
   backend:
     restart: unless-stopped
@@ -32,7 +51,27 @@ services:
       - ./backend/seeds:/usr/src/app/seeds:ro
       - ./.env.template:/usr/src/.env.template:ro
       - ./backend/node_modules:/usr/src/app/node_modules
-
+      - type: bind
+        source: ./backend/yarn.lock
+        target: /usr/src/app/yarn.lock
+      - type: bind
+        source: ./backend/package.json
+        target: /usr/src/app/package.json
+      - type: bind
+        source: ./backend/knexfile.js
+        target: /usr/src/app/knexfile.js
+      - type: bind
+        source: ./backend/start_backend.sh
+        target: /usr/src/app/start_backend.sh
+      - type: bind
+        source: ./backend/tsconfig.json
+        target: /usr/src/app/tsconfig.json
+      - type: bind
+        source: ./backend/tsconfig.migrations.json
+        target: /usr/src/app/tsconfig.migrations.json
+      - type: bind
+        source: ./backend/tsconfig.app.json
+        target: /usr/src/app/tsconfig.app.json
   db:
     image: postgres
     restart: unless-stopped
