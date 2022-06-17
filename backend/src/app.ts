@@ -22,7 +22,7 @@ dayjs.extend(relative);
   const templateConfigFile = fs.readFileSync(templateConfigPath, "utf-8");
   const templateConfig = dotenv.parse(templateConfigFile);
 
-  dotenv.config({ path: path.join(process.cwd(), "..", ".env") });
+  dotenv.config({ path: path.join(process.cwd(), ".env") });
 
   const missing: string[] = [];
 
