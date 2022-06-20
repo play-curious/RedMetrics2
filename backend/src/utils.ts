@@ -2,8 +2,8 @@ import fsp from "fs/promises";
 import path from "path";
 import express from "express";
 import nodemailer from "nodemailer";
-import Mail from "nodemailer/lib/mailer";
 import url from "url";
+import dayjs from "dayjs";
 
 import * as uuid from "uuid";
 import * as types from "rm2-typings";
@@ -11,6 +11,15 @@ import * as types from "rm2-typings";
 import * as auth from "./controllers/auth";
 import * as game from "./controllers/game";
 import * as constants from "./constants";
+
+import pg from "pg";
+
+// todo
+const timestampzParser = pg.types.getTypeParser(1184);
+
+pg.types.setTypeParser(1184, (value) => {
+  return dayjs(timestampzParser(value)).format(process.env.DATES_FORMAT);
+});
 
 interface ForFilesOptions {
   recursive?: boolean;

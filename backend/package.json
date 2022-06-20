@@ -17,7 +17,8 @@
     "clean": "rm -rf dist",
     "types": "npm up rm2-typings -f",
     "fixtures": "node dist/fixtures/setup",
-    "fixtures-down": "node dist/fixtures/teardown"
+    "fixtures-down": "node dist/fixtures/teardown",
+    "fix-bcrypt": "npm rebuild bcrypt --build-from-source"
   },
   "repository": {
     "type": "git",

@@ -1,0 +1,2 @@
+/backend/start_backend.sh eol=lf
+/frontend/start_frontend.sh eol=lf

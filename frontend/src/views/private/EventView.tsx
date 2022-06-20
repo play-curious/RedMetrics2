@@ -12,8 +12,11 @@ import Wrapper from "../../nodes/Wrapper";
 const request = types.utils.request;
 
 export default function EventView() {
-  const { game_id, session_id, _id } =
-    Router.useParams<{ game_id: string; session_id: string; _id: string }>();
+  const { game_id, session_id, _id } = Router.useParams<{
+    game_id: string;
+    session_id: string;
+    _id: string;
+  }>();
 
   const id = Number(_id);
 
