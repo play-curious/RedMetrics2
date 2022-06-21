@@ -17,26 +17,8 @@ dayjs.extend(relative);
 
 // Global
 
-{
-  const templateConfigPath = path.join(process.cwd(), "..", ".env.template");
-  const templateConfigFile = fs.readFileSync(templateConfigPath, "utf-8");
-  const templateConfig = dotenv.parse(templateConfigFile);
-
-  dotenv.config({ path: path.join(process.cwd(), ".env") });
-
-  const missing: string[] = [];
-
-  for (const key in templateConfig) {
-    if (!process.env[key]) missing.push(key);
-  }
-
-  if (missing.length > 0) {
-    console.table(missing);
-    throw new (class ConfigError extends Error {})(
-      `Missing ${missing.length} properties in dotenv file.`
-    );
-  }
-}
+dotenv.config({ path: path.join(process.cwd(), "..", ".env") });
+dotenv.config({ path: path.join(process.cwd(), ".env") });
 
 // Database
 

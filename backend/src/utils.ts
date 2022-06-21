@@ -18,7 +18,9 @@ import pg from "pg";
 const timestampzParser = pg.types.getTypeParser(1184);
 
 pg.types.setTypeParser(1184, (value) => {
-  return dayjs(timestampzParser(value)).format(process.env.DATES_FORMAT);
+  return dayjs(timestampzParser(value)).format(
+    process.env.API_DATES_FORMAT || undefined
+  );
 });
 
 interface ForFilesOptions {
