@@ -44,7 +44,7 @@
     "knex": "^0.95.14",
     "nodemailer": "^6.7.2",
     "pg": "^8.7.1",
-    "rm2-typings": "git+https://github.com/play-curious/RedMetrics2-typing.git",
+    "rm2-typings": "https://github.com/play-curious/RedMetrics2-typing.git",
     "tsc-watch": "^4.5.0",
     "underscore": "^1.13.2",
     "uuid": "^8.3.2"
