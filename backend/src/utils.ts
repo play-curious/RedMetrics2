@@ -424,32 +424,6 @@ export function extractPagingParams(
   };
 }
 
-// export function jsonRecursivelySnakeToCamelCase<Value>(
-//   value: Array<Value>
-// ): Array<types.utils.SnakeToCamelCaseNested<Value>>;
-// export function jsonRecursivelySnakeToCamelCase<Value>(
-//   value: Value
-// ): types.utils.SnakeToCamelCaseNested<Value>;
-// export function jsonRecursivelySnakeToCamelCase<Value>(
-//   value: Array<Value> | Value
-// ):
-//   | Array<types.utils.SnakeToCamelCaseNested<Value>>
-//   | types.utils.SnakeToCamelCaseNested<Value> {
-//   if (Array.isArray(value))
-//     return value.map((v) => jsonRecursivelySnakeToCamelCase(v));
-//
-//   return Object.fromEntries(
-//     Object.entries(value).map(([key, value]) => [
-//       snakeToCamelCase(key),
-//       /boolean|string|number/.test(typeof value) ||
-//       value === null ||
-//       value === undefined
-//         ? value
-//         : jsonRecursivelySnakeToCamelCase(value),
-//     ])
-//   ) as types.utils.SnakeToCamelCaseNested<Value>;
-// }
-
 export function removeNullFields(obj: object): object {
   return JSON.parse(
     JSON.stringify(obj, (key, value) => {
