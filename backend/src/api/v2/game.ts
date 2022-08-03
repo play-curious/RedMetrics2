@@ -26,7 +26,7 @@ route<types.api.Game>(
       if (!publisher)
         return utils.sendError(res, {
           description: "Publisher not found",
-          code: 404,
+          code: 404
         });
 
       query = game.getPublisherGames(publisher_id);
@@ -44,13 +44,13 @@ route<types.api.Game>(
     const games = await query
       .offset(offset)
       .limit(perPage)
-      .orderBy(sortBy?.column ?? "updated_timestamp", sortBy?.order ?? "desc");
+      .orderBy(sortBy?.column ?? "name", sortBy?.order ?? "desc");
 
     utils.setPagingHeaders(req, res, {
       perPage,
       total,
       pageCount,
-      page,
+      page
     });
 
     res.json(utils.jsonRecursivelySnakeToCamelCase(games));
@@ -72,7 +72,7 @@ route<types.api.Game>(
     if (!req.body.name)
       return utils.sendError(res, {
         code: 301,
-        description: "Missing game name",
+        description: "Missing game name"
       });
 
     const currentGame: types.api.Game["Methods"]["Post"]["Body"] = {
@@ -80,7 +80,7 @@ route<types.api.Game>(
       author: req.body.author,
       customData: JSON.stringify(req.body.customData ?? {}),
       description: req.body.description,
-      name: req.body.name,
+      name: req.body.name
     };
 
     const id = await game.postGame({
@@ -88,12 +88,12 @@ route<types.api.Game>(
       author: currentGame.author,
       custom_data: currentGame.customData,
       description: currentGame.description,
-      name: currentGame.name,
+      name: currentGame.name
     });
 
     res.json({
       id,
-      ...currentGame,
+      ...currentGame
     });
   })
 );
@@ -117,7 +117,7 @@ route<types.api.GameById>(
     if (!targetGame)
       return utils.sendError(res, {
         code: 404,
-        description: "Game not found",
+        description: "Game not found"
       });
 
     res.json(utils.jsonRecursivelySnakeToCamelCase(targetGame));
@@ -143,14 +143,14 @@ route<types.api.GameById>(
     if (!targetGame)
       return utils.sendError(res, {
         code: 404,
-        description: "Game not found",
+        description: "Game not found"
       });
 
     await game.updateGame(req.params.id, {
       name: req.body.name,
       description: req.body.description,
       custom_data: JSON.stringify(req.body.customData ?? {}),
-      author: req.body.author,
+      author: req.body.author
     });
 
     res.json({});
@@ -174,7 +174,7 @@ route<types.api.GameById>(
     if (!targetGame)
       return utils.sendError(res, {
         code: 404,
-        description: "Game not found",
+        description: "Game not found"
       });
 
     await game.removeGame(targetGame.id as string);
@@ -200,7 +200,7 @@ route<types.api.GameById_Data>(
     if (!targetGame)
       return utils.sendError(res, {
         code: 404,
-        description: "Game not found",
+        description: "Game not found"
       });
 
     const sessions = await event.getAllGameSessions(targetGame.id);
@@ -218,10 +218,10 @@ route<types.api.GameById_Data>(
                   delete e.session_id;
                   return e;
                 }
-              ),
+              )
             };
           })
-        ),
+        )
       });
 
     res.type("application/octet-stream");
@@ -256,7 +256,7 @@ route<types.api.GameById_Session>(
       pageCount,
       perPage,
       total,
-      page,
+      page
     });
 
     res.json(utils.jsonRecursivelySnakeToCamelCase(items));
