@@ -5,6 +5,9 @@ import NotificationSystem from "react-notification-system";
 import * as types from "rm2-typings";
 import * as axios from "axios";
 
+export const camelToSnakeCase = (str: string) =>
+  str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+
 export async function checkNotificationParams(
   notificationSystem: React.RefObject<NotificationSystem.System>
 ) {

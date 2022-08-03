@@ -22,8 +22,9 @@ export default function Paginator<T>({
     sortBy: `${string} ${"asc" | "desc"}`
   ) => unknown;
 }) {
-  const [sortBy, setSortBy] =
-    React.useState<`${string} ${"asc" | "desc"}`>(`id desc`);
+  const [sortBy, setSortBy] = React.useState<`${string} ${"asc" | "desc"}`>(
+    `updated_timestamp desc`
+  );
   const [pageNumber, setPageNumber] = React.useState<number>(1);
 
   return context && context.data.length > 0 ? (

@@ -3,7 +3,9 @@ import React from "react";
 import { faSortUp, faSortDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const unneededColumns: string[] = ["custom_data"];
+import * as utils from "../utils";
+
+const unneededColumns: string[] = ["custom_data", "undefined"];
 
 export default function SortBy<Table>({
   row,
@@ -12,13 +14,21 @@ export default function SortBy<Table>({
   row: Table;
   onChange: (sortBy: `${string} ${"asc" | "desc"}`) => unknown;
 }) {
-  const columns = Object.keys(row).filter(
-    (key) => !unneededColumns.includes(key)
-  ) as (keyof Table)[];
+  const columns = Object.keys(row)
+    .filter((key) => !unneededColumns.includes(key))
+    .map(utils.camelToSnakeCase) as (keyof Table)[];
 
   const [order, setOrder] = React.useState<"asc" | "desc">("desc");
-  const [column, setColumn] = React.useState<keyof Table>(columns[0]);
+  const [column, setColumn] = React.useState<keyof Table>();
   const [pattern, setPattern] = React.useState<`${string} ${"asc" | "desc"}`>();
+
+  if (!column) {
+    if (columns.includes("updated_timestamp" as any))
+      setColumn("updated_timestamp" as any);
+    else if (columns.includes("created_timestamp" as any))
+      setColumn("created_timestamp" as any);
+    else setColumn(columns[0]);
+  }
 
   const _pattern = `${column} ${order}`;
 
@@ -33,7 +43,7 @@ export default function SortBy<Table>({
       <span
         className="bg-transparent text-red-500 px-2 cursor-pointer"
         onClick={() =>
-          setColumn(columns[columns.indexOf(column) + 1] ?? columns[0])
+          setColumn(columns[columns.indexOf(column as any) + 1] ?? columns[0])
         }
       >
         {column}

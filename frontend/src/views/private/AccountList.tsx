@@ -40,7 +40,7 @@ export default function AccountList({
     }).then(utils.handlePagingFetch(setContext));
   };
 
-  if (context === undefined) fetchAccounts(1, "id desc");
+  if (context === undefined) fetchAccounts(1, "created_timestamp desc");
 
   if (!user.isAdmin)
     return Error({
