@@ -5,3 +5,4 @@ dist/
 migrations/
 yarn-error.log
 /initDatabase.js
+package-lock.json
