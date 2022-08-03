@@ -10687,9 +10687,9 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^3.0.0"
     inherits "^2.0.1"
 
-"rm2-typings@git+https://github.com/play-curious/RedMetrics2-typing.git":
+"rm2-typings@https://github.com/play-curious/RedMetrics2-typing.git":
   version "1.0.12"
-  resolved "git+https://github.com/play-curious/RedMetrics2-typing.git#af213002bbcc96406045426931e05c48754f41ce"
+  resolved "https://github.com/play-curious/RedMetrics2-typing.git#2d57b0132951eb558b0e88bff1740a7d20c7fd2d"
   dependencies:
     "@types/express" "^4.17.13"
     axios "^0.24.0"

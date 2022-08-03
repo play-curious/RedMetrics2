@@ -1,5 +1,4 @@
 import React from "react";
-import dayjs from "dayjs";
 
 import * as types from "rm2-typings";
 
