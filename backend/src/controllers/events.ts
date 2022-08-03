@@ -47,13 +47,13 @@ export function getSessionEvents(
   id: types.tables.Session["id"],
   offset: number,
   limit: number,
-  sortBy: { column: keyof types.tables.Session; order: "asc" | "desc" }
+  sortBy?: { column?: keyof types.tables.Session; order?: "asc" | "desc" }
 ): Promise<types.tables.Event[]> {
   return events()
     .where("session_id", id)
     .offset(offset)
     .limit(limit)
-    .orderBy(sortBy.column, sortBy.order);
+    .orderBy(sortBy?.column ?? "server_timestamp", sortBy?.order ?? "desc");
 }
 
 export function getAllSessionEvents(

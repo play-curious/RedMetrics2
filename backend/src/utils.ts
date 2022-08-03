@@ -13,6 +13,7 @@ import * as game from "./controllers/game";
 import * as constants from "./constants";
 
 import pg from "pg";
+import { Knex } from "knex";
 
 // todo
 const timestampzParser = pg.types.getTypeParser(1184);
@@ -403,7 +404,7 @@ export function extractPagingParams(
 } & { offset: number; pageCount: number } {
   const sortBy =
     (String(req.query.sortBy) as types.api.AllParameters["sortBy"]) ??
-    "created_timestamp desc";
+    "updated_timestamp desc";
   const perPage = Math.max(
     Number(req.query.perPage ?? process.env.API_MAX_LIMIT_PER_PAGE),
     1

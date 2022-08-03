@@ -91,7 +91,7 @@ export function getAccounts(
     .select("*")
     .offset(offset)
     .limit(limit)
-    .orderBy(sortBy.column, sortBy.order);
+    .orderBy(sortBy?.column ?? "created_timestamp", sortBy?.order ?? "desc");
 }
 
 export function getAccountCount(): Promise<number> {

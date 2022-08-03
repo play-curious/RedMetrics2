@@ -7,8 +7,6 @@ import * as auth from "../../controllers/auth";
 import * as event from "../../controllers/events";
 import * as events from "../../controllers/events";
 
-import dayjs from "dayjs";
-
 const route = types.utils.buildRouteMaker(app.v2);
 
 route<types.api.Game>(
@@ -46,7 +44,7 @@ route<types.api.Game>(
     const games = await query
       .offset(offset)
       .limit(perPage)
-      .orderBy(sortBy.column, sortBy.order);
+      .orderBy(sortBy?.column ?? "updated_timestamp", sortBy?.order ?? "desc");
 
     utils.setPagingHeaders(req, res, {
       perPage,
@@ -252,7 +250,7 @@ route<types.api.GameById_Session>(
       .where("game_id", req.params.id)
       .offset(offset)
       .limit(perPage)
-      .orderBy(sortBy.column, sortBy.order);
+      .orderBy(sortBy?.column ?? "updated_timestamp", sortBy?.order ?? "desc");
 
     utils.setPagingHeaders(req, res, {
       pageCount,
