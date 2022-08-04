@@ -13,7 +13,7 @@ export default function EventCard({
 }) {
   return (
     <Card
-      title={event.section ?? "no section"}
+      title={event.type ?? event.section ?? `Event #${event.id}`}
       footer={event.serverTimestamp}
       url={`/game/${game_id}/session/${event.sessionId}/event/${event.id}`}
     >
