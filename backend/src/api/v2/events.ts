@@ -286,11 +286,17 @@ route<types.api.Event>(
     }
 
     let session: types.tables.Session;
+
     if (postEvents[0].sessionId) {
       const _session = await events.getSession(postEvents[0].sessionId);
-      if (!_session) session = await newSession();
-      else session = _session;
-    } else session = await newSession();
+      if (!_session) {
+        session = await newSession();
+      } else {
+        session = _session;
+      }
+    } else {
+      session = await newSession();
+    }
 
     await events.postEvent(
       postEvents.map((postEvent) => {
