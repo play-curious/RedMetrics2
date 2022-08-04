@@ -68,7 +68,7 @@ export default function SessionView() {
     ).then(utils.handlePagingFetch(setContext));
   };
 
-  if (context === undefined) fetchEvents(1, "id desc");
+  if (context === undefined) fetchEvents(1, "serverTimestamp asc");
 
   utils.checkNotificationParams(notificationSystem).catch();
 
