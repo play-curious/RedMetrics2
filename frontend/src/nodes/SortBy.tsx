@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import * as utils from "../utils";
 
-const unneededColumns: string[] = ["custom_data", "undefined"];
+const unneededColumns: string[] = ["custom_data"];
 
 export default function SortBy<Table>({
   row,
@@ -28,13 +28,16 @@ export default function SortBy<Table>({
     else if (columns.includes("created_timestamp" as any))
       setColumn("created_timestamp" as any);
     else setColumn(columns[0]);
+    return <div />;
   }
 
-  const _pattern = `${column} ${order}`;
+  const _pattern: `${string} ${"asc" | "desc"}` = `${column} ${order}`;
 
   if (pattern !== _pattern) {
-    setPattern(`${column} ${order}`);
-    onChange(`${column} ${order}`);
+    console.log(_pattern);
+    onChange(_pattern);
+    setPattern(_pattern);
+    return <div />;
   }
 
   return (
@@ -51,9 +54,7 @@ export default function SortBy<Table>({
       and by order:
       <span
         className="bg-transparent text-red-500 px-2 cursor-pointer"
-        onClick={() => {
-          setOrder(order === "asc" ? "desc" : "asc");
-        }}
+        onClick={() => setOrder(order === "asc" ? "desc" : "asc")}
       >
         {order}
         <FontAwesomeIcon
