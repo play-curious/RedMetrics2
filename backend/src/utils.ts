@@ -13,7 +13,6 @@ import * as game from "./controllers/game";
 import * as constants from "./constants";
 
 import pg from "pg";
-import { Knex } from "knex";
 
 // todo
 const timestampzParser = pg.types.getTypeParser(1184);
@@ -336,6 +335,8 @@ export function applyLimits(): express.RequestHandler {
   return (req, res, next) => {
     const maxLimitPerPage = Number(process.env.API_MAX_LIMIT_PER_PAGE ?? 1000);
 
+    req.query;
+
     if (req.query.limit && Number(req.query.limit) > maxLimitPerPage)
       return sendError(res, {
         code: 401,
@@ -393,6 +394,20 @@ export function setPagingHeaders(
   }
 }
 
+export function isPagingParameter(
+  parameter: any
+): parameter is types.api.AllParameters["sortBy"] {
+  if (typeof parameter !== "string") return false;
+
+  const parameters = parameter.split(" ");
+
+  return (
+    parameters.length === 2 &&
+    /^(?:desc|asc)$/.test(parameters[1]) &&
+    /^([a-z]|_)+$/.test(parameters[0])
+  );
+}
+
 export function extractPagingParams(
   req: express.Request,
   total: number
@@ -402,9 +417,14 @@ export function extractPagingParams(
     order: "desc" | "asc";
   };
 } & { offset: number; pageCount: number } {
-  const sortBy =
-    (String(req.query.sortBy) as types.api.AllParameters["sortBy"]) ??
-    "updated_timestamp desc";
+  let param = req.query.sortBy;
+
+  if (param && !isPagingParameter(param)) {
+    console.error("Bad paging parameter: " + req.query.sortBy);
+    param = "id desc";
+  }
+
+  const sortBy = param ?? "id desc";
   const perPage = Math.max(
     Number(req.query.perPage ?? process.env.API_MAX_LIMIT_PER_PAGE),
     1
