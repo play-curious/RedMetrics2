@@ -335,8 +335,6 @@ export function applyLimits(): express.RequestHandler {
   return (req, res, next) => {
     const maxLimitPerPage = Number(process.env.API_MAX_LIMIT_PER_PAGE ?? 1000);
 
-    req.query;
-
     if (req.query.limit && Number(req.query.limit) > maxLimitPerPage)
       return sendError(res, {
         code: 401,
