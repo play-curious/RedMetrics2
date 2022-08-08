@@ -2,7 +2,11 @@ import React from "react";
 
 import * as types from "rm2-typings";
 
+import * as utils from "../../utils";
+
 import Card from "./Card";
+
+import "./EventCard.scss";
 
 export default function EventCard({
   event,
@@ -17,9 +21,12 @@ export default function EventCard({
       footer={event.serverTimestamp}
       url={`/game/${game_id}/session/${event.sessionId}/event/${event.id}`}
     >
-      <pre>
-        <code>{JSON.stringify(event, null, 2)}</code>
-      </pre>
+      <div className="code-container">
+        <pre
+          className="code"
+          dangerouslySetInnerHTML={{ __html: utils.highlightJson(event) }}
+        ></pre>
+      </div>
     </Card>
   );
 }

@@ -1,0 +1,28 @@
+.code-container {
+  max-height: 150px;
+  overflow-y: scroll;
+
+  .code {
+    font-family: "Andale Mono", monospace;
+
+    .number {
+      color: #ff000a;
+    }
+
+    .boolean {
+      color: #ff6d72;
+    }
+
+    .null {
+      color: #ff6d72;
+    }
+
+    .key {
+      color: #5e2a2a;
+    }
+
+    .string {
+      color: #ff000a;
+    }
+  }
+}

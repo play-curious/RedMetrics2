@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import * as utils from "../utils";
 
-const unneededColumns: string[] = ["custom_data"];
+const unneededColumns: string[] = ["custom_data", "coordinates"];
 
 export default function SortBy<Table>({
   row,
@@ -14,9 +14,10 @@ export default function SortBy<Table>({
   row: Table;
   onChange: (sortBy: `${string} ${"asc" | "desc"}`) => unknown;
 }) {
-  const columns = Object.keys(row)
-    .filter((key) => !unneededColumns.includes(key))
-    .map(utils.camelToSnakeCase) as (keyof Table)[];
+  const columns = Object.entries(row)
+    .map(([key, val]) => [utils.camelToSnakeCase(key), val])
+    .filter(([key, val]) => !unneededColumns.includes(key))
+    .map(([key]) => key) as (keyof Table)[];
 
   const [order, setOrder] = React.useState<"asc" | "desc">("desc");
   const [column, setColumn] = React.useState<keyof Table>();
@@ -34,7 +35,6 @@ export default function SortBy<Table>({
   const _pattern: `${string} ${"asc" | "desc"}` = `${column} ${order}`;
 
   if (pattern !== _pattern) {
-    console.log(_pattern);
     onChange(_pattern);
     setPattern(_pattern);
     return <div />;
