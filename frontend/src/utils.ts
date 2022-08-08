@@ -1,5 +1,7 @@
 import React from "react";
+import prettier from "prettier";
 import querystring from "query-string";
+import * as babylon from "babylon";
 import NotificationSystem from "react-notification-system";
 
 import * as types from "rm2-typings";
@@ -9,9 +11,17 @@ export const camelToSnakeCase = (str: string) =>
   str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 
 export function highlightJson(json: any) {
-  let output = JSON.stringify(json, undefined, 2);
+  const temp = "const json = ";
+
+  let output = prettier.format(temp + JSON.stringify(json), {
+    parser: babylon.parse,
+    printWidth: 200,
+    tabWidth: 2,
+    semi: false,
+  });
 
   output = output
+    .replace(temp, "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");

@@ -21,7 +21,7 @@
     "url": "https://github.com/play-curious/RedMetrics2/issues"
   },
   "homepage": "https://github.com/play-curious/RedMetrics2#readme",
-  "devDependencies": {
+  "dependencies": {
     "prettier": "^2.3.1"
   }
 }
