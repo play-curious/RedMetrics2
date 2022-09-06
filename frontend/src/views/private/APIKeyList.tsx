@@ -49,6 +49,7 @@ export default function APIKeyList({
         page: 1,
         sortBy: "name asc" as `${string} ${"asc" | "desc"}`,
         perPage: Number(process.env.API_MAX_LIMIT_PER_PAGE ?? 9000),
+        publisher_id: user.id,
       },
     })
       .then(({ data }) => setOwnGames(data))

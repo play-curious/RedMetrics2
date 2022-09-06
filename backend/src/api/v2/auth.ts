@@ -110,7 +110,7 @@ route<types.api.Register>(
       password: hash,
       is_admin,
       connection_token: connectionToken,
-      confirmed: false,
+      confirmed: process.env.SMTP_DISABLED === 1,
       created_timestamp: new Date(),
     });
 
@@ -118,7 +118,16 @@ route<types.api.Register>(
 
     if (!account) return;
 
-    await utils.sendAccountConfirmation(account);
+    if (process.env.SMTP_DISABLED !== 1) {
+      try {
+        await utils.sendAccountConfirmation(account);
+      } catch (error) {
+        return utils.sendError(res, {
+          code: 201,
+          description: "Incorrectly configured emails",
+        });
+      }
+    }
 
     res.cookie(constants.COOKIE_NAME, connectionToken, {
       maxAge: 1000 * 60 * 60 * 24 * 7,
@@ -184,7 +193,7 @@ route<types.api.Account>(
       email,
       password: hash,
       is_admin,
-      confirmed: false,
+      confirmed: process.env.SMTP_DISABLED === 1,
       created_timestamp: new Date(),
     });
 
@@ -192,7 +201,16 @@ route<types.api.Account>(
 
     if (!account) return;
 
-    await utils.sendAccountConfirmation(account);
+    if (process.env.SMTP_DISABLED !== 1) {
+      try {
+        await utils.sendAccountConfirmation(account);
+      } catch (error) {
+        return utils.sendError(res, {
+          code: 201,
+          description: "Failed to send confirmation email",
+        });
+      }
+    }
 
     res.json({});
   })

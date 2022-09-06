@@ -6,10 +6,13 @@ import * as types from "rm2-typings";
 import CustomForm from "../../nodes/CustomForm";
 import Button from "../../nodes/Button";
 
+import { useHistory } from "react-router-dom";
+
 const request = types.utils.request;
 
 export default function ConfirmEmail() {
   const notificationSystem = React.createRef<NotificationSystem.System>();
+  const history = useHistory();
 
   return (
     <>
@@ -35,7 +38,11 @@ export default function ConfirmEmail() {
                   message: "Successfully confirm your email!",
                   level: "success",
                 });
-                window.location.reload();
+
+                setTimeout(() => {
+                  history.push("/home");
+                  window.location.reload();
+                }, 2000);
               })
               .catch((error) => {
                 notificationSystem.current?.addNotification({

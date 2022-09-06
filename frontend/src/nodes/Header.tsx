@@ -25,7 +25,7 @@ export default function Header({
               <Logo />
             </div>
             <Menu>
-              {user?.isAdmin && <MenuItem to="/games"> Games </MenuItem>}
+              {user && <MenuItem to="/games"> Games </MenuItem>}
               {user && <MenuItem to="/api-keys"> Api Keys </MenuItem>}
               {user?.isAdmin && <MenuItem to="/accounts"> Accounts </MenuItem>}
               <MenuItem to="/docs"> Docs </MenuItem>

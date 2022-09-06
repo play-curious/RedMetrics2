@@ -26,17 +26,13 @@ export default function GameList({
 
   const gamePerPage = 15;
 
-  if (!user.isAdmin)
-    return Error({
-      text: "You must be administrator to access this page.",
-    });
-
   const fetchGames = (
     pageNumber: number,
     sortBy: `${string} ${"asc" | "desc"}`
   ) => {
     request<types.api.Game>("Get", "/game", undefined, {
       params: {
+        publisher_id: user.id,
         page: pageNumber,
         perPage: gamePerPage,
         sortBy,

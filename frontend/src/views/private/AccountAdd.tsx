@@ -35,8 +35,8 @@ export default function AccountAdd({
           className="flex flex-col"
           onSubmit={(data: types.api.Account["Methods"]["Post"]["Body"]) => {
             request<types.api.Account>("Post", "/account", data)
-              .then(() => {
-                const message = `new account created with password: ${password}`;
+              .then(({ status }) => {
+                const message = `New account created with password: ${password}`;
 
                 console.info(message);
                 alert(message);
@@ -46,19 +46,42 @@ export default function AccountAdd({
                   level: "success",
                 });
                 notificationSystem.current?.addNotification({
-                  message: `new account created with password: ${password}`,
+                  message,
                   level: "info",
                 });
 
-                setRedirect("/accounts");
+                setTimeout(() => {
+                  if (status === 201) {
+                    notificationSystem.current?.addNotification({
+                      message: "Can't send the confirmation email...",
+                      level: "error",
+                    });
+                  }
+                }, 1000);
+
+                setTimeout(() => {
+                  notificationSystem.current?.addNotification({
+                    message: "Redirect to accounts in 2 seconds...",
+                    level: "info",
+                  });
+                }, 2000);
+
+                setTimeout(() => {
+                  setRedirect("/accounts");
+                }, 4000);
               })
               .catch((error) => {
-                notificationSystem.current?.addNotification({
-                  message: error.message.includes("401")
-                    ? "Email already used!"
-                    : error.message,
-                  level: "error",
-                });
+                if (error.message.includes("401")) {
+                  notificationSystem.current?.addNotification({
+                    message: "Email already used!",
+                    level: "error",
+                  });
+                } else {
+                  notificationSystem.current?.addNotification({
+                    message: error.message,
+                    level: "error",
+                  });
+                }
               });
           }}
           submitText="Create"
