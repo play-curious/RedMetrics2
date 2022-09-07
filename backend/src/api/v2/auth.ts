@@ -110,7 +110,7 @@ route<types.api.Register>(
       password: hash,
       is_admin,
       connection_token: connectionToken,
-      confirmed: process.env.SMTP_DISABLED === 1,
+      confirmed: process.env.SMTP_DISABLED === "1",
       created_timestamp: new Date(),
     });
 
@@ -118,7 +118,7 @@ route<types.api.Register>(
 
     if (!account) return;
 
-    if (process.env.SMTP_DISABLED !== 1) {
+    if (process.env.SMTP_DISABLED !== "1") {
       try {
         await utils.sendAccountConfirmation(account);
       } catch (error) {
@@ -193,7 +193,7 @@ route<types.api.Account>(
       email,
       password: hash,
       is_admin,
-      confirmed: process.env.SMTP_DISABLED === 1,
+      confirmed: process.env.SMTP_DISABLED === "1",
       created_timestamp: new Date(),
     });
 
@@ -201,7 +201,7 @@ route<types.api.Account>(
 
     if (!account) return;
 
-    if (process.env.SMTP_DISABLED !== 1) {
+    if (process.env.SMTP_DISABLED !== "1") {
       try {
         await utils.sendAccountConfirmation(account);
       } catch (error) {
