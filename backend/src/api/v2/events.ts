@@ -289,7 +289,7 @@ route<types.api.Event>(
 
     if (postEvents[0].sessionId) {
       const _session = await events.getSession(postEvents[0].sessionId);
-      if (!_session) {
+      if (!_session || _session.closed) {
         session = await newSession();
       } else {
         session = _session;
@@ -311,6 +311,9 @@ route<types.api.Event>(
         };
       })
     );
+
+    if (postEvents.some((postEvent) => postEvent.type === "end"))
+      await events.updateGameSession(session.id, { closed: true });
 
     res.json(session.id);
   })

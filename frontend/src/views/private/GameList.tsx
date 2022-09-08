@@ -32,7 +32,7 @@ export default function GameList({
   ) => {
     request<types.api.Game>("Get", "/game", undefined, {
       params: {
-        publisher_id: user.id,
+        publisher_id: user.isAdmin ? undefined : user.id,
         page: pageNumber,
         perPage: gamePerPage,
         sortBy,

@@ -20,14 +20,16 @@ export default function APIKeyList({
 }: {
   user: types.utils.SnakeToCamelCaseNested<types.tables.Account>;
 }) {
-  const [apiKeys, setApiKeys] = React.useState<types.tables.ApiKey[]>();
-  const [ownGames, setOwnGames] = React.useState<types.tables.Game[]>();
+  const [apiKeys, setApiKeys] =
+    React.useState<types.utils.SnakeToCamelCaseNested<types.tables.ApiKey>[]>();
+  const [ownGames, setOwnGames] =
+    React.useState<types.utils.SnakeToCamelCaseNested<types.tables.Game>[]>();
 
   const notificationSystem = React.createRef<NotificationSystem.System>();
 
   const gameId = new URLSearchParams(window.location.search).get("game_id");
 
-  const fetchApiKeys = () => {
+  const fetchApiKeys = () =>
     request<types.api.AccountById_Key>(
       "Get",
       `/account/${user.id}/key`,
@@ -40,16 +42,14 @@ export default function APIKeyList({
           level: "error",
         });
       });
-  };
 
-  if (apiKeys === undefined) fetchApiKeys();
-  if (ownGames === undefined)
+  const fetchGames = () =>
     request<types.api.Game>("Get", "/game", undefined, {
       params: {
         page: 1,
         sortBy: "name asc" as `${string} ${"asc" | "desc"}`,
         perPage: Number(process.env.API_MAX_LIMIT_PER_PAGE ?? 9000),
-        publisher_id: user.id,
+        publisher_id: user.isAdmin ? undefined : user.id,
       },
     })
       .then(({ data }) => setOwnGames(data))
@@ -59,6 +59,9 @@ export default function APIKeyList({
           level: "error",
         });
       });
+
+  if (apiKeys === undefined) fetchApiKeys();
+  if (ownGames === undefined) fetchGames();
 
   return (
     <>
@@ -88,6 +91,7 @@ export default function APIKeyList({
               description: {
                 is: "text",
                 placeholder: "API key name or reason",
+                label: "name",
               },
               gameId: {
                 is: "select",
@@ -147,10 +151,10 @@ export default function APIKeyList({
                     {apiKey.description}
                   </div>
                   <div className="table-cell p-1">
-                    <Dom.Link to={"/game/show/" + apiKey.game_id}>
+                    <Dom.Link to={"/game/show/" + apiKey.gameId}>
                       <span className="underline hover:text-blue-600 transition duration-200">
-                        {ownGames?.find((game) => game.id === apiKey.game_id)
-                          ?.name ?? ""}
+                        {ownGames?.find((game) => game.id === apiKey.gameId)
+                          ?.name ?? "unknown"}
                       </span>
                     </Dom.Link>
                   </div>
@@ -160,7 +164,9 @@ export default function APIKeyList({
                   <div className="table-cell p-1 flex items-center h-full">
                     <Button
                       customClassName="hover:bg-red-600 rounded-full"
-                      callback={function (this: types.tables.ApiKey) {
+                      callback={function (
+                        this: types.utils.SnakeToCamelCaseNested<types.tables.ApiKey>
+                      ) {
                         confirmAlert({
                           title: "Confirm to remove",
                           message:
