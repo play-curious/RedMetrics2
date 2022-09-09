@@ -65,6 +65,10 @@ export function getUserApiKeys(account_id: types.tables.Account["id"]) {
   return apiKeys().where({ account_id });
 }
 
+export function getAllApiKeys() {
+  return apiKeys();
+}
+
 export function removeUserApiKeys(account_id: types.tables.Account["id"]) {
   return getUserApiKeys(account_id).delete();
 }

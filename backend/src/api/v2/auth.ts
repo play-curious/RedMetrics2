@@ -329,12 +329,19 @@ route<types.api.AccountById_Key>(
   "/account/:id/key",
   utils.authentication((ctx) => ctx.params.id === ctx.account.id),
   utils.asyncHandler(async (req, res) => {
-    if (utils.hasAccount(req))
-      res.json(
-        utils.jsonRecursivelySnakeToCamelCase(
-          await auth.getUserApiKeys(req.account.id)
-        )
-      );
+    if (utils.hasAccount(req)) {
+      if (req.account.is_admin) {
+        res.json(
+          utils.jsonRecursivelySnakeToCamelCase(await auth.getAllApiKeys())
+        );
+      } else {
+        res.json(
+          utils.jsonRecursivelySnakeToCamelCase(
+            await auth.getUserApiKeys(req.account.id)
+          )
+        );
+      }
+    }
   })
 );
 
