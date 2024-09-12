@@ -13,12 +13,17 @@ import fs from "fs";
 import * as utils from "./utils";
 import * as types from "rm2-typings";
 
-dayjs.extend(relative);
-
 // Global
+
+dayjs.extend(relative);
 
 dotenv.config({ path: path.join(process.cwd(), "..", ".env") });
 dotenv.config({ path: path.join(process.cwd(), ".env") });
+
+// Override the default type parsing, which gets rid of the milliseconds field
+pg.types.setTypeParser(pg.types.builtins.TIMESTAMPTZ, (value) => {
+  return new Date(value).toISOString();
+});
 
 // Database
 

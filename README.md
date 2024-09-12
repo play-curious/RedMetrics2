@@ -32,6 +32,14 @@ Migrations are created in TypeScript in the `backend/migrations_src` directory a
 
 To build and run the migrations, use `npx knex migrate` on the backend.
 
+The `adminer` Docker image is useful for examining the database. To connect, open a browser to port http://localhost:9091. Enter the following:
+
+* System: `PostgreSQL`
+* Server: `db`
+* User: from `.env` file
+* Password: from `.env` file
+* Database: from `.env` file
+
 ## Admin account
 
 To create an admin account, run `yarn seed` on the backend. It will create an account with the email `ADMIN_EMAIL` and `ADMIN_PASSWORD`, if they are in the `.env` file, or they will use a preset email and random password. The account information will be written to standard out.
